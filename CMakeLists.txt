@@ -13,5 +13,5 @@ find_package(OpenGL REQUIRED)
 
 add_subdirectory(thirdparty/glad)
 add_subdirectory(src/dummy_test)
-add_subdirectory(thirdparty/glm)
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw OpenGL::GL glad dummy_test)
+add_subdirectory(src/scene_graph)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw OpenGL::GL glad dummy_test utils SceneGraph)

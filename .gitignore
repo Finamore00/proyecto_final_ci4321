@@ -49,3 +49,6 @@ _deps
 *-prefix/
 
 # End of CMake
+
+build/*
+build/*/*
