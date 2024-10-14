@@ -3,14 +3,11 @@
 #include "transform.hpp"
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
 
+Transform::Transform(SceneObject &obj) : sceneObject(obj) {}
 
 glm::mat4 Transform::getLocalModelMatrix()
 {
-    const glm::mat4 rotX = glm::rotate(glm::mat4(1.0), glm::radians(m_eulerRot.x), glm::vec3(1.0f, 0.0f, 0.0f));
-    const glm::mat4 rotY = glm::rotate(glm::mat4(1.0), glm::radians(m_eulerRot.y), glm::vec3(0.0f, 1.0f, 0.0f));
-    const glm::mat4 rotZ = glm::rotate(glm::mat4(1.0), glm::radians(m_eulerRot.z), glm::vec3(0.0f, 0.0f, 1.0f));
-    const glm::mat4 rotMatrix = rotY * rotX * rotZ;
-
+    const glm::mat4 rotMatrix = (glm::mat4)m_rotation;
     return glm::translate(glm::mat4(1.0f), m_position) * rotMatrix * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
@@ -32,9 +29,15 @@ void Transform::setLocalPosition(const glm::vec3& position)
     m_isDirty = true;
 }
 
-void Transform::setLocalEulerRotation(const glm::vec3& position)
+void Transform::setLocalEulerRotation(const glm::vec3& euler)
 {
-    m_eulerRot = position;
+    m_rotation = glm::quat(glm::radians(euler));
+    m_isDirty = true;
+}
+
+void Transform::setLocalRotation(const glm::quat& rot)
+{
+    m_rotation = rot;
     m_isDirty = true;
 }
 
@@ -55,7 +58,7 @@ void Transform::removeChild(Transform& child)
             return;
         }
         i++;
-    }    
+    }
 }
 
 void Transform::setParent(Transform* const newParent)
