@@ -25,22 +25,16 @@ void Transform::computeModelMatrix(const glm::mat4& parentGlobalModelMat)
 
 glm::vec3 Transform::getUpVector()
 {
-    //if (m_isDirty)
-    //    forceUpdateTransform(); // this should also update parents?
     return glm::vec3(m_modelMatrix[1]);
 }
 
 glm::vec3 Transform::getRightVector()
 {
-    //if (m_isDirty)
-    //    forceUpdateTransform(); // this should also update parents?
     return glm::vec3(m_modelMatrix[0]);
 }
 
 glm::vec3 Transform::getFrontVector()
 {
-    //if (m_isDirty)
-    //    forceUpdateTransform(); // this should also update parents?
     return glm::vec3(m_modelMatrix[2]);
 };
 
@@ -70,22 +64,16 @@ void Transform::setLocalScale(const glm::vec3& scale)
 
 glm::vec3 Transform::getWorldPosition()
 {
-    //if (m_isDirty)
-    //    forceUpdateTransform(); // this should also update parents?
-    return glm::vec3(parent->getModelMatrix()[3]);
+    return glm::vec3(getModelMatrix()[3]);
 }
 
 glm::quat Transform::getWorldRotation()
 {
-    //if (m_isDirty)
-    //    forceUpdateTransform(); // this should also update parents?
     return glm::quat(parent->getModelMatrix());
 }
 
 glm::vec3 Transform::getWorldEulerRotation()
 {
-    //if (m_isDirty)
-    //    forceUpdateTransform(); // this should also update parents?
     return {0.0, 0.0, 0.0};
 }
 
@@ -125,7 +113,7 @@ void Transform::setWorldRotation(const glm::quat& rot)
         return;
     }
 
-    const glm::mat4& p = parent->getModelMatrix();
+    const glm::mat4& p = parent->getModelMatrix(); // find a way to cache this
     glm::mat4 wRot = glm::mat4_cast(rot);
     glm::mat4 lRot = glm::inverse(p) * wRot;
     m_rotation = glm::quat(lRot);
