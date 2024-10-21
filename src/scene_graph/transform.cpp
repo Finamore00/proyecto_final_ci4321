@@ -25,17 +25,17 @@ void Transform::computeModelMatrix(const glm::mat4& parentGlobalModelMat)
 
 glm::vec3 Transform::getUpVector()
 {
-    return glm::vec3(m_modelMatrix[1]);
+    return glm::normalize(glm::vec3(m_modelMatrix[1]));
 }
 
 glm::vec3 Transform::getRightVector()
 {
-    return glm::vec3(m_modelMatrix[0]);
+    return glm::normalize(glm::vec3(m_modelMatrix[0]));
 }
 
 glm::vec3 Transform::getFrontVector()
 {
-    return glm::vec3(m_modelMatrix[2]);
+    return glm::normalize(glm::vec3(m_modelMatrix[2]));
 };
 
 void Transform::setLocalPosition(const glm::vec3& position)
@@ -64,24 +64,24 @@ void Transform::setLocalScale(const glm::vec3& scale)
 
 glm::vec3 Transform::getWorldPosition()
 {
-    return glm::vec3(getModelMatrix()[3]);
+    return glm::vec3(m_modelMatrix[3]);
 }
 
 glm::quat Transform::getWorldRotation()
 {
-    return glm::quat(parent->getModelMatrix());
+    return glm::quat(m_modelMatrix); // Not sure of this
 }
 
 glm::vec3 Transform::getWorldEulerRotation()
 {
-    return {0.0, 0.0, 0.0};
+    return glm::eulerAngles(glm::quat(m_modelMatrix));
 }
 
 glm::vec3 Transform::getWorldScale()
 {
     //if (m_isDirty)
     //    forceUpdateTransform(); // this should also update parents?
-    const glm::mat4& s = parent->getModelMatrix();
+    const glm::mat4& s = parent->m_modelMatrix;
     return glm::vec3(
         s[0].length(),
         s[1].length(),
@@ -98,7 +98,7 @@ void Transform::setWorldPosition(const glm::vec3& position)
         return;
     }
 
-    const glm::mat4& p = parent->getModelMatrix();
+    const glm::mat4& p = parent->m_modelMatrix;
     glm::mat4 wPos = glm::translate(glm::mat4(1.0f), position);
     glm::mat4 lPos = glm::inverse(p) * wPos;
     m_position = glm::vec3(lPos[3]);
@@ -113,7 +113,7 @@ void Transform::setWorldRotation(const glm::quat& rot)
         return;
     }
 
-    const glm::mat4& p = parent->getModelMatrix(); // find a way to cache this
+    const glm::mat4& p = parent->m_modelMatrix; // find a way to cache this
     glm::mat4 wRot = glm::mat4_cast(rot);
     glm::mat4 lRot = glm::inverse(p) * wRot;
     m_rotation = glm::quat(lRot);
@@ -128,7 +128,7 @@ void Transform::setWorldEulerRotation(const glm::vec3& euler)
         return;
     }
 
-    const glm::mat4& p = parent->getModelMatrix();
+    const glm::mat4& p = parent->m_modelMatrix;
     glm::mat4 wRot = glm::mat4_cast(glm::quat(glm::radians(euler)));
     glm::mat4 lRot = glm::inverse(p) * wRot;
     m_rotation = glm::quat(lRot);
@@ -143,7 +143,7 @@ void Transform::setWorldScale(const glm::vec3& scale)
         return;
     }
 
-    const glm::mat4& p = parent->getModelMatrix();
+    const glm::mat4& p = parent->m_modelMatrix;
     glm::mat4 wScale = glm::scale(glm::mat4(1.0f), scale);
     glm::mat4 lScale = glm::inverse(p) * wScale;
     m_scale = glm::vec3(
@@ -201,7 +201,7 @@ void Transform::updateTransform()
 void Transform::forceUpdateTransform()
 {
     if (parent)
-        computeModelMatrix(parent->getModelMatrix());
+        computeModelMatrix(parent->m_modelMatrix);
     else
         computeModelMatrix();
 
