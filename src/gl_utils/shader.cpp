@@ -112,4 +112,34 @@ namespace gl_utils {
         src_file.close();
     }
 
+    shader_program::shader_program(const std::string &vertex_path, const std::string &fragment_path) {
+        vertex_shader vs(vertex_path);
+        fragment_shader fs(fragment_path);
+
+        link_status = GL_TRUE;
+        program_id = glCreateProgram();
+        glAttachShader(program_id, vs.shader_id);
+        glAttachShader(program_id, fs.shader_id);
+        glLinkProgram(program_id);
+    }
+
+    bool shader_program::link_success() {
+        glGetProgramiv(program_id, GL_LINK_STATUS, &link_status);
+        if (link_status == GL_FALSE) {
+            std::cerr << "Error linking shader program." << std::endl;
+            glGetProgramInfoLog(program_id, 512, nullptr, info_log);
+            std::cerr << "Error log string: " << info_log << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
+    void shader_program::use() const {
+        glUseProgram(program_id);
+    }
+
+    shader_program::~shader_program() {
+        glDeleteProgram(program_id);
+    }
 }

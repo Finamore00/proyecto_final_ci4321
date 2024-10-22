@@ -53,24 +53,19 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     //Create shaders
-    const auto vert_sh = gl_utils::vertex_shader("../shader_files/color_triangle/shader.vert");
-    const auto frag_sh = gl_utils::fragment_shader("../shader_files/color_triangle/shader.frag");
 
-    const GLuint shader_program = glCreateProgram();
-    glAttachShader(shader_program, vert_sh.shader_id);
-    glAttachShader(shader_program, frag_sh.shader_id);
-    glLinkProgram(shader_program);
+    auto shader_program = gl_utils::shader_program(
+        "../shader_files/color_triangle/shader.vert",
+        "../shader_files/color_triangle/shader.frag");
 
-    //Check linking status
-    GLint success;
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if (!success) {
-        printf("Error linking shader program. Exiting...\n");
+    if (!shader_program.link_success()) {
+        std::cerr << "Error linking shader programs" << std::endl;
+        glfwDestroyWindow(window);
         glfwTerminate();
         return -1;
     }
 
-    glUseProgram(shader_program);
+    shader_program.use();
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void *>(nullptr));
     glEnableVertexAttribArray(0);
@@ -86,7 +81,7 @@ int main()
         glClearColor(hex_to_float(0x36), hex_to_float(0x45), hex_to_float(0x4F), 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader_program);
+        shader_program.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);

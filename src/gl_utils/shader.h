@@ -15,9 +15,9 @@ namespace gl_utils {
         GLuint shader_id;
         shader() = default;
         virtual ~shader() = default;
-        virtual void compile() {};
-        virtual std::string get_shader_str() {};
-        virtual bool check_compile_success() {return false;};
+        virtual void compile() = 0;
+        virtual std::string get_shader_str() = 0;
+        virtual bool check_compile_success() = 0;
 
     protected:
         char info_log[512] {};
@@ -27,6 +27,7 @@ namespace gl_utils {
 
     class vertex_shader final: public shader {
     public:
+        vertex_shader() = default;
         explicit vertex_shader(const std::string& src_path);
         void compile() override;
         bool check_compile_success() override;
@@ -37,11 +38,24 @@ namespace gl_utils {
 
     class fragment_shader final: public shader {
     public:
+        fragment_shader() = default;
         explicit fragment_shader(const std::string& file_path);
         void compile() override;
         bool check_compile_success() override;
         std::string get_shader_str() override;
         ~fragment_shader() override;
+    };
+
+    class shader_program final {
+    public:
+        GLuint program_id;
+        shader_program(const std::string &vertex_path, const std::string &fragment_path);
+        bool link_success();
+        void use() const;
+        ~shader_program();
+    private:
+        GLint link_status;
+        char info_log[512] {};
     };
 
 } // shader
