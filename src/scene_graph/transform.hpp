@@ -3,6 +3,8 @@
 
 #include "../../thirdparty/glm/glm.hpp"
 #include "../../thirdparty/glm/gtc/quaternion.hpp"
+#include "../collisions/collision_primitives.hpp"
+#include "../mesh/mesh.hpp"
 
 class SceneObject;
 
@@ -27,25 +29,27 @@ protected:
 public:
     bool isDirty() const {return m_isDirty;}
     const glm::mat4& getModelMatrix() const {return m_modelMatrix;}
+    const std::vector<Transform*>& getChildren() const {return children;}
+    SceneObject& getSceneObject() const {return sceneObject;}
 
-    const glm::vec3& getLocalScale() {return m_position;}
-    const glm::vec3& getLocalPosition() {return m_position;}
-    const glm::quat& getLocalRotation() {return m_rotation;}
-    glm::vec3 getLocalEulerRotation() {return glm::eulerAngles(m_rotation);}
+    const glm::vec3& getLocalScale() const {return m_position;}
+    const glm::vec3& getLocalPosition() const {return m_position;}
+    const glm::quat& getLocalRotation() const {return m_rotation;}
+    glm::vec3 getLocalEulerRotation() const {return glm::eulerAngles(m_rotation);}
 
-    glm::vec3 getUpVector();
-    glm::vec3 getRightVector();
-    glm::vec3 getFrontVector();
+    glm::vec3 getUpVector() const;
+    glm::vec3 getRightVector() const;
+    glm::vec3 getFrontVector() const;
 
     void setLocalPosition(const glm::vec3& position);
     void setLocalRotation(const glm::quat& rot);
     void setLocalEulerRotation(const glm::vec3& euler);
     void setLocalScale(const glm::vec3& scale);
 
-    glm::vec3 getWorldPosition();
-    glm::quat getWorldRotation();
-    glm::vec3 getWorldEulerRotation();
-    glm::vec3 getWorldScale();
+    glm::vec3 getWorldPosition() const;
+    glm::quat getWorldRotation() const;
+    glm::vec3 getWorldEulerRotation() const;
+    glm::vec3 getWorldScale() const;
     
     void setWorldPosition(const glm::vec3& position);
     void setWorldRotation(const glm::quat& rot);
@@ -63,6 +67,19 @@ public:
 
 class SceneObject
 {
+protected:
+    static unsigned int m_curId; 
+    const unsigned int m_ID;
+
 public:
+    bool enabled = true;
+
     Transform transform = Transform(*this);
+    Collider* collider = nullptr;
+    Mesh* mesh = nullptr;
+
+    SceneObject();
+    
+    unsigned int getId() {return m_ID;};
+    virtual void OnCollision(Collider& collider, Transform& transform) {};
 };

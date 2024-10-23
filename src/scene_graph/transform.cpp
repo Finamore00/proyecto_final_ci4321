@@ -3,7 +3,10 @@
 #include "transform.hpp"
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
 
+unsigned int SceneObject::m_curId = 0u;
+
 Transform::Transform(SceneObject &obj) : sceneObject(obj) {}
+SceneObject::SceneObject() : m_ID(m_curId++) {}
 
 glm::mat4 Transform::getLocalModelMatrix()
 {
@@ -23,17 +26,17 @@ void Transform::computeModelMatrix(const glm::mat4& parentGlobalModelMat)
     m_isDirty = false;
 }
 
-glm::vec3 Transform::getUpVector()
+glm::vec3 Transform::getUpVector() const
 {
     return glm::normalize(glm::vec3(m_modelMatrix[1]));
 }
 
-glm::vec3 Transform::getRightVector()
+glm::vec3 Transform::getRightVector() const
 {
     return glm::normalize(glm::vec3(m_modelMatrix[0]));
 }
 
-glm::vec3 Transform::getFrontVector()
+glm::vec3 Transform::getFrontVector() const
 {
     return glm::normalize(glm::vec3(m_modelMatrix[2]));
 };
@@ -62,22 +65,22 @@ void Transform::setLocalScale(const glm::vec3& scale)
     m_isDirty = true;
 }
 
-glm::vec3 Transform::getWorldPosition()
+glm::vec3 Transform::getWorldPosition() const
 {
     return glm::vec3(m_modelMatrix[3]);
 }
 
-glm::quat Transform::getWorldRotation()
+glm::quat Transform::getWorldRotation() const
 {
     return glm::quat(m_modelMatrix); // Not sure of this
 }
 
-glm::vec3 Transform::getWorldEulerRotation()
+glm::vec3 Transform::getWorldEulerRotation() const
 {
     return glm::eulerAngles(glm::quat(m_modelMatrix));
 }
 
-glm::vec3 Transform::getWorldScale()
+glm::vec3 Transform::getWorldScale() const
 {
     //if (m_isDirty)
     //    forceUpdateTransform(); // this should also update parents?
@@ -150,7 +153,7 @@ void Transform::setWorldScale(const glm::vec3& scale)
         glm::vec3(lScale[0]).length(), 
         glm::vec3(lScale[1]).length(), 
         glm::vec3(lScale[2]).length()
-    );
+    ); // this isnt working :(
 }
 
 void Transform::removeChild(Transform& child)
