@@ -72,14 +72,6 @@ bool testSphereOnSphere(const Sphere& a, const Sphere& b)
 bool testSphereOnOBB(const Sphere& s, const OBB& o)
 {
     glm::vec3 closest(ClosestPtPointOBB(s.pos, o));
-    //std::cout << "Sphere p:" << glm::to_string(s.pos) << std::endl;
-    //std::cout << "Sphere r:" << s.radius << std::endl;
-    //std::cout << "OBB p:" << glm::to_string(o.center) << std::endl;
-    //std::cout << "OBB x:" << glm::to_string(o.axes[0]) << std::endl;
-    //std::cout << "OBB y:" << glm::to_string(o.axes[1]) << std::endl;
-    //std::cout << "OBB z:" << glm::to_string(o.axes[2]) << std::endl;
-    //std::cout << "OBB hw:" << glm::to_string(o.halfW) << std::endl;
-    //std::cout << "==============================" << std::endl;
     glm::vec3 v = closest - s.pos;
     return glm::dot(v, v) <= s.radius * s.radius;
 }

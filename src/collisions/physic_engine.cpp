@@ -1,9 +1,6 @@
 #include "physic_engine.hpp"
 #include <iostream>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include "../../thirdparty/glm/gtx/string_cast.hpp"
-
 void PhysicEngine::sync_transforms()
 {
    for (auto &&ent : m_physicEnts)
@@ -19,7 +16,6 @@ void PhysicEngine::sync_transforms()
         ent.collider.shape.obb.axes[1] = ent.transform.getUpVector();
         ent.collider.shape.obb.axes[2] = ent.transform.getFrontVector();
         ent.collider.shape.obb.halfW = ent.transform.getWorldScale() / 2.0f;
-        std::cout << glm::to_string(ent.transform.getWorldScale()) << std::endl;
    }
 }
 void PhysicEngine::register_entity(Collider& collider, Transform& transform)
