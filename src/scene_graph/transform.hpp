@@ -3,10 +3,10 @@
 
 #include "../../thirdparty/glm/glm.hpp"
 #include "../../thirdparty/glm/gtc/quaternion.hpp"
-#include "../collisions/collision_primitives.hpp"
-#include "../mesh/mesh.hpp"
 
 class SceneObject;
+class Collider;
+class Mesh;
 
 class Transform
 {

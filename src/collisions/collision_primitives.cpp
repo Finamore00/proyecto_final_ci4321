@@ -1,6 +1,8 @@
 #include "collision_primitives.hpp"
 #include <iostream>
 
+#include "../scene_graph/transform.hpp"
+
 Collider createSphereCollider(float radius, const glm::vec3& pos)
 {
     Collider res;

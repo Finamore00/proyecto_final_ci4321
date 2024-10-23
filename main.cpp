@@ -11,6 +11,7 @@
 #include "src/scene_graph/transform.hpp"
 #include "src/textures/texture.hpp"
 #include "src/mesh/geometry.hpp"
+#include "src/mesh/mesh.hpp"
 #include "src/gl_utils/shader.h"
 #include "src/game/bullet.hpp"
 
@@ -127,7 +128,7 @@ int main()
     physicsEngine.register_entity(*bullet.collider, bullet.transform);
     physicsEngine.register_entity(*floor.collider, floor.transform);
     
-    projection = glm::perspective(glm::radians(45.0f), 800.0f/ 600.0f, 0.1f, 1000.0f);
+    projection = glm::perspective(glm::radians(75.0f), 800.0f/ 600.0f, 0.1f, 1000.0f);
     float old_time, dt;
     // Main loop!
     while (!glfwWindowShouldClose(window))

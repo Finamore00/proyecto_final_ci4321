@@ -1,9 +1,10 @@
 #pragma once
 #include "../../thirdparty/glm/glm.hpp"
-#include "../scene_graph/transform.hpp"
 
 #define SPHERE_COLLIDER 0
 #define OBB_COLLIDER 1
+
+class Transform;
 
 struct Sphere {
     float radius;
