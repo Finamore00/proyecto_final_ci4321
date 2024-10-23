@@ -54,6 +54,7 @@ build/*
 build/*/*
 
 *.OLD.*
+*.OLD
 
 # IntelliJ bull
 .idea
