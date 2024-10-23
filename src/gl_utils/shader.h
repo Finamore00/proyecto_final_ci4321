@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include "../../thirdparty/glad/include/glad/glad.h"
+#include "../../thirdparty/glm/glm.hpp"
 
 namespace gl_utils {
 
@@ -51,6 +52,7 @@ namespace gl_utils {
         GLuint program_id;
         shader_program(const std::string &vertex_path, const std::string &fragment_path);
         bool link_success();
+        void set_mat4f(const std::string &name, const glm::mat4x4 &val) const;
         void use() const;
         ~shader_program();
     private:

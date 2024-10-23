@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include "../../thirdparty/glad/include/glad/glad.h"
+#include "../../thirdparty/glm/gtc/type_ptr.hpp"
 
 namespace gl_utils {
 
@@ -141,5 +142,10 @@ namespace gl_utils {
 
     shader_program::~shader_program() {
         glDeleteProgram(program_id);
+    }
+
+    void shader_program::set_mat4f(const std::string &name, const glm::mat4x4 &val) const
+    {
+        glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
     }
 }

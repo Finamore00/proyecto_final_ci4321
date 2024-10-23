@@ -1,18 +1,24 @@
 #pragma once
+#include "../gl_utils/shader.h"
 #include "geometry.hpp"
+#include "material.hpp"
 
 class Mesh
 {
 private:
     Geometry m_geometry;
+    Material m_shaderMaterial;
     unsigned int VBO, VAO, EBO;
 
-    void initializeMesh(const Geometry& geometry);
+    void initializeGeometry(const Geometry& geometry);
     
 public:
-    Mesh(const Geometry& geometry);
-    Mesh();
+    const gl_utils::shader_program& shader;
 
+    Mesh(const Geometry& geometry, const gl_utils::shader_program& shader);
     void draw();
-    void setGeometry(const Geometry& geometry);
 };
+
+#define VPOS_LAY_LOC 0
+#define VPOS_LAY_NOR 1
+#define VPOS_LAY_UVS 2
