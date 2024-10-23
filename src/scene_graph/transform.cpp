@@ -86,9 +86,9 @@ glm::vec3 Transform::getWorldScale() const
     //    forceUpdateTransform(); // this should also update parents?
     const glm::mat4& s = parent->m_modelMatrix;
     return glm::vec3(
-        s[0].length(),
-        s[1].length(),
-        s[2].length()
+        glm::length(glm::vec3(m_modelMatrix[0])),
+        glm::length(glm::vec3(m_modelMatrix[1])),
+        glm::length(glm::vec3(m_modelMatrix[2]))
     );
 }
 
@@ -147,13 +147,17 @@ void Transform::setWorldScale(const glm::vec3& scale)
     }
 
     const glm::mat4& p = parent->m_modelMatrix;
-    glm::mat4 wScale = glm::scale(glm::mat4(1.0f), scale);
+    glm::mat4 wScale = m_modelMatrix;
+    wScale[0] = glm::vec4(glm::normalize(glm::vec3(wScale[0])), 0.0f) * scale.x;
+    wScale[1] = glm::vec4(glm::normalize(glm::vec3(wScale[1])), 0.0f) * scale.y;
+    wScale[2] = glm::vec4(glm::normalize(glm::vec3(wScale[2])), 0.0f) * scale.z;
+
     glm::mat4 lScale = glm::inverse(p) * wScale;
     m_scale = glm::vec3(
-        glm::vec3(lScale[0]).length(), 
-        glm::vec3(lScale[1]).length(), 
-        glm::vec3(lScale[2]).length()
-    ); // this isnt working :(
+        glm::length(glm::vec3(lScale[0])), 
+        glm::length(glm::vec3(lScale[1])), 
+        glm::length(glm::vec3(lScale[2]))
+    );
 }
 
 void Transform::removeChild(Transform& child)
