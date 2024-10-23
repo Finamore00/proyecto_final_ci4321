@@ -53,6 +53,8 @@ _deps
 build/*
 build/*/*
 
+*.OLD.*
+
 # IntelliJ bull
 .idea
 cmake-build-debug
