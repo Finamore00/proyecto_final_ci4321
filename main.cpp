@@ -11,7 +11,7 @@
 #include "src/scene_graph/transform.hpp"
 #include "src/textures/texture.hpp"
 #include "src/mesh/geometry.hpp"
-#include "src/utils/shader.hpp"
+#include "src/gl_utils/shader.h"
 #include "src/game/bullet.hpp"
 
 // Window resize handler
@@ -66,19 +66,13 @@ int main()
     glFrontFace(GL_CCW);
 
     // Thirdparty config
-    stbi_set_flip_vertically_on_load(true);  
-
-    // Buffers creation and binding
-    unsigned int VBO;
-    unsigned int VAO;
-    unsigned int EBO;
+    stbi_set_flip_vertically_on_load(true);
 
     SceneObject root, cam;
-
     root.transform.updateTransform();
 
     cam.transform.setParent(&root.transform, false);
-    cam.transform.setWorldPosition(glm::vec3(0.0f, 0.0f, 20.0f));
+    cam.transform.setWorldPosition(glm::vec3(0.0f, 0.0f, 10.0f));
     cam.transform.setWorldEulerRotation(glm::vec3(0.0f, 180.0f, 0.0f));
     root.transform.updateTransform();
 
@@ -86,9 +80,6 @@ int main()
     bulletSpawn.transform.setParent(&root.transform, false);
     bulletSpawn.transform.setWorldEulerRotation(glm::vec3(0.0f, 90.0f, 0.0f));
     root.transform.updateTransform();
-
-    auto f = bulletSpawn.transform.getFrontVector();
-    std::cout << f.x << "," << f.y << "," << f.z << std::endl;
     
     Bullet bullet(2.0f, -9.8f, false);
     Mesh boxMesh(boxGeo, basicShader);
@@ -110,11 +101,10 @@ int main()
     wall.mesh = &boxMesh;
     wall.collider = &wallCol;
     wall.collider->type = SPHERE_COLLIDER;
-    wall.collider->shape = {.sphere= {0.5f, wall.transform.getWorldPosition()}}; 
+    wall.collider->shape = {.sphere= {0.5f, wall.transform.getWorldPosition()}};
 
     physicsEngine.register_entity(*bullet.collider, bullet.transform);
     physicsEngine.register_entity(*wall.collider, wall.transform);
-    
     
     projection = glm::perspective(glm::radians(45.0f), 800.0f/ 600.0f, 0.1f, 1000.0f);
 
@@ -153,7 +143,9 @@ int main()
         }
 
         do_physics();
-        bullet.update(dt);
+        //bullet.update(dt);
+        //logic(root);
+        
         root.transform.updateTransform();
         view = glm::lookAt(
             cam.transform.getWorldPosition(), 

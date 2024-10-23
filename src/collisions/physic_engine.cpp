@@ -8,7 +8,7 @@ void PhysicEngine::sync_transforms()
         if (ent.collider.type == SPHERE_COLLIDER)
         {
             ent.collider.shape.sphere.pos = ent.transform.getWorldPosition();
-            continue;;
+            continue;
         }
 
         ent.collider.shape.obb.center = ent.transform.getWorldPosition();

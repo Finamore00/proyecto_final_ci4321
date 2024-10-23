@@ -148,4 +148,9 @@ namespace gl_utils {
     {
         glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
     }
+
+    void shader_program::set_vec4f(const std::string &name, const glm::vec4 &val) const
+    {
+        glUniform4fv(glGetUniformLocation(program_id, name.c_str()), 1, glm::value_ptr(val));
+    }
 }

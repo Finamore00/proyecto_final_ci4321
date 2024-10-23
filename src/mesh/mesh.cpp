@@ -37,7 +37,10 @@ void Mesh::draw()
 
     if (m_shaderMaterial.texture != nullptr)
         m_shaderMaterial.texture->useTexture(GL_TEXTURE0);
+    else
+        glBindTexture(GL_TEXTURE_2D, 0);
 
+    shader.set_vec4f("fColor", m_shaderMaterial.color);
     shader.use();
     glDrawElements(GL_TRIANGLES, m_geometry.indices.size(), GL_UNSIGNED_INT, (void*)0);
     glBindVertexArray(0);

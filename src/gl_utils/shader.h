@@ -52,7 +52,10 @@ namespace gl_utils {
         GLuint program_id;
         shader_program(const std::string &vertex_path, const std::string &fragment_path);
         bool link_success();
+        
         void set_mat4f(const std::string &name, const glm::mat4x4 &val) const;
+        void set_vec4f(const std::string &name, const glm::vec4 &val) const;
+        
         void use() const;
         ~shader_program();
     private:
