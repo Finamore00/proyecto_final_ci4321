@@ -19,14 +19,17 @@ void windowResizeCallback(GLFWwindow* window, int width, int height);
 // Input processing
 void processInput(GLFWwindow* window);
 
+
 glm::vec3 input(0.0f);
 glm::vec2 rotInput(0.0f);
 glm::mat4 projection, view;
 PhysicEngine physicsEngine;
 
+
 void do_physics();
 void logic(const SceneObject& root);
 void render_tree(const SceneObject& root);
+void draw_skybox(const Mesh& mesh, const Texture& text);
 
 int main()
 {
@@ -35,6 +38,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Triangle", NULL, NULL);
     if (window == NULL)
@@ -54,11 +58,26 @@ int main()
     }
 
     gl_utils::shader_program basicShader = gl_utils::shader_program(
-        "../shader_files/basic.v",
-        "../shader_files/basic.f");
+        "../shader_files/basic.vert",
+        "../shader_files/basic.frag"
+    );
 
-    Texture boxTexture("../textures/container.jpg", GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+    Texture boxTexture({"../textures/container.jpg"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     Geometry boxGeo = createBox(1.0f, 1.0f);
+
+    gl_utils::shader_program skyboxShader = gl_utils::shader_program(
+    "../shader_files/skybox.vert",
+    "../shader_files/skybox.frag"
+    );
+
+    Texture skyBoxText = Texture(
+        {
+            "../textures/skybox/cliff_right.bmp", "../textures/skybox/cliff_left.bmp", "../textures/skybox/cliff_up.bmp",
+            "../textures/skybox/cliff_down.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_front.bmp"
+        }, GL_TEXTURE_CUBE_MAP, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE
+    );
+
+    Mesh skyboxMesh(createInvertedBox(1000.0f, 1000.0f), skyboxShader);
 
     // Open GL settings
     glEnable(GL_DEPTH_TEST);
@@ -72,7 +91,7 @@ int main()
     root.transform.updateTransform();
 
     cam.transform.setParent(&root.transform, false);
-    cam.transform.setWorldPosition(glm::vec3(0.0f, 0.0f, 10.0f));
+    cam.transform.setWorldPosition(glm::vec3(0.0f, 0.0f, 15.0f));
     cam.transform.setWorldEulerRotation(glm::vec3(0.0f, 180.0f, 0.0f));
     root.transform.updateTransform();
 
@@ -81,33 +100,34 @@ int main()
     bulletSpawn.transform.setWorldEulerRotation(glm::vec3(0.0f, 90.0f, 0.0f));
     root.transform.updateTransform();
     
-    Bullet bullet(2.0f, -9.8f, false);
+    Bullet bullet(1.0f, -9.8f, false);
     Mesh boxMesh(boxGeo, basicShader);
-    Collider bulletCol;
+    Collider bulletCol = createSphereCollider(bullet.transform, 0.5f);
     bullet.mesh = &boxMesh;
     bullet.collider = &bulletCol;
-    bullet.collider->type = SPHERE_COLLIDER;
-    bullet.collider->shape = {.sphere= {0.5f, bulletSpawn.transform.getWorldPosition()}}; 
 
     bullet.transform.setParent(&root.transform, false);
     root.transform.updateTransform();
     bullet.spawn(bulletSpawn.transform);
-
-    SceneObject wall;
-    Collider wallCol;
-    wall.transform.setParent(&root.transform, false);
-    wall.transform.setWorldPosition(glm::vec3(5.0f, 0.0f, 0.0f));
     root.transform.updateTransform();
-    wall.mesh = &boxMesh;
-    wall.collider = &wallCol;
-    wall.collider->type = SPHERE_COLLIDER;
-    wall.collider->shape = {.sphere= {0.5f, wall.transform.getWorldPosition()}};
+
+    SceneObject floor;
+    Collider floorCol = createOBBCollider(floor.transform);
+
+    floor.transform.setParent(&root.transform, false);
+    root.transform.updateTransform();
+    floor.transform.setWorldPosition(glm::vec3(5.0f, 0.0f, 0.0f));
+    floor.transform.setWorldScale(glm::vec3(5.0f, 0.5f, 5.0f));
+    root.transform.updateTransform();
+    floor.transform.setWorldEulerRotation(glm::vec3(45.0f, 45.0f, 45.0f));
+
+    floor.mesh = &boxMesh;
+    floor.collider = &floorCol;
 
     physicsEngine.register_entity(*bullet.collider, bullet.transform);
-    physicsEngine.register_entity(*wall.collider, wall.transform);
+    physicsEngine.register_entity(*floor.collider, floor.transform);
     
     projection = glm::perspective(glm::radians(45.0f), 800.0f/ 600.0f, 0.1f, 1000.0f);
-
     float old_time, dt;
     // Main loop!
     while (!glfwWindowShouldClose(window))
@@ -133,8 +153,6 @@ int main()
             glm::quat pitchRot = glm::angleAxis(rotInput.x * glm::radians(60.0f) * dt, r);
             glm::quat wRot = cam.transform.getWorldRotation() * yawRot;
 
-            std::cout << dir.x << "," << dir.y << "," << dir.z << std::endl;
-
             glm::vec3 wpos = cam.transform.getWorldPosition();
             glm::vec3 nextPosition = wpos + dir * 5.0f * dt;
             
@@ -143,7 +161,7 @@ int main()
         }
 
         do_physics();
-        //bullet.update(dt);
+        bullet.update(dt);
         //logic(root);
         
         root.transform.updateTransform();
@@ -153,6 +171,7 @@ int main()
             cam.transform.getUpVector()
         );
         
+        draw_skybox(skyboxMesh, skyBoxText);
         render_tree(root);
 
         glfwSwapBuffers(window);
@@ -230,11 +249,23 @@ void render_tree(const SceneObject& root)
         if (co.mesh != nullptr)
         {   
             auto wpos = co.transform.getWorldPosition();
+            co.mesh->shader.use();
             co.mesh->shader.set_mat4f("projection", projection);
             co.mesh->shader.set_mat4f("view", view);
             co.mesh->shader.set_mat4f("model", c->getModelMatrix());
-            c->getSceneObject().mesh->draw();
+            co.mesh->draw();
         }
         render_tree(co);
     }
+}
+
+void draw_skybox(const Mesh& mesh, const Texture& text)
+{
+    glDepthMask(GL_FALSE);
+    mesh.shader.use();
+    mesh.shader.set_mat4f("projection", projection);
+    mesh.shader.set_mat4f("view", glm::mat4(glm::mat3(view)));
+    text.useTexture(GL_TEXTURE0);
+    mesh.draw();
+    glDepthMask(GL_TRUE);
 }

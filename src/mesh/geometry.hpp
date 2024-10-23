@@ -18,5 +18,6 @@ struct Geometry
 
 Geometry createPlane(float x, float z);
 Geometry createBox(float width, float height);
+Geometry createInvertedBox(float width, float height);
 Geometry createSphere(unsigned int segments, unsigned int arcs, float radius);
 Geometry createCylinder(unsigned int segments, float radius, float height);

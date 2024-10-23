@@ -7,7 +7,7 @@ class Mesh
 {
 private:
     Geometry m_geometry;
-    Material m_shaderMaterial;
+    //Material m_shaderMaterial;
     unsigned int VBO, VAO, EBO;
 
     void initializeGeometry(const Geometry& geometry);
@@ -16,7 +16,7 @@ public:
     const gl_utils::shader_program& shader;
 
     Mesh(const Geometry& geometry, const gl_utils::shader_program& shader);
-    void draw();
+    void draw() const;
 };
 
 #define VPOS_LAY_LOC 0

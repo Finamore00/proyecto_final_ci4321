@@ -81,6 +81,67 @@ Geometry createBox(float width, float height)
     return box;
 }
 
+Geometry createInvertedBox(float width, float height)
+{
+    float halfW = width / 2.0f;
+    float halfH = height / 2.0f;
+    Geometry box = {};
+    box.vertices = {
+        {{-halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+
+        {{halfW, halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{halfW, -halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{halfW, halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{halfW, -halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+
+        {{halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
+        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
+        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
+        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+
+        {{-halfW, halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-halfW, -halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{-halfW, halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-halfW, -halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+
+        {{-halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
+
+        {{-halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}}
+
+    };
+
+    box.indices = {
+        2, 1, 0,
+        3, 1, 2,
+
+        6, 5, 4,
+        7, 5, 6,
+
+        10, 9, 8,
+        11, 9, 10,
+
+        14, 13, 12,
+        15, 13, 14,
+
+        18, 17, 16,
+        19, 17, 18,
+
+        20, 21, 22,
+        22, 21, 23
+    };
+
+    return box;    
+}
+
 Geometry createSphere(unsigned int segments, unsigned int arcs, float radius)
 {
     return {};

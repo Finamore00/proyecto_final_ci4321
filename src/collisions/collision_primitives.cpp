@@ -1,12 +1,36 @@
 #include "collision_primitives.hpp"
-#include <stdexcept>
+#include <iostream>
 
 Collider createSphereCollider(float radius, const glm::vec3& pos)
 {
-    return {
-        SPHERE_COLLIDER,
-        Sphere{radius, pos}
-    };
+    Collider res;
+    res.type = SPHERE_COLLIDER;
+    res.shape.sphere = Sphere{radius, pos};
+    return res;
+}
+
+Collider createOBBCollider(const glm::vec3& pos, const glm::vec3 up, const glm::vec3 right, glm::vec3 front, const glm::vec3& halfW)
+{
+    Collider res;
+    res.type = OBB_COLLIDER;
+    res.shape.obb = OBB{pos, {right, up, front}, halfW};
+    return res;
+}
+
+Collider createSphereCollider(const Transform& t, float radius)
+{
+    return createSphereCollider(radius, t.getWorldPosition());
+}
+
+Collider createOBBCollider(const Transform& t)
+{
+    return createOBBCollider(
+        t.getWorldPosition(),
+        t.getRightVector(), 
+        t.getUpVector(), 
+        t.getFrontVector(),
+        t.getWorldScale() / 2.0f
+    );
 }
 
 bool testCollision(const Collider& a, const Collider& b)
@@ -48,6 +72,14 @@ bool testSphereOnSphere(const Sphere& a, const Sphere& b)
 bool testSphereOnOBB(const Sphere& s, const OBB& o)
 {
     glm::vec3 closest(ClosestPtPointOBB(s.pos, o));
+    //std::cout << "Sphere p:" << glm::to_string(s.pos) << std::endl;
+    //std::cout << "Sphere r:" << s.radius << std::endl;
+    //std::cout << "OBB p:" << glm::to_string(o.center) << std::endl;
+    //std::cout << "OBB x:" << glm::to_string(o.axes[0]) << std::endl;
+    //std::cout << "OBB y:" << glm::to_string(o.axes[1]) << std::endl;
+    //std::cout << "OBB z:" << glm::to_string(o.axes[2]) << std::endl;
+    //std::cout << "OBB hw:" << glm::to_string(o.halfW) << std::endl;
+    //std::cout << "==============================" << std::endl;
     glm::vec3 v = closest - s.pos;
     return glm::dot(v, v) <= s.radius * s.radius;
 }
