@@ -85,7 +85,7 @@ int main()
         }, GL_TEXTURE_CUBE_MAP, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE
     );
 
-    Geometry boxGeo = create_sphere(50, 35, 5.0f);
+    Geometry boxGeo = create_cylinder(50, 1.0f, 5.0f);
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
     skyboxMesh.shaderMaterial.texture = &skyBoxText;
 

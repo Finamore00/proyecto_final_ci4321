@@ -227,7 +227,72 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
     return sphere;
 }
 
-Geometry create_cylinder(unsigned int segments, float radius, float height)
+/**
+ * @brief Creates and returns a cylinder geometry
+ * @param sectors Sector count for the cylinder circunference. Must be greater than 0
+ * @param radius Radius of the sphere circunference
+ * @param height Cylinder height
+ * @return A geometry object representing the cylinder.
+ */
+Geometry create_cylinder(unsigned int sectors, float radius, float height)
 {
-    return {};
+    Geometry cylinder = {};
+    cylinder.vertices = {};
+    cylinder.indices = {};
+
+    const float sector_step = (2.0f * PI) / static_cast<float>(sectors);
+    const float rad_inv = 1.0f / radius;
+    const float hf_height = height / 2.0f;
+    const float hf_height_inv = 1.0f / hf_height;
+
+    //Points at the center of the top and bottom circumferences
+    cylinder.vertices.push_back({glm::vec3(0.0f, 0.0f, hf_height),
+                                 glm::vec3(0.0f, 0.0f, hf_height * rad_inv),
+                                 glm::vec2(0.5f, 0.5f)}); //See tex coords later
+
+    cylinder.vertices.push_back({glm::vec3(0.0f, 0.0f, -hf_height),
+                                 glm::vec3(0.0f, 0.0f, -hf_height * rad_inv),
+                                 glm::vec2(0.5f, 0.5f)});
+    
+
+    //Push all remaining points and indices
+    for (unsigned int i = 0; i <= sectors; i++) {
+        const float sector_angle = i * sector_step;
+        const float x_coord = radius * cosf(sector_angle);
+        const float y_coord = radius * sinf(sector_angle);
+
+        const glm::vec3 coords_top = {x_coord, y_coord, hf_height};
+        const glm::vec3 normals_top = {x_coord * rad_inv, y_coord * rad_inv, hf_height * hf_height_inv};
+        const glm::vec2 uvs_top = {(float)i / (float)sectors, 1.0f};
+
+        const glm::vec3 coords_bottom = {x_coord, y_coord, -hf_height};
+        const glm::vec3 normals_bottom = {x_coord * rad_inv, y_coord * rad_inv, -(hf_height * hf_height_inv)};
+        const glm::vec2 uvs_bottom = {(float)i / (float)sectors, 0.0f};
+
+        cylinder.vertices.push_back({coords_top, normals_top, uvs_top});
+        cylinder.vertices.push_back({coords_bottom, normals_bottom, uvs_bottom});
+
+        //Indices
+        if (i < sectors) {
+            //Push indices for top triangle
+            cylinder.indices.push_back(0);
+            cylinder.indices.push_back(i);
+            cylinder.indices.push_back(i + 2);
+
+            //Push indices for bottom triangle
+            cylinder.indices.push_back(1);
+            cylinder.indices.push_back(i + 1);
+            cylinder.indices.push_back(i + 3);
+
+            //Push indices for side plane
+            cylinder.indices.push_back(i);
+            cylinder.indices.push_back(i + 1);
+            cylinder.indices.push_back(i + 2);
+
+            cylinder.indices.push_back(i + 1);
+            cylinder.indices.push_back(i + 2);
+            cylinder.indices.push_back(i + 3);
+        }
+    }
+    return cylinder;
 }
