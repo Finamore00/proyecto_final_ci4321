@@ -1,9 +1,17 @@
-#version 400 core
+#version 420 core
 struct Light
 {
    vec3  pos;
    vec3  col;
    float power;
+};
+
+layout (std140, binding = 1) uniform Lights
+{
+                  // base  // offset
+   vec3 l1_pos;   // 16    // 0
+   vec3 l1_col;   // 16    // 16
+   float l1_pow;  // 4     // 32
 };
 
 in vec2 TexCoord;
@@ -20,9 +28,9 @@ out vec4 FragColor;
 void main()
 {
    vec3 norm = normalize(Normal);
-   vec3 lightDir = normalize(light.pos - FragPos);
+   vec3 lightDir = normalize(l1_pos - FragPos);
    float factor = max(dot(norm, lightDir), 0.0);
-   vec3 diffuse = factor * light.power * light.col;
+   vec3 diffuse = factor * l1_pow * l1_col;
 
    FragColor = texture(base, TexCoord) * (vec4(diffuse, 1.0) + vec4(ambient, 1.0)) * vec4(tint, 1.0);
 }

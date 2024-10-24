@@ -1,8 +1,8 @@
 #include "texture.hpp"
-#include "../../thirdparty/stb/stb_image.h"
 
-#include <glad/glad.h>
 #include <iostream>
+
+#include "../../thirdparty/stb/stb_image.h"
 
 Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLint int_format, GLenum format, GLenum data_type): m_textureType(texture_type)
 {

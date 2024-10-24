@@ -1,6 +1,7 @@
 #include "mesh.hpp"
-#include <glad/glad.h>
 #include <iostream>
+
+#include "../../thirdparty/glad/include/glad/glad.h"
 
 Mesh::Mesh(const Geometry& geometry, const gl_utils::shader_program& shader): shader(shader)
 {
@@ -43,9 +44,9 @@ void Mesh::draw() const
 
     shader.set_vec3f("ambient", shaderMaterial.ambient);
     shader.set_vec3f("tint", shaderMaterial.tint);
-    shader.set_vec3f("light.pos", glm::vec3(1.0f, 10.0f, 0.0f));
-    shader.set_vec3f("light.col", glm::vec3(1.0));
-    shader.set_1f("light.power", 1.0f);
+    //shader.set_vec3f("light.pos", glm::vec3(1.0f, 10.0f, 0.0f));
+    //shader.set_vec3f("light.col", glm::vec3(1.0));
+    //shader.set_1f("light.power", 1.0f);
 
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_geometry.indices.size(), GL_UNSIGNED_INT, (void*)0);

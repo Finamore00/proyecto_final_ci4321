@@ -1,3 +1,0 @@
-add_library(collisions STATIC collision_primitives.cpp physic_engine.cpp)
-target_include_directories(collisions PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(collisions PUBLIC scene_graph)

@@ -1,7 +1,9 @@
 #pragma once
-#include <glad/glad.h>
+
 #include <vector>
 #include <string>
+
+#include "../../thirdparty/glad/include/glad/glad.h"
 
 struct TextureMeta
 {
