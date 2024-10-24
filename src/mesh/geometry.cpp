@@ -165,9 +165,66 @@ Geometry create_inverted_box(float width, float height)
     return box;    
 }
 
-Geometry create_sphere(unsigned int segments, unsigned int arcs, float radius)
+/**
+ * @brief Creates and returns a sphere geometry
+ * @param sectors Sector count for the uv sphere. Must be greater than 0
+ * @param stacks Stack count for the uv sphere. Must be greater than 0
+ * @param radius Radius of the sphere
+ * @return Geometry representing the sphere shaper
+ */
+Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
 {
-    return {};
+    Geometry sphere = {};
+    sphere.vertices = {};
+    sphere.indices = {};
+
+
+    const float sector_step = (2.0f * PI) / static_cast<float>(sectors);
+    const float stack_step = PI / static_cast<float>(stacks);
+    const float rad_invert = 1.0f / radius;
+
+
+    for (unsigned int i = 0; i <= stacks; ++i) {
+        const float stack_angle = (PI / 2.0f) - (i * stack_step);
+        const float xy_plane_coord = radius * cosf(stack_angle);
+        const float z_coord = radius * sinf(stack_angle);
+
+        //Aux variables for indices
+        int ind_aux1 = i * (sectors + 1);
+        int ind_aux2 = ind_aux1 + sectors + 1;
+
+        for (unsigned int j = 0; j <= sectors; ++j) {
+            const float sector_angle = j * sector_step;
+            const float x_coord = xy_plane_coord * cosf(sector_angle);
+            const float y_coord = xy_plane_coord * sinf(sector_angle);
+
+            const glm::vec3 coords = {x_coord, y_coord, z_coord};
+            const glm::vec3 normals = {x_coord * rad_invert, y_coord * rad_invert, z_coord * rad_invert};
+            const glm::vec2 tex_pos = {static_cast<float>(j) / sectors, static_cast<float>(i) / stacks};
+
+            sphere.vertices.push_back({coords, normals, tex_pos});
+
+            //Adding indices
+            if (j < sectors) {
+                if (i != 0) {
+                    sphere.indices.push_back(ind_aux1);
+                    sphere.indices.push_back(ind_aux2);
+                    sphere.indices.push_back(ind_aux1 + 1);
+                }
+
+                if (i != stacks - 1) {
+                    sphere.indices.push_back(ind_aux1 + 1);
+                    sphere.indices.push_back(ind_aux2);
+                    sphere.indices.push_back(ind_aux2 + 1);
+                }
+
+                ind_aux1++;
+                ind_aux2++;
+            }
+        }
+    }
+
+    return sphere;
 }
 
 Geometry create_cylinder(unsigned int segments, float radius, float height)
