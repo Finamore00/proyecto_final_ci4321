@@ -6,33 +6,39 @@
 
 class Transform;
 
+/// @brief Represents a sphere
 struct Sphere {
     float radius;
     glm::vec3 pos;
 };
 
+/// @brief Represents an Object Oriented Box (OBB)
+///        with a center, orientation axes and the scale
+///        of those axes
 struct OBB {
     glm::vec3 center;
     glm::vec3 axes[3];
     glm::vec3 halfW;
 };
 
+/// @brief Union holding the possible collision shapes
 union CollisionShapes
 {
     Sphere sphere;
     OBB obb;
 };
 
-
+/// @brief Collider. Specifies the type of the colliders
+///        and stores the collision shape itself.
 struct Collider {
     unsigned int type;
     CollisionShapes shape;
 };
 
-Collider createSphereCollider(float radius, const glm::vec3& pos);
-Collider createOBBCollider(const glm::vec3& pos, const glm::vec3 up, const glm::vec3 right, glm::vec3 front, const glm::vec3& halfW);
-Collider createSphereCollider(const Transform& t, float radius);
-Collider createOBBCollider(const Transform& t);
-bool testCollision(const Collider& a, const Collider& b);
-bool testSphereOnSphere(const Sphere& a, const Sphere& b);
-bool testSphereOnOBB(const Sphere& a, const OBB& b);
+Collider create_sphere_collider(float radius, const glm::vec3& pos);
+Collider create_OBB_collider(const glm::vec3& pos, const glm::vec3 up, const glm::vec3 right, glm::vec3 front, const glm::vec3& halfW);
+Collider create_sphere_collider(const Transform& t, float radius);
+Collider create_OBB_collider(const Transform& t);
+bool test_collision(const Collider& a, const Collider& b);
+bool test_sphere_sphere(const Sphere& a, const Sphere& b);
+bool test_sphere_OBB(const Sphere& a, const OBB& b);

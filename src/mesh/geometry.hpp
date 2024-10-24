@@ -2,6 +2,7 @@
 #include <vector>
 #include "../../thirdparty/glm/glm.hpp"
 
+/// @brief Struct containing position, normal, and uv data of a vertex
 struct VertexData
 {
     glm::vec3 position;
@@ -9,6 +10,7 @@ struct VertexData
     glm::vec2 uv;
 };
 
+/// @brief Struct containing vertices data and indices of a geometry
 struct Geometry
 {
     std::vector<VertexData> vertices;
@@ -16,8 +18,8 @@ struct Geometry
 };
 
 
-Geometry createPlane(float x, float z);
-Geometry createBox(float width, float height);
-Geometry createInvertedBox(float width, float height);
-Geometry createSphere(unsigned int segments, unsigned int arcs, float radius);
-Geometry createCylinder(unsigned int segments, float radius, float height);
+Geometry create_plane(float x, float z);
+Geometry create_box(float width, float height);
+Geometry create_inverted_box(float width, float height);
+Geometry create_sphere(unsigned int segments, unsigned int arcs, float radius);
+Geometry create_cylinder(unsigned int segments, float radius, float height);

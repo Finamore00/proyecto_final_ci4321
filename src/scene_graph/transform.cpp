@@ -5,86 +5,113 @@
 
 unsigned int SceneObject::m_curId = 0u;
 
-Transform::Transform(SceneObject &obj) : sceneObject(obj) {}
+Transform::Transform(SceneObject &obj) : m_sceneObject(obj) {}
 SceneObject::SceneObject() : m_ID(m_curId++) {}
 
-glm::mat4 Transform::getLocalModelMatrix()
+/// @brief Calculates the local model matrix
+/// @return Local model matrix
+glm::mat4 Transform::get_local_model_matrix()
 {
-    const glm::mat4 rotMatrix = glm::mat4_cast(m_rotation);
+    const glm::mat4 rotMatrix = glm::mat4_cast(glm::normalize(m_rotation));
     return glm::translate(glm::mat4(1.0f), m_position) * rotMatrix * glm::scale(glm::mat4(1.0f), m_scale);
 }
 
-void Transform::computeModelMatrix()
+/// @brief Computes the world model matrix with no parent
+void Transform::compute_model_matrix()
 {
-    m_modelMatrix = getLocalModelMatrix();
+    m_modelMatrix = get_local_model_matrix();
     m_isDirty = false;
 }
 
-void Transform::computeModelMatrix(const glm::mat4& parentGlobalModelMat)
+/// @brief Computes the world model matrix with a parent
+/// @param parentGlobalModelMat Parent model matrix
+void Transform::compute_model_matrix(const glm::mat4& parentGlobalModelMat)
 {
-    m_modelMatrix = parentGlobalModelMat * getLocalModelMatrix();
+    m_modelMatrix = parentGlobalModelMat * get_local_model_matrix();
     m_isDirty = false;
 }
 
-glm::vec3 Transform::getUpVector() const
+/// @brief Gets world up vector
+/// @return World up vector
+glm::vec3 Transform::get_up_vector() const
 {
     return glm::normalize(glm::vec3(m_modelMatrix[1]));
 }
 
-glm::vec3 Transform::getRightVector() const
+/// @brief Gets world right vector
+/// @return World right vector
+glm::vec3 Transform::get_right_vector() const
 {
     return glm::normalize(glm::vec3(m_modelMatrix[0]));
 }
 
-glm::vec3 Transform::getFrontVector() const
+/// @brief Gets world front vector
+/// @return World front vector
+glm::vec3 Transform::get_front_vector() const
 {
     return glm::normalize(glm::vec3(m_modelMatrix[2]));
 };
 
-void Transform::setLocalPosition(const glm::vec3& position)
+/// @brief Sets the local position of the transform
+/// @param position Local position
+void Transform::set_local_position(const glm::vec3& position)
 {
     m_position = position;
     m_isDirty = true;
 }
 
-void Transform::setLocalEulerRotation(const glm::vec3& euler)
+/// @brief Sets the local rotation of the transform using euler angles
+/// @param euler Local Euler angles
+void Transform::set_local_euler_rotation(const glm::vec3& euler)
 {
     m_rotation = glm::quat(glm::radians(euler));
     m_isDirty = true;
 }
 
-void Transform::setLocalRotation(const glm::quat& rot)
+/// @brief Sets the local rotation of the transform using a quaternion
+/// @param rot Local quaternion
+void Transform::set_local_rotation(const glm::quat& rot)
 {
     m_rotation = rot;
     m_isDirty = true;
 }
 
-void Transform::setLocalScale(const glm::vec3& scale)
+/// @brief Sets the local scale of the transform
+/// @param scale Local scale
+void Transform::set_local_scale(const glm::vec3& scale)
 {
     m_scale = scale;
     m_isDirty = true;
 }
 
-glm::vec3 Transform::getWorldPosition() const
+/// @brief Gets the world position of the transform
+/// @return World position
+glm::vec3 Transform::get_world_position() const
 {
     return glm::vec3(m_modelMatrix[3]);
 }
 
-glm::quat Transform::getWorldRotation() const
+/// @brief Gets the world rotation
+/// @return World rotation
+glm::quat Transform::get_world_rotation() const
 {
     return glm::quat(m_modelMatrix); // Not sure of this
 }
 
-glm::vec3 Transform::getWorldEulerRotation() const
+/// @brief Gets the world euler rotation
+/// @return World euler rotation
+glm::vec3 Transform::get_world_euler_rotation() const
 {
     return glm::eulerAngles(glm::quat(m_modelMatrix));
 }
 
-glm::vec3 Transform::getWorldScale() const
+/// @brief Gets the world scale
+/// @return World scale
+glm::vec3 Transform::get_world_scale() const
 {
     //if (m_isDirty)
     //    forceUpdateTransform(); // this should also update parents?
-    const glm::mat4& s = parent->m_modelMatrix;
+    const glm::mat4& s = m_parent->m_modelMatrix;
     return glm::vec3(
         glm::length(glm::vec3(m_modelMatrix[0])),
         glm::length(glm::vec3(m_modelMatrix[1])),
@@ -92,61 +119,69 @@ glm::vec3 Transform::getWorldScale() const
     );
 }
 
-void Transform::setWorldPosition(const glm::vec3& position)
+/// @brief Sets the world position of the transform
+/// @param position Target world position
+void Transform::set_world_position(const glm::vec3& position)
 {
     m_isDirty = true;
-    if (parent == nullptr)
+    if (m_parent == nullptr)
     {
         m_position = position;
         return;
     }
 
-    const glm::mat4& p = parent->m_modelMatrix;
+    const glm::mat4& p = m_parent->m_modelMatrix;
     glm::mat4 wPos = glm::translate(glm::mat4(1.0f), position);
     glm::mat4 lPos = glm::inverse(p) * wPos;
     m_position = glm::vec3(lPos[3]);
 }
 
-void Transform::setWorldRotation(const glm::quat& rot)
+/// @brief Sets the world rotation of the transform using a quaternion
+/// @param rot Target rotation quaternion
+void Transform::set_world_rotation(const glm::quat& rot)
 {
     m_isDirty = true;
-    if (parent == nullptr)
+    if (m_parent == nullptr)
     {
         m_rotation = rot;
         return;
     }
 
-    const glm::mat4& p = parent->m_modelMatrix; // find a way to cache this
+    const glm::mat4& p = m_parent->m_modelMatrix; // find a way to cache this
     glm::mat4 wRot = glm::mat4_cast(rot);
     glm::mat4 lRot = glm::inverse(p) * wRot;
     m_rotation = glm::quat(lRot);
 }
 
-void Transform::setWorldEulerRotation(const glm::vec3& euler)
+/// @brief Sets the world rotation of the transform using euler rotations
+/// @param euler Target euler rotation
+void Transform::set_world_euler_rotation(const glm::vec3& euler)
 {
     m_isDirty = true;
-    if (parent == nullptr)
+    if (m_parent == nullptr)
     {
         m_rotation = glm::quat(euler);
         return;
     }
 
-    const glm::mat4& p = parent->m_modelMatrix;
+    const glm::mat4& p = m_parent->m_modelMatrix;
     glm::mat4 wRot = glm::mat4_cast(glm::quat(glm::radians(euler)));
     glm::mat4 lRot = glm::inverse(p) * wRot;
     m_rotation = glm::quat(lRot);
 }
 
-void Transform::setWorldScale(const glm::vec3& scale)
+/// @brief Sets the world scale of the transform
+/// @param scale Target world scale
+void Transform::set_world_scale(const glm::vec3& scale)
 {
     m_isDirty = true;
-    if (parent == nullptr)
+    if (m_parent == nullptr)
     {
         m_scale = scale;
         return;
     }
 
-    const glm::mat4& p = parent->m_modelMatrix;
+    const glm::mat4& p = m_parent->m_modelMatrix;
     glm::mat4 wScale = m_modelMatrix;
     wScale[0] = glm::vec4(glm::normalize(glm::vec3(wScale[0])), 0.0f) * scale.x;
     wScale[1] = glm::vec4(glm::normalize(glm::vec3(wScale[1])), 0.0f) * scale.y;
@@ -160,58 +195,67 @@ void Transform::setWorldScale(const glm::vec3& scale)
     );
 }
 
-void Transform::removeChild(Transform& child)
+/// @brief Removes a child from the transform
+/// @param child Child to remove
+void Transform::remove_child(Transform& child)
 {
     int i = 0;
-    for (auto &&c : children)
+    for (auto &&c : m_children)
     {
         if (c == &child) {
-            children.erase(children.begin() + i);
+            m_children.erase(m_children.begin() + i);
             return;
         }
         i++;
     }
 }
 
-void Transform::setParent(Transform* const newParent, bool keepWorld)
+/// @brief Sets a transform as the parent
+/// @param newParent New parent or null for none
+/// @param keepWorld Keeps the world properties of the transform
+void Transform::set_parent(Transform* const newParent, bool keepWorld)
 {
-    if (parent != nullptr)
+    if (m_parent != nullptr)
     {
         // This instance must remove itself from its parent instance!
-        parent->removeChild(*this);
+        m_parent->remove_child(*this);
     }
-    parent = newParent;
+    m_parent = newParent;
     if (newParent != nullptr)
-        parent->children.emplace_back(this);
+        m_parent->m_children.emplace_back(this);
 
     m_isDirty = !keepWorld;
     if (!keepWorld)
         return;
 
     // check this
-    setWorldPosition(getWorldPosition());
-    setWorldRotation(getWorldRotation());
-    setWorldScale(getWorldScale());
+    set_world_position(get_world_position());
+    set_world_rotation(get_world_rotation());
+    set_world_scale(get_world_scale());
 }
 
-void Transform::updateTransform()
+/// @brief Updates the world matrix of the transform and
+///        its children. Only updates the dirty ones
+void Transform::update_transform()
 {
     if (m_isDirty) {
-        forceUpdateTransform();
+        force_update_transform();
         return;
     }
 
-    for (auto &&c : children)
-        c->updateTransform();
+    for (auto &&c : m_children)
+        c->update_transform();
 }
 
-void Transform::forceUpdateTransform()
+/// @brief Forces the updates the world matrix of the transform and
+///        its children. Updates ALL the transforms
+void Transform::force_update_transform()
 {
-    if (parent)
-        computeModelMatrix(parent->m_modelMatrix);
+    if (m_parent)
+        compute_model_matrix(m_parent->m_modelMatrix);
     else
-        computeModelMatrix();
+        compute_model_matrix();
 
-    for (auto &&c : children)
-        c->forceUpdateTransform();
+    for (auto &&c : m_children)
+        c->force_update_transform();
 }

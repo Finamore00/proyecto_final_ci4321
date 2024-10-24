@@ -1,25 +1,28 @@
 #include "mesh.hpp"
 #include <glad/glad.h>
+#include <iostream>
 
 Mesh::Mesh(const Geometry& geometry, const gl_utils::shader_program& shader): shader(shader)
 {
-    initializeGeometry(geometry);
+    initialize_geometry(geometry);
 }
 
-void Mesh::initializeGeometry(const Geometry& geometry)
+/// @brief Sets all of the mesh data (VBO, EBO, VAO) of a mesh using a geometry
+/// @param geometry Geometry of the mesh
+void Mesh::initialize_geometry(const Geometry& geometry)
 {
     m_geometry = geometry;
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    glGenBuffers(1, &m_VBO);
+    glGenBuffers(1, &m_EBO);
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
 
     // Data
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData) * m_geometry.vertices.size(), &(m_geometry.vertices[0]), GL_STATIC_DRAW);
 
     // Setting indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_geometry.indices.size(), &(m_geometry.indices[0]), GL_STATIC_DRAW); 
 
     // Assigning attributes
@@ -31,9 +34,20 @@ void Mesh::initializeGeometry(const Geometry& geometry)
     glEnableVertexAttribArray(2);
 }
 
+/// @brief Draws the mesh
 void Mesh::draw() const
 {
-    glBindVertexArray(VAO);
+    shader.use();
+    if (shaderMaterial.texture != nullptr)
+        shaderMaterial.texture->use_texture(GL_TEXTURE0);
+
+    shader.set_vec3f("ambient", shaderMaterial.ambient);
+    shader.set_vec3f("tint", shaderMaterial.tint);
+    shader.set_vec3f("light.pos", glm::vec3(1.0f, 10.0f, 0.0f));
+    shader.set_vec3f("light.col", glm::vec3(1.0));
+    shader.set_1f("light.power", 1.0f);
+
+    glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_geometry.indices.size(), GL_UNSIGNED_INT, (void*)0);
     glBindVertexArray(0);
 }

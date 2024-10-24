@@ -6,8 +6,8 @@
 
 Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLint int_format, GLenum format, GLenum data_type): m_textureType(texture_type)
 {
-    glGenTextures(1, &_ID);
-    glBindTexture(texture_type, _ID);
+    glGenTextures(1, &m_ID);
+    glBindTexture(texture_type, m_ID);
 
     // Texture parameters
     glTexParameteri(texture_type, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -30,42 +30,54 @@ Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLin
     glBindTexture(texture_type, 0);
 }
 
-void Texture::useTexture(GLenum unit) const
+/// @brief Binds the texture for his use
+/// @param unit Texture unit to use for
+void Texture::use_texture(GLenum unit) const
 {
     glActiveTexture(unit);
-    glBindTexture(m_textureType, _ID);
+    glBindTexture(m_textureType, m_ID);
 }
 
+/// @brief Loads a 2d texture from a path
+/// @param path Filepath of the texture
+/// @param int_format Internal format of the texture
+/// @param format Format of the texture
+/// @param data_type Type of data in the texture
 void Texture::load_2d_text(const std::string& path, GLint int_format, GLenum format, GLenum data_type)
 {
-    _file_metas.push_back({});
-    unsigned char *data = stbi_load(path.c_str(), &_file_metas.front().width, &_file_metas.front().height, &_file_metas.front().nrChannels, 0); 
+    m_file_metas.push_back({});
+    unsigned char *data = stbi_load(path.c_str(), &m_file_metas.front().width, &m_file_metas.front().height, &m_file_metas.front().nrChannels, 0); 
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, int_format, _file_metas.front().width, _file_metas.front().height, 0, format, data_type, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, int_format, m_file_metas.front().width, m_file_metas.front().height, 0, format, data_type, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
         std::cout << "Failed to load texture in path: " << path << std::endl;
 
-    _file_metas.front().int_format = int_format;
-    _file_metas.front().data_type = data_type;
-    _file_metas.front().format = format;
+    m_file_metas.front().int_format = int_format;
+    m_file_metas.front().data_type = data_type;
+    m_file_metas.front().format = format;
     stbi_image_free(data);
 }
 
+/// @brief Loads a cubemap texture from a path
+/// @param path Filepath of the textures composing the cubeap
+/// @param int_format Internal format of the texture
+/// @param format Format of the texture
+/// @param data_type Type of data in the texture
 void Texture::load_cubemap(const std::vector<std::string> path, GLint int_format, GLenum format, GLenum data_type)
 {
     if (path.size() != 6)
         std::cout << "Wrong texture amount for a cubemap. Expected 6 textures." << std::endl;
         
-    _file_metas.assign(6, {.int_format=(int_format), .format=(format), .data_type=(data_type)});
+    m_file_metas.assign(6, {.int_format=(int_format), .format=(format), .data_type=(data_type)});
     for (unsigned int i = 0; i < 6; i++)
     {
-        unsigned char *data = stbi_load(path[i].c_str(), &_file_metas[i].width, &_file_metas[i].height, &_file_metas[i].nrChannels, 0);
+        unsigned char *data = stbi_load(path[i].c_str(), &m_file_metas[i].width, &m_file_metas[i].height, &m_file_metas[i].nrChannels, 0);
         if (data)
         {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, _file_metas[i].width, _file_metas[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, m_file_metas[i].width, m_file_metas[i].height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
             stbi_image_free(data);
         }

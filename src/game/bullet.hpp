@@ -14,5 +14,5 @@ public:
     void spawn();
     void spawn(const Transform& spawner);
     void update(float dt);
-    void OnCollision(Collider& collider, Transform& transform) override;
+    void on_collision(Collider& collider, Transform& transform) override;
 };

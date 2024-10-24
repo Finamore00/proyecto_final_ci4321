@@ -1,6 +1,10 @@
 #include "geometry.hpp"
 
-Geometry createPlane(float x, float z)
+/// @brief Creates a plane geometry
+/// @param x X size of the plane
+/// @param z Z size of the plane
+/// @return Geometry representing the plane
+Geometry create_plane(float x, float z)
 {
     float halfX = x / 2.0f;
     float halfZ = z / 2.0f;
@@ -20,42 +24,51 @@ Geometry createPlane(float x, float z)
     return plane;
 }
 
-Geometry createBox(float width, float height)
+/// @brief Creates a box geometry
+/// @param width Box's width
+/// @param height Box's height
+/// @return Geometry representing the box
+Geometry create_box(float width, float height)
 {
     float halfW = width / 2.0f;
     float halfH = height / 2.0f;
     Geometry box = {};
     box.vertices = {
-        {{-halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+        // Front
+        {{-halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
 
+        // Right
         {{halfW, halfH, halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
         {{halfW, -halfH, halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfW, halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
         {{halfW, -halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 
-        {{halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        // Back
+        {{halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
+        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
+        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
+        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
 
+        // Left
         {{-halfW, halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
         {{-halfW, -halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{-halfW, halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
         {{-halfW, -halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 
+        // Top
         {{-halfW, halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
         {{-halfW, halfH, halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfW, halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
         {{halfW, halfH, halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
 
+        // Bottom
         {{-halfW, -halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
         {{-halfW, -halfH, halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfW, -halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
         {{halfW, -halfH, halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}}
-
     };
 
     box.indices = {
@@ -81,42 +94,52 @@ Geometry createBox(float width, float height)
     return box;
 }
 
-Geometry createInvertedBox(float width, float height)
+
+/// @brief Creates am inverted box geometry
+/// @param width Box's width
+/// @param height Box's height
+/// @return Geometry representing the box
+Geometry create_inverted_box(float width, float height)
 {
     float halfW = width / 2.0f;
     float halfH = height / 2.0f;
     Geometry box = {};
     box.vertices = {
-        {{-halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        // Front
+        {{-halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
+        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
+        {{halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
+        {{halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
 
+        // Right
         {{halfW, halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
         {{halfW, -halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfW, halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
         {{halfW, -halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 
-        {{halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
-        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
-        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
-        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+        // Back
+        {{halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
 
+        // Left
         {{-halfW, halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
         {{-halfW, -halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{-halfW, halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
         {{-halfW, -halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 
+        // Top
         {{-halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
         {{-halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
         {{halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
 
+        // Bottom
         {{-halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
         {{-halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
         {{halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
         {{halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}}
-
     };
 
     box.indices = {
@@ -142,12 +165,12 @@ Geometry createInvertedBox(float width, float height)
     return box;    
 }
 
-Geometry createSphere(unsigned int segments, unsigned int arcs, float radius)
+Geometry create_sphere(unsigned int segments, unsigned int arcs, float radius)
 {
     return {};
 }
 
-Geometry createCylinder(unsigned int segments, float radius, float height)
+Geometry create_cylinder(unsigned int segments, float radius, float height)
 {
     return {};
 }

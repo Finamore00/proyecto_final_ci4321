@@ -1,9 +1,12 @@
 #pragma once
 #include <vector>
 #include <map>
-#include "../scene_graph/transform.hpp"
 #include "collision_primitives.hpp"
 
+struct Collider;
+class Transform;
+
+/// @brief Represents a physic entity in the physic simulation.
 struct PhysicEntity {
     Collider& collider;
     Transform& transform;

@@ -144,6 +144,11 @@ namespace gl_utils {
         glDeleteProgram(program_id);
     }
 
+    void shader_program::set_1f(const std::string &name, float val) const
+    {
+        glUniform1f(glGetUniformLocation(program_id, name.c_str()), val);
+    }
+
     void shader_program::set_mat4f(const std::string &name, const glm::mat4x4 &val) const
     {
         glUniformMatrix4fv(glGetUniformLocation(program_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(val));
@@ -152,5 +157,10 @@ namespace gl_utils {
     void shader_program::set_vec4f(const std::string &name, const glm::vec4 &val) const
     {
         glUniform4fv(glGetUniformLocation(program_id, name.c_str()), 1, glm::value_ptr(val));
+    }
+
+    void shader_program::set_vec3f(const std::string &name, const glm::vec3 &val) const
+    {
+        glUniform3fv(glGetUniformLocation(program_id, name.c_str()), 1, glm::value_ptr(val));
     }
 }

@@ -2,8 +2,10 @@
 #include "../../thirdparty/glm/glm.hpp"
 #include "../textures/texture.hpp"
 
+/// @brief Struct representing the material properties of a shader
 struct Material
 {
     Texture* texture = nullptr;
-    glm::vec4 color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::vec3 ambient = glm::vec3(0.1f);
+    glm::vec3 tint = glm::vec3(1.0f);
 };

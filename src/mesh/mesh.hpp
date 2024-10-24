@@ -7,13 +7,13 @@ class Mesh
 {
 private:
     Geometry m_geometry;
-    //Material m_shaderMaterial;
-    unsigned int VBO, VAO, EBO;
+    unsigned int m_VBO, m_VAO, m_EBO;
 
-    void initializeGeometry(const Geometry& geometry);
+    void initialize_geometry(const Geometry& geometry);
     
 public:
     const gl_utils::shader_program& shader;
+    Material shaderMaterial;
 
     Mesh(const Geometry& geometry, const gl_utils::shader_program& shader);
     void draw() const;
