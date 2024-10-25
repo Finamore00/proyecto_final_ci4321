@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-#include "../scene_graph/transform.hpp"
-
 /// @brief Creates a sphere collider
 /// @param radius Sphere radius
 /// @param pos Sphere center

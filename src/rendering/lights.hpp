@@ -1,6 +1,6 @@
 #pragma once
 #include "../../thirdparty/glm/glm.hpp"
-#include "../scene_graph/transform.hpp"
+#include "../scene_graph/sceneobject.hpp"
 
 class Light: public SceneObject
 {

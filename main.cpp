@@ -7,14 +7,21 @@
 #include "thirdparty/stb/stb_image.h"
 #include "thirdparty/glm/glm.hpp"
 
+#include "src/scene_graph/sceneobject.hpp"
+#include "src/scene_graph/transform.hpp"
+#include "src/scene_graph/component.hpp"
+
 #include "src/rendering/rendering_engine.hpp"
 #include "src/rendering/lights.hpp"
-#include "src/physics/physic_engine.hpp"
-#include "src/scene_graph/transform.hpp"
+
+#include "src/gl_utils/shader.h"
+
 #include "src/textures/texture.hpp"
 #include "src/mesh/geometry.hpp"
 #include "src/mesh/mesh.hpp"
-#include "src/gl_utils/shader.h"
+
+#include "src/physics/physic_engine.hpp"
+
 #include "src/game/bullet.hpp"
 
 

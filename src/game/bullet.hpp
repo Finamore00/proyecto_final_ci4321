@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../scene_graph/sceneobject.hpp"
 #include "../scene_graph/transform.hpp"
 
 class Bullet: public SceneObject

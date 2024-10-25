@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "../scene_graph/transform.hpp"
+#include "../scene_graph/sceneobject.hpp"
 
 /// @brief Syncs the transform properties of all the physics entities in the engine,
 ///        with the colliders properties.
