@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "../../thirdparty/glm/glm.hpp"
+#define PI 3.14159274f
 
 /// @brief Struct containing position, normal, and uv data of a vertex
 struct VertexData
