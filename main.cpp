@@ -16,6 +16,7 @@
 #include "src/mesh/mesh.hpp"
 #include "src/gl_utils/shader.h"
 #include "src/game/bullet.hpp"
+#include "src/game/tank.hpp"
 
 
 // Window resize handler
@@ -114,13 +115,18 @@ int main()
     bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 1 * 90.0f, 0.0f));
     root.transform.update_transform();
     
-    Bullet bullet(0.0f, -9.8f, false);
-    bullet.mesh = &bulletMesh;
+    // Bullet bullet(0.0f, -9.8f, false);
+    // bullet.mesh = &bulletMesh;
 
-    bullet.transform.set_parent(&root.transform, false);
-    bullet.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
-    bullet.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
-    //bullet.spawn(bulletSpawn.transform);
+    // bullet.transform.set_parent(&root.transform, false);
+    // bullet.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
+    // bullet.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
+    // //bullet.spawn(bulletSpawn.transform);
+    // root.transform.update_transform();
+
+    Tank tank(root, basicShader);
+    tank.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
+    tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
     root.transform.update_transform();
 
     SceneObject floor;
@@ -134,21 +140,21 @@ int main()
     
     // Setting colliders
     Collider floorCol = create_OBB_collider(floor.transform);
-    Collider bulletCol = create_sphere_collider(bullet.transform, 0.5f);
+    // Collider bulletCol = create_sphere_collider(bullet.transform, 0.5f);
     floor.collider = &floorCol;
-    bullet.collider = &bulletCol;
+    // bullet.collider = &bulletCol;
 
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 0.0f);
-    mainLight.intensity = 1.0f;
+    mainLight.intensity = 2.0f;
 
     mainLight.transform.set_parent(&root.transform, false);
     mainLight.transform.set_world_position(glm::vec3(0.0f, 1.0f, 0.0f));
     root.transform.update_transform();
 
     // Registering colliders
-    physicsEngine.register_entity(*bullet.collider, bullet.transform);
+    // physicsEngine.register_entity(*bullet.collider, bullet.transform);
     physicsEngine.register_entity(*floor.collider, floor.transform);
 
     // Setting main camera and registering lights
