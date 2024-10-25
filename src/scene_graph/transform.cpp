@@ -12,8 +12,11 @@ SceneObject::SceneObject() : m_ID(m_curId++) {}
 /// @return Local model matrix
 glm::mat4 Transform::get_local_model_matrix()
 {
+    const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), m_scale);
     const glm::mat4 rotMatrix = glm::mat4_cast(glm::normalize(m_rotation));
-    return glm::translate(glm::mat4(1.0f), m_position) * rotMatrix * glm::scale(glm::mat4(1.0f), m_scale);
+    const glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), m_position);
+
+    return translateMatrix * rotMatrix * scaleMatrix;
 }
 
 /// @brief Computes the world model matrix with no parent
@@ -95,7 +98,13 @@ glm::vec3 Transform::get_world_position() const
 /// @return World rotation
 glm::quat Transform::get_world_rotation() const
 {
-    return glm::quat(m_modelMatrix); // Not sure of this
+    glm::mat3 rotationMatrix = glm::mat3(m_modelMatrix);
+    
+    rotationMatrix[0] = glm::normalize(rotationMatrix[0]);
+    rotationMatrix[1] = glm::normalize(rotationMatrix[1]);
+    rotationMatrix[2] = glm::normalize(rotationMatrix[2]);
+
+    return glm::normalize(glm::quat_cast(rotationMatrix));
 }
 
 /// @brief Gets the world euler rotation
@@ -147,10 +156,10 @@ void Transform::set_world_rotation(const glm::quat& rot)
         return;
     }
 
-    const glm::mat4& p = m_parent->m_modelMatrix; // find a way to cache this
-    glm::mat4 wRot = glm::mat4_cast(rot);
-    glm::mat4 lRot = glm::inverse(p) * wRot;
-    m_rotation = glm::quat(lRot);
+    glm::mat4 parentMatrix = m_parent->m_modelMatrix;
+    glm::quat parentRotation = glm::quat_cast(parentMatrix);
+    glm::quat localRotation = glm::inverse(parentRotation) * glm::normalize(rot);
+    m_rotation = localRotation;
 }
 
 /// @brief Sets the world rotation of the transform using euler rotations
