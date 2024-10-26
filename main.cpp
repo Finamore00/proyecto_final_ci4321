@@ -17,6 +17,7 @@
 #include "src/gl_utils/shader.h"
 #include "src/game/bullet.hpp"
 #include "src/game/tank.hpp"
+#include "src/input/input.hpp"
 
 
 // Window resize handler
@@ -59,6 +60,9 @@ int main()
         return -1;
     }
 
+    InputManager *input_m;
+    input_m = input_m->get_instance();
+    input_m->set_window(window);
     PhysicEngine physicsEngine;
     RenderingEngine renderEngine(800.0f, 600.0f, 75.0f);
 
@@ -170,6 +174,7 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
         dt = glfwGetTime() - old_time;
+
         old_time = glfwGetTime();
 
         processInput(window);
