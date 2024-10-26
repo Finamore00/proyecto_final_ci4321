@@ -44,6 +44,8 @@ void Mesh::draw() const
 
     shader.set_vec3f("ambient", shaderMaterial.ambient);
     shader.set_vec3f("tint", shaderMaterial.tint);
+    shader.set_vec2f("uvt.uvOffset", shaderMaterial.texUVoffset);
+    shader.set_vec2f("uvt.uvScale", shaderMaterial.texUVscales);
     //shader.set_vec3f("light.pos", glm::vec3(1.0f, 10.0f, 0.0f));
     //shader.set_vec3f("light.col", glm::vec3(1.0));
     //shader.set_1f("light.power", 1.0f);
