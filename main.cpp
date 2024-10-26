@@ -89,6 +89,7 @@ int main()
             "../textures/skybox/cliff_down.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_front.bmp"
         }, GL_TEXTURE_CUBE_MAP, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE
     );
+    Texture tankTexture({"../textures/tank.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
 
     Geometry boxGeo = create_box(1.0f, 1.0f);
 
@@ -100,7 +101,7 @@ int main()
     bulletMesh.shaderMaterial.texture = &boxTexture;
 
     Mesh floorMesh(boxGeo, basicShader);
-    floorMesh.shaderMaterial.texture = &floorTexture;
+    floorMesh.shaderMaterial.texture = &pavementTexture;
 
     // Creating SceneObjects
     SceneObject root, cam;
@@ -115,17 +116,18 @@ int main()
     bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 1 * 90.0f, 0.0f));
     root.transform.update_transform();
     
-    // Bullet bullet(0.0f, -9.8f, false);
-    // bullet.mesh = &bulletMesh;
+    Bullet bullet(0.0f, -9.8f, false);
+    bullet.mesh = &bulletMesh;
 
     // bullet.transform.set_parent(&root.transform, false);
     // bullet.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
     // bullet.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
-    // //bullet.spawn(bulletSpawn.transform);
+    // // bullet.spawn(bulletSpawn.transform);
     // root.transform.update_transform();
 
     Tank tank(root, basicShader);
-    tank.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
+    tank.mesh->shaderMaterial.texture = &tankTexture;
+    tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
     root.transform.update_transform();
 
@@ -146,11 +148,11 @@ int main()
 
     // Setting main light
     Light mainLight;
-    mainLight.color = glm::vec3(1.0f, 1.0f, 0.0f);
-    mainLight.intensity = 2.0f;
+    mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    mainLight.intensity = 5.0f;
 
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(0.0f, 1.0f, 0.0f));
+    mainLight.transform.set_world_position(glm::vec3(1.0f, 10.0f, -1.0f));
     root.transform.update_transform();
 
     // Registering colliders
