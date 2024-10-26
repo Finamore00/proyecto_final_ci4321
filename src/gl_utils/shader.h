@@ -57,7 +57,8 @@ namespace gl_utils {
         void set_mat4f(const std::string &name, const glm::mat4x4 &val) const;
         void set_vec4f(const std::string &name, const glm::vec4 &val) const;
         void set_vec3f(const std::string &name, const glm::vec3 &val) const;
-        
+        void set_vec2f(const std::string &name, const glm::vec2 &val) const;
+
         void use() const;
         ~shader_program();
     private:

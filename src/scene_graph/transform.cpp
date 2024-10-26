@@ -111,6 +111,7 @@ glm::quat Transform::get_world_rotation() const
 /// @return World euler rotation
 glm::vec3 Transform::get_world_euler_rotation() const
 {
+    // This one might not work!
     return glm::eulerAngles(glm::quat(m_modelMatrix));
 }
 
