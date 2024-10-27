@@ -60,9 +60,9 @@ int main()
         return -1;
     }
 
-    InputManager *input_m;
-    input_m = input_m->get_instance();
-    input_m->set_window(window);
+    InputManager *input_mgr;
+    input_mgr = input_mgr->get_instance();
+    input_mgr->set_window(window);
     PhysicEngine physicsEngine;
     RenderingEngine renderEngine(800.0f, 600.0f, 75.0f);
 
@@ -177,8 +177,6 @@ int main()
 
         old_time = glfwGetTime();
 
-        // processInput(window);
-
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -211,6 +209,11 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE)) {
+            glfwSetWindowShouldClose(window, true);
+            break;
+        }
     }
 
     glfwTerminate();
