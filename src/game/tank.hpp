@@ -4,11 +4,15 @@
 #include "bullet.hpp"
 
 class Tank: public SceneObject {
-    public:
-        Tank(SceneObject &parent, gl_utils::shader_program &shader);
-        void rotate_turret(glm::vec3 euler_rotations, float time);
-        void fire_bullet();
+public:
+    Tank(SceneObject &parent, gl_utils::shader_program &shader);
+    void update(float time);
 
-   private:
-        Bullet *bullets[3];
+private:
+    Transform *turret_transform;
+    void fire_bullet();
+    void rotate_turret(float time);
+    void rotate_tank(float time);
+    void move(float time);
+    Bullet *bullets[3];
 };

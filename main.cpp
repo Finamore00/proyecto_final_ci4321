@@ -132,7 +132,7 @@ int main()
     Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.texture = &tankTexture;
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
+    tank.transform.set_world_euler_rotation(glm::vec3(45.0f, 0.0f, 90.0f));
     root.transform.update_transform();
 
     SceneObject floor;
@@ -177,7 +177,7 @@ int main()
 
         old_time = glfwGetTime();
 
-        processInput(window);
+        // processInput(window);
 
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -201,6 +201,8 @@ int main()
             cam.transform.set_world_position(nextPosition);
             cam.transform.set_world_rotation(wRot);
         }
+
+        tank.update(dt);
 
         root.transform.update_transform();
         physicsEngine.simulate();
@@ -239,14 +241,14 @@ void processInput(GLFWwindow* window)
     else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         yInput = -1.0f;
 
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
         xInput = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    else if(glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         xInput = 1.0f;
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
         zInput = 1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    else if(glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
         zInput = -1.0f;
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
