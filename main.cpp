@@ -120,14 +120,14 @@ int main()
     bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 1 * 90.0f, 0.0f));
     root.transform.update_transform();
     
-    Bullet bullet(0.0f, -9.8f, false);
-    bullet.mesh = &bulletMesh;
+    // Bullet bullet(5.0f, -9.8f, false);
+    // bullet.mesh = &bulletMesh;
 
     // bullet.transform.set_parent(&root.transform, false);
     // bullet.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
     // bullet.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
-    // // bullet.spawn(bulletSpawn.transform);
-    // root.transform.update_transform();
+    // bullet.spawn(bulletSpawn.transform, 1.0f);
+    root.transform.update_transform();
 
     Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.texture = &tankTexture;
@@ -201,6 +201,8 @@ int main()
         }
 
         tank.update(dt);
+        tank.update_bullets(dt);
+        // bullet.update(dt);
 
         root.transform.update_transform();
         physicsEngine.simulate();
