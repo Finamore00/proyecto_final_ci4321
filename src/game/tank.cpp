@@ -18,13 +18,17 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     turret_sphere->transform.set_parent(&this->transform, true);
     turret_sphere->transform.set_local_position(glm::vec3(0.25f, 0.0f, 0));
     turret_sphere->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    transform.update_transform();
     turret_sphere->enabled = true;
     turret_sphere->mesh = new Mesh(create_sphere(30, 20, 0.25), shader);
 
     //Create pivot point for the cylinder
     SceneObject *cylinder_pivot = new SceneObject;
     cylinder_pivot->transform.set_parent(&turret_sphere->transform, true);
+    cylinder_pivot->transform.set_local_position(glm::vec3(0.0, 0.0, 0.0));
+    cylinder_pivot->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     turret_transform = &turret_sphere->transform;
+    turret_transform->update_transform();
 
     //Create the actual turret cylinder
     SceneObject *turret_cylinder = new SceneObject;
@@ -32,13 +36,15 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     turret_cylinder->transform.set_parent(&cylinder_pivot->transform, true);
     turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
     turret_cylinder->transform.set_local_position(glm::vec3(0.0f, -0.5f, 0.0f));
+    cylinder_pivot->transform.update_transform();
     turret_cylinder->enabled = true;
 
     //Bullet spawner
     SceneObject *bullet_spawner = new SceneObject;
     bullet_spawner->transform.set_parent(&turret_cylinder->transform, true);
     bullet_spawner->transform.set_local_euler_rotation(glm::vec3(90.0f, 0.0f, 0.0f));
-    bullet_spawner->transform.set_local_position(glm::vec3(0.0f, 1.0f, 0.0f));
+    bullet_spawner->transform.set_local_position(glm::vec3(0.0f, -1.0f, 0.0f));
+    turret_cylinder->transform.update_transform();
     spawner_transform = &bullet_spawner->transform;
 
     //Initiate bullets
@@ -54,10 +60,10 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 }
 
 void Tank::update(float time) {
-    rotate_tank(time);
-    move(time);
     rotate_turret(time);
     fire_bullet();
+    rotate_tank(time);
+    move(time);
 
     return;
 }

@@ -162,6 +162,9 @@ int main()
     // Registering colliders
     // physicsEngine.register_entity(*bullet.collider, bullet.transform);
     physicsEngine.register_entity(*floor.collider, floor.transform);
+    for (int i = 0; i < 3; i++) {
+        physicsEngine.register_entity(*tank.bullets[i]->collider, tank.bullets[i]->transform);
+    }
 
     // Setting main camera and registering lights
     renderEngine.set_main_camera(&cam.transform);
