@@ -247,31 +247,10 @@ void processInput(GLFWwindow* window)
     rotInput.x = pitch;
 }
 
-
-void render_tree(const SceneObject& root)
-{
-    for (auto &&c : root.transform.get_children())
-    {
-        const SceneObject& co = c->get_scene_object();
-        if (!co.enabled)
-            continue;;
-
-        if (co.mesh != nullptr)
-        {   
-            co.mesh->shader.use();
-            co.mesh->shader.set_mat4f("projection", projection);
-            co.mesh->shader.set_mat4f("view", view);
-            co.mesh->shader.set_mat4f("model", c->get_model_matrix());
-            co.mesh->draw();
-        }
-        render_tree(co);
-    }
-}
-
 void draw_skybox(const Mesh& mesh, const Texture& text)
 {
     glDepthMask(GL_FALSE);
-    mesh.shader.use();
+    mesh.shader->use();
     mesh.draw();
     glDepthMask(GL_TRUE);
 }

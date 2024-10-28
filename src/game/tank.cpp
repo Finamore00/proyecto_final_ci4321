@@ -132,11 +132,7 @@ void Tank::rotate_turret(float time) {
         rotDir = -1.0f;
     }
 
-    glm::vec3 pivotF = cannon_pivot_transform->get_right_vector();
-    pivotF.y = 0.0f;
-    pivotF = glm::normalize(pivotF);
-    float angBtw = glm::degrees(glm::angle(cannon_pivot_transform->get_right_vector(), glm::vec3(0.0f, 1.0f, 0.0f)));
-    
+    float angBtw = glm::degrees(glm::angle(cannon_pivot_transform->get_right_vector(), glm::vec3(0.0f, 1.0f, 0.0f)));    
     if (rotDir != 0.0f)
     {
         if ((rotDir < 0.0f && (angBtw + glm::degrees(pi) * time * rotDir) < 90.0f) ||
@@ -189,15 +185,15 @@ void Tank::fire_bullet() {
         int i = 0;
         for (; i < 3 && bullets[i]->enabled; i++) {}
 
-        if (i >= 3) {
-            return; //No available bullet found
-        }
+        if (i >= 3)
+            i = last_fired_bullet;
 
         bool use_gravity = input->key_is_pressed(GLFW_KEY_SPACE);
 
         transform.update_transform();
         bullets[i]->spawn(*spawner_transform, 10.0f, use_gravity);
         bullets[i]->enabled = true;
+        last_fired_bullet = (last_fired_bullet + 1) % 3;
     }
 }
 

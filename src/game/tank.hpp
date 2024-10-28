@@ -19,4 +19,5 @@ public:
     void rotate_tank(float time);
     void move(float time);
     float last_fired_time = 0.0f;
+    int last_fired_bullet = 0;
 };
