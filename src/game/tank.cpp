@@ -56,7 +56,6 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
         bullets[i] = new Bullet(1.0f, -9.8f, true);
         bullets[i]->mesh = new Mesh(create_sphere(15, 10, 0.125f), shader);
         bullets[i]->transform.set_parent(&bullet_spawner->transform, false);
-        bullets[i]->spawn(bullet_spawner->transform, 5.0f);
         bullets[i]->collider = new Collider;
         *(bullets[i]->collider) = create_sphere_collider(bullets[i]->transform, 0.125f);
         bullets[i]->enabled = false;
@@ -69,6 +68,7 @@ void Tank::update(float time) {
     rotate_tank(time);
     move(time);
 
+    transform.update_transform();
     return;
 }
 
@@ -179,7 +179,8 @@ void Tank::fire_bullet() {
 void Tank::update_bullets(float time) {
     for (int i = 0; i < 3; i++) {
         if (bullets[i]->enabled) {
-            bullets[i]->update(time);;
+            bullets[i]->update(time);
         }
     }
+    transform.update_transform();
 }
