@@ -39,5 +39,5 @@ void main()
    float factor = max(dot(norm, lightDir), 0.0);
    vec3 diffuse = factor * l1_pow * l1_col;
 
-   FragColor = texture(base, TexCoord * uvt.uvScale + uvt.uvOffset) * (vec4(diffuse, 1.0) + vec4(ambient, 1.0)) * vec4(tint, 1.0);
+   FragColor = (texture(base, TexCoord * uvt.uvScale + uvt.uvOffset) +  vec4(ambient, 1.0)) * vec4(diffuse, 1.0) * vec4(tint, 1.0);
 }
