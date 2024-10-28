@@ -1,4 +1,4 @@
-# ci4321-proyecto-1
+# Computación Gráfica I (CI4321) - Primer Proyecto
 Primer Proyecto de Computación Gráfica I (CI4321). Universidad Simón Bolívar, trimestre Sep-Dic 2024
 
 # Integrantes
