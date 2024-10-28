@@ -3,7 +3,7 @@
 
 #include "../../thirdparty/glad/include/glad/glad.h"
 
-Mesh::Mesh(const Geometry& geometry, const gl_utils::shader_program& shader): shader(shader)
+Mesh::Mesh(const Geometry& geometry, const gl_utils::shader_program& shader): shader(&shader)
 {
     initialize_geometry(geometry);
 }
@@ -35,20 +35,24 @@ void Mesh::initialize_geometry(const Geometry& geometry)
     glEnableVertexAttribArray(2);
 }
 
+void Mesh::set_shader(const gl_utils::shader_program& ns)
+{
+    this->shader = &ns;
+}
+
 /// @brief Draws the mesh
 void Mesh::draw() const
 {
-    shader.use();
+    shader->use();
     if (shaderMaterial.texture != nullptr)
         shaderMaterial.texture->use_texture(GL_TEXTURE0);
+    else
+        glBindTexture(GL_TEXTURE_2D, 0);
 
-    shader.set_vec3f("ambient", shaderMaterial.ambient);
-    shader.set_vec3f("tint", shaderMaterial.tint);
-    shader.set_vec2f("uvt.uvOffset", shaderMaterial.texUVoffset);
-    shader.set_vec2f("uvt.uvScale", shaderMaterial.texUVscales);
-    //shader.set_vec3f("light.pos", glm::vec3(1.0f, 10.0f, 0.0f));
-    //shader.set_vec3f("light.col", glm::vec3(1.0));
-    //shader.set_1f("light.power", 1.0f);
+    shader->set_vec3f("ambient", shaderMaterial.ambient);
+    shader->set_vec3f("tint", shaderMaterial.tint);
+    shader->set_vec2f("uvt.uvOffset", shaderMaterial.texUVoffset);
+    shader->set_vec2f("uvt.uvScale", shaderMaterial.texUVscales);
 
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_geometry.indices.size(), GL_UNSIGNED_INT, (void*)0);

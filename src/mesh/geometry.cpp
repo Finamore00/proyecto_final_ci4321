@@ -29,47 +29,48 @@ Geometry create_plane(float x, float z)
 /// @param width Box's width
 /// @param height Box's height
 /// @return Geometry representing the box
-Geometry create_box(float width, float height)
+Geometry create_box(float x, float y, float z)
 {
-    float halfW = width / 2.0f;
-    float halfH = height / 2.0f;
+    float halfX = x / 2.0f;
+    float halfY = y / 2.0f;
+    float halfZ = z / 2.0f;
     Geometry box = {};
     box.vertices = {
         // Front
-        {{-halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{-halfX, halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-halfX, -halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{halfX, halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{halfX, -halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
 
         // Right
-        {{halfW, halfH, halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{halfX, halfY, halfZ}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{halfX, -halfY, halfZ}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{halfX, halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{halfX, -halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 
         // Back
-        {{halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
-        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
-        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
-        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+        {{halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
+        {{halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
+        {{-halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
 
         // Left
-        {{-halfW, halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{-halfW, halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-halfX, -halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{-halfX, halfY, halfZ}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-halfX, -halfY, halfZ}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
 
         // Top
-        {{-halfW, halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfW, halfH, halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfW, halfH, halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-halfX, halfY, halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{halfX, halfY, -halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{halfX, halfY, halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
 
         // Bottom
-        {{-halfW, -halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfW, -halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}}
+        {{-halfX, -halfY, -halfZ}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-halfX, -halfY, halfZ}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{halfX, -halfY, -halfZ}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{halfX, -halfY, halfZ}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}}
     };
 
     box.indices = {

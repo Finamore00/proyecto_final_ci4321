@@ -74,7 +74,8 @@ bool test_collision(const Collider& a, const Collider& b)
     if (b.type == SPHERE_COLLIDER)
         return test_sphere_OBB(b.shape.sphere, a.shape.obb);
     
-    throw std::invalid_argument("Both colliders are OBBs");
+    std::cout << "[WARNING] Collisions between OBBs not implemented yet" << std::endl;
+    return false;
 };
 
 /// @brief Finds a point in an OBB surface, closest to a specified point

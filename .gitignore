@@ -59,3 +59,4 @@ build/*/*
 # IntelliJ bull
 .idea
 cmake-build-debug
+.vscode

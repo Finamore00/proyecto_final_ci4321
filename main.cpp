@@ -16,6 +16,9 @@
 #include "src/mesh/mesh.hpp"
 #include "src/gl_utils/shader.h"
 #include "src/game/bullet.hpp"
+#include "src/game/tank.hpp"
+#include "src/game/obstacle.hpp"
+#include "src/input/input.hpp"
 
 
 // Window resize handler
@@ -58,6 +61,9 @@ int main()
         return -1;
     }
 
+    InputManager *input_mgr;
+    input_mgr = input_mgr->get_instance();
+    input_mgr->set_window(window);
     PhysicEngine physicsEngine;
     RenderingEngine renderEngine(800.0f, 600.0f, 75.0f);
 
@@ -80,16 +86,18 @@ int main()
     );
 
     Texture boxTexture({"../textures/crate.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-    Texture floorTexture({"../textures/floor_tiles.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+    Texture floorTexture({"../textures/floor.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     Texture pavementTexture({"../textures/pavement.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     Texture skyBoxText = Texture(
         {
-            "../textures/skybox/cliff_right.bmp", "../textures/skybox/cliff_left.bmp", "../textures/skybox/cliff_up.bmp",
-            "../textures/skybox/cliff_down.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_front.bmp"
+            "../textures/skybox/cliff_front.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_down.bmp",
+            "../textures/skybox/cliff_up.bmp", "../textures/skybox/cliff_right.bmp", "../textures/skybox/cliff_left.bmp"
         }, GL_TEXTURE_CUBE_MAP, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE
     );
 
-    Geometry boxGeo = create_box(1.0f, 1.0f);
+    Texture tankTexture({"../textures/tank.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+
+    Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
     // Creating meshes
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
@@ -103,91 +111,168 @@ int main()
 
     // Creating SceneObjects
     SceneObject root, cam;
-    cam.transform.set_parent(&root.transform, false);
-    cam.transform.set_world_position(glm::vec3(0.0f, 0.0f, -5.0f));
+    root.transform.update_transform();
+
+#pragma region Tank setup
+    // Tank set up
+    Tank tank(root, basicShader);
+    tank.mesh->shaderMaterial.texture = &tankTexture;
+    tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
+    tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    root.transform.update_transform();
+
+    cam.transform.set_parent(&tank.transform, false);
+    cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -3.0f));
     cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    tank.transform.update_transform();
+#pragma endregion
+
+
+#pragma region Environment
+    // Setting main light
+    Light mainLight;
+    mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+    mainLight.intensity = 1.0f;
+    mainLight.transform.set_parent(&root.transform, false);
+    mainLight.transform.set_world_position(glm::vec3(1.0f, 10.0f, -1.0f));
     root.transform.update_transform();
 
-    SceneObject bulletSpawn;
-    bulletSpawn.transform.set_parent(&root.transform, false);
-    bulletSpawn.transform.set_world_position(glm::vec3(1.0f, 0.0f, 0.0f));
-    bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 1 * 90.0f, 0.0f));
-    root.transform.update_transform();
-    
-    Bullet bullet(0.0f, -9.8f, false);
-    bullet.mesh = &bulletMesh;
+    Obstacle demoSphere1 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere1.transform.set_local_position(glm::vec3(-4.0f, -9.5f, 0.0f));
+    demoSphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere1.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere1.enabled = true;
 
-    bullet.transform.set_parent(&root.transform, false);
-    bullet.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
-    bullet.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
-    //bullet.spawn(bulletSpawn.transform);
-    root.transform.update_transform();
+    Obstacle demoSphere2 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere2.transform.set_local_position(glm::vec3(4.0f, -9.5f, 0.0f));
+    demoSphere2.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere2.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere2.enabled = true;
+
+    Obstacle demoSphere3 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere3.transform.set_local_position(glm::vec3(0.0f, -9.5f, -4.0f));
+    demoSphere3.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere3.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere3.enabled = true;
+
+    Obstacle demoSphere4 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere4.transform.set_local_position(glm::vec3(0.0f, -9.5f, 4.0f));
+    demoSphere4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere4.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere4.enabled = true;
 
     SceneObject floor;
     floor.mesh = &floorMesh;
-
+    floor.mesh->shaderMaterial.texUVscales = glm::vec3(100.0f);
     floor.transform.set_parent(&root.transform, false);
     floor.transform.set_world_position(glm::vec3(0.0f, -1.0f, 0.0f));
-    floor.transform.set_world_scale(glm::vec3(100.0f, 0.5f, 100.0f));
+    floor.transform.set_world_scale(glm::vec3(1000.0f, 0.5f, 1000.0f));
     floor.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     root.transform.update_transform();
-    
-    // Setting colliders
-    Collider floorCol = create_OBB_collider(floor.transform);
-    Collider bulletCol = create_sphere_collider(bullet.transform, 0.5f);
-    floor.collider = &floorCol;
-    bullet.collider = &bulletCol;
 
-    // Setting main light
-    Light mainLight;
-    mainLight.color = glm::vec3(1.0f, 1.0f, 0.0f);
-    mainLight.intensity = 1.0f;
+    Obstacle sphere1 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere1.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 8.0f));
+    sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere1.mesh->shaderMaterial.tint = glm::vec3(0.0f, 1.0f, 0.0f);
+    sphere1.enabled = true;
 
-    mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(0.0f, 1.0f, 0.0f));
-    root.transform.update_transform();
+    Obstacle sphere2 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere2.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 6.0f));
+    sphere2.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere2.mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
+    sphere2.enabled = true;
 
+    Obstacle sphere3 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere3.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 4.0f));
+    sphere3.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere3.mesh->shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
+    sphere3.enabled = true;
+
+    Obstacle sphere4 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere4.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 2.0f));
+    sphere4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere4.mesh->shaderMaterial.tint = glm::vec3(1.0f, 1.0f, 1.0f);
+    sphere4.enabled = true;
+
+    Obstacle box1 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box1.transform.set_world_position(glm::vec3(10.0f, 0.2f, 10.0f));
+    box1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    box1.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box1.enabled = true;
+
+    Obstacle box2 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box2.transform.set_world_position(glm::vec3(7.0f, 1.2f, 10.0f));
+    box2.transform.set_world_euler_rotation(glm::vec3(45.0f, 0.0f, 0.0f));
+    box2.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box2.enabled = true;
+
+    Obstacle box3 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box3.transform.set_world_position(glm::vec3(4.0f, 2.2f, 10.0f));
+    box3.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
+    box3.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box3.enabled = true;
+
+    Obstacle box4 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box4.transform.set_world_position(glm::vec3(1.0f, 3.2f, 10.0f));
+    box4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 45.0f));
+    box4.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box4.enabled = true;
+
+    Obstacle box5 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box5.transform.set_world_position(glm::vec3(-2.0f, 4.2f, 10.0f));
+    box5.transform.set_world_euler_rotation(glm::vec3(45.0f, 45.0f, 0.0f));
+    box5.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box5.enabled = true;
+
+    Obstacle box6 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box6.transform.set_world_position(glm::vec3(-5.0f, 4.2f, 10.0f));
+    box6.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 45.0f));
+    box6.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box6.enabled = true;
+#pragma endregion
+
+
+#pragma region Physic setup
     // Registering colliders
-    physicsEngine.register_entity(*bullet.collider, bullet.transform);
-    physicsEngine.register_entity(*floor.collider, floor.transform);
+    Collider floorCol = create_OBB_collider(floor.transform);
+    floor.collider = &floorCol;
 
+    physicsEngine.register_entity(*floor.collider, floor.transform);
+    physicsEngine.register_entity(*sphere1.collider, sphere1.transform);
+    physicsEngine.register_entity(*sphere2.collider, sphere2.transform);
+    physicsEngine.register_entity(*sphere3.collider, sphere3.transform);
+    physicsEngine.register_entity(*sphere4.collider, sphere4.transform);
+    physicsEngine.register_entity(*box1.collider, box1.transform);
+    physicsEngine.register_entity(*box2.collider, box2.transform);
+    physicsEngine.register_entity(*box3.collider, box3.transform);
+    physicsEngine.register_entity(*box4.collider, box4.transform);
+    physicsEngine.register_entity(*box5.collider, box5.transform);
+    physicsEngine.register_entity(*box6.collider, box6.transform);
+
+    for (int i = 0; i < 3; i++)
+        physicsEngine.register_entity(*tank.bullets[i]->collider, tank.bullets[i]->transform);
+#pragma endregion
+
+#pragma region Rendering
     // Setting main camera and registering lights
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
+#pragma endregion
 
     float old_time = 0.0f;
     float dt = 0.0f;
     // Main loop!
-
     while (!glfwWindowShouldClose(window))
     {
         dt = glfwGetTime() - old_time;
-        old_time = glfwGetTime();
 
-        processInput(window);
+        old_time = glfwGetTime();
 
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (input.x != 0 || input.y != 0 || input.z != 0 || rotInput.x != 0 || rotInput.y != 0)
-        {
-            auto f = cam.transform.get_front_vector(); // not getting the correct one :(
-            auto u = cam.transform.get_up_vector();
-            auto r = cam.transform.get_right_vector();
-
-            glm::vec3 dir = r * input.x + f * input.z + u * input.y;
-            dir = (input.x != 0 || input.y != 0 || input.z != 0) ? glm::normalize(dir) : glm::vec3(0.0);
-            
-            glm::quat yawRot = glm::angleAxis(rotInput.y * glm::radians(60.0f) * dt, glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::quat pitchRot = glm::angleAxis(rotInput.x * glm::radians(60.0f) * dt, r);
-            glm::quat wRot = cam.transform.get_world_rotation() * yawRot;
-
-            glm::vec3 wpos = cam.transform.get_world_position();
-            glm::vec3 nextPosition = wpos + dir * 5.0f * dt;
-            
-            cam.transform.set_world_position(nextPosition);
-            cam.transform.set_world_rotation(wRot);
-        }
+        tank.update(dt);
+        tank.update_bullets(dt);
 
         root.transform.update_transform();
         physicsEngine.simulate();
@@ -196,6 +281,11 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE)) {
+            glfwSetWindowShouldClose(window, true);
+            break;
+        }
     }
 
     glfwTerminate();
@@ -209,75 +299,10 @@ void windowResizeCallback(GLFWwindow* window, int width, int height)
     projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 5000.0f);
 }
 
-
-void processInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    
-    float xInput = 0.0;
-    float yInput = 0.0;
-    float zInput = 0.0;
-    float yaw = 0.0;
-    float pitch = 0.0;
-    
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        yInput = 1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        yInput = -1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        xInput = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        xInput = 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        zInput = 1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        zInput = -1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        yaw = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        yaw = 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        pitch = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        pitch = 1.0f;
-
-    input.x = xInput;
-    input.y = yInput;
-    input.z = zInput;
-    rotInput.y = yaw;
-    rotInput.x = pitch;
-}
-
-
-void render_tree(const SceneObject& root)
-{
-    for (auto &&c : root.transform.get_children())
-    {
-        const SceneObject& co = c->get_scene_object();
-        if (!co.enabled)
-            continue;;
-
-        if (co.mesh != nullptr)
-        {   
-            co.mesh->shader.use();
-            co.mesh->shader.set_mat4f("projection", projection);
-            co.mesh->shader.set_mat4f("view", view);
-            co.mesh->shader.set_mat4f("model", c->get_model_matrix());
-            co.mesh->draw();
-        }
-        render_tree(co);
-    }
-}
-
 void draw_skybox(const Mesh& mesh, const Texture& text)
 {
     glDepthMask(GL_FALSE);
-    mesh.shader.use();
+    mesh.shader->use();
     mesh.draw();
     glDepthMask(GL_TRUE);
 }

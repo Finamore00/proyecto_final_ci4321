@@ -8,5 +8,5 @@ out vec4 FragColor;
 
 void main()
 {    
-    FragColor = texture(skybox, TexCoords);
+    FragColor = texture(skybox, vec3(TexCoords.x, -TexCoords.y, TexCoords.z));
 }
