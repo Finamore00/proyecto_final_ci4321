@@ -43,9 +43,11 @@ void Mesh::set_shader(const gl_utils::shader_program& ns)
 /// @brief Draws the mesh
 void Mesh::draw() const
 {
-    (*shader).use();
+    shader->use();
     if (shaderMaterial.texture != nullptr)
         shaderMaterial.texture->use_texture(GL_TEXTURE0);
+    else
+        glBindTexture(GL_TEXTURE_2D, 0);
 
     shader->set_vec3f("ambient", shaderMaterial.ambient);
     shader->set_vec3f("tint", shaderMaterial.tint);
