@@ -7,6 +7,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../thirdparty/glm/gtx/string_cast.hpp"
+#include "../../thirdparty/glm/gtx/vector_angle.hpp"
 
 Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 
@@ -62,6 +63,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     }
 }
 
+
 void Tank::update(float time) {
     rotate_turret(time);
     fire_bullet();
@@ -71,6 +73,7 @@ void Tank::update(float time) {
     transform.update_transform();
     return;
 }
+
 
 void Tank::rotate_tank(float time) {
     InputManager *input;
@@ -95,24 +98,6 @@ void Tank::rotate_tank(float time) {
     transform.set_world_rotation(current_rotation * rotation);
 }   
 
-void Tank::move(float time) {
-    InputManager *input;
-    input = input->get_instance();
-
-    glm::vec3 current_position = transform.get_world_position();
-    glm::vec3 fwd = transform.get_front_vector();
-    const float move_delta = 5.0f * time;  // Decide on a maximum speed
-
-    if (input->key_is_pressed(GLFW_KEY_W)) {
-        current_position += move_delta * fwd;
-    }
-
-    if (input->key_is_pressed(GLFW_KEY_S)) {
-        current_position -= move_delta * fwd;
-    }
-
-    transform.set_world_position(current_position);
-}
 
 //Turret rotates kinda weird rn
 void Tank::rotate_turret(float time) {
@@ -147,13 +132,42 @@ void Tank::rotate_turret(float time) {
         rotDir = -1.0f;
     }
 
+    glm::vec3 pivotF = cannon_pivot_transform->get_right_vector();
+    pivotF.y = 0.0f;
+    pivotF = glm::normalize(pivotF);
+    float angBtw = glm::degrees(glm::angle(cannon_pivot_transform->get_right_vector(), glm::vec3(0.0f, 1.0f, 0.0f)));
+    
     if (rotDir != 0.0f)
     {
-        rotation = glm::angleAxis(pi * time * rotDir, right);
-        rotation = glm::normalize(rotation);
-        cannon_pivot_transform->set_world_rotation(rotation * pivot_x_rotation);
-        transform.update_transform();
+        if ((rotDir < 0.0f && (angBtw + glm::degrees(pi) * time * rotDir) < 90.0f) ||
+            (rotDir > 0.0f && (angBtw - glm::degrees(pi) * time * rotDir) > 0.0f))
+        {
+            rotation = glm::angleAxis(pi * time * rotDir, right);
+            rotation = glm::normalize(rotation);
+            cannon_pivot_transform->set_world_rotation(rotation * pivot_x_rotation);
+            transform.update_transform();
+        }
     }
+}
+
+
+void Tank::move(float time) {
+    InputManager *input;
+    input = input->get_instance();
+
+    glm::vec3 current_position = transform.get_world_position();
+    glm::vec3 fwd = transform.get_front_vector();
+    const float move_delta = 5.0f * time;  // Decide on a maximum speed
+
+    if (input->key_is_pressed(GLFW_KEY_W)) {
+        current_position += move_delta * fwd;
+    }
+
+    if (input->key_is_pressed(GLFW_KEY_S)) {
+        current_position -= move_delta * fwd;
+    }
+
+    transform.set_world_position(current_position);
 }
 
 
