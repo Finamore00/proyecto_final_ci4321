@@ -85,7 +85,7 @@ int main()
     );
 
     Texture boxTexture({"../textures/crate.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-    Texture floorTexture({"../textures/floor_tiles.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+    Texture floorTexture({"../textures/floor.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     Texture pavementTexture({"../textures/pavement.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     Texture skyBoxText = Texture(
         {
@@ -105,13 +105,10 @@ int main()
     bulletMesh.shaderMaterial.texture = &boxTexture;
 
     Mesh floorMesh(boxGeo, basicShader);
-    floorMesh.shaderMaterial.texture = &pavementTexture;
+    floorMesh.shaderMaterial.texture = &floorTexture;
 
     // Creating SceneObjects
     SceneObject root, cam;
-    cam.transform.set_parent(&root.transform, false);
-    cam.transform.set_world_position(glm::vec3(0.0f, 0.0f, -5.0f));
-    cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     root.transform.update_transform();
 
     SceneObject bulletSpawn;
@@ -119,21 +116,17 @@ int main()
     bulletSpawn.transform.set_world_position(glm::vec3(1.0f, 0.0f, 0.0f));
     bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 1 * 90.0f, 0.0f));
     root.transform.update_transform();
-    
-    // Bullet bullet(5.0f, -9.8f, false);
-    // bullet.mesh = &bulletMesh;
-
-    // bullet.transform.set_parent(&root.transform, false);
-    // bullet.transform.set_world_position(glm::vec3(1.0f, 1.0f, 0.0f));
-    // bullet.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
-    // bullet.spawn(bulletSpawn.transform, 1.0f);
-    root.transform.update_transform();
 
     Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.texture = &tankTexture;
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    tank.transform.set_world_euler_rotation(glm::vec3(45.0f, 0.0f, 90.0f));
+    tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
     root.transform.update_transform();
+
+    cam.transform.set_parent(&tank.transform, false);
+    cam.transform.set_world_position(glm::vec3(-3.0f, 2.0f, 0.0f));
+    cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
+    tank.transform.update_transform();
 
     SceneObject floor;
     floor.mesh = &floorMesh;
@@ -153,14 +146,13 @@ int main()
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    mainLight.intensity = 5.0f;
+    mainLight.intensity = 2.0f;
 
     mainLight.transform.set_parent(&root.transform, false);
     mainLight.transform.set_world_position(glm::vec3(1.0f, 10.0f, -1.0f));
     root.transform.update_transform();
 
     // Registering colliders
-    // physicsEngine.register_entity(*bullet.collider, bullet.transform);
     physicsEngine.register_entity(*floor.collider, floor.transform);
     for (int i = 0; i < 3; i++) {
         physicsEngine.register_entity(*tank.bullets[i]->collider, tank.bullets[i]->transform);
@@ -183,29 +175,8 @@ int main()
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (input.x != 0 || input.y != 0 || input.z != 0 || rotInput.x != 0 || rotInput.y != 0)
-        {
-            auto f = cam.transform.get_front_vector(); // not getting the correct one :(
-            auto u = cam.transform.get_up_vector();
-            auto r = cam.transform.get_right_vector();
-
-            glm::vec3 dir = r * input.x + f * input.z + u * input.y;
-            dir = (input.x != 0 || input.y != 0 || input.z != 0) ? glm::normalize(dir) : glm::vec3(0.0);
-            
-            glm::quat yawRot = glm::angleAxis(rotInput.y * glm::radians(60.0f) * dt, glm::vec3(0.0f, 1.0f, 0.0f));
-            glm::quat pitchRot = glm::angleAxis(rotInput.x * glm::radians(60.0f) * dt, r);
-            glm::quat wRot = cam.transform.get_world_rotation() * yawRot;
-
-            glm::vec3 wpos = cam.transform.get_world_position();
-            glm::vec3 nextPosition = wpos + dir * 5.0f * dt;
-            
-            cam.transform.set_world_position(nextPosition);
-            cam.transform.set_world_rotation(wRot);
-        }
-
         tank.update(dt);
         tank.update_bullets(dt);
-        // bullet.update(dt);
 
         root.transform.update_transform();
         physicsEngine.simulate();

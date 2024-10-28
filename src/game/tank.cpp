@@ -34,7 +34,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     SceneObject *turret_cylinder = new SceneObject;
     turret_cylinder->mesh = new Mesh(create_cylinder(30, 0.0625f, 1.0f), shader);
     turret_cylinder->transform.set_parent(&cylinder_pivot->transform, true);
-    turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
+    turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     turret_cylinder->transform.set_local_position(glm::vec3(0.0f, -0.5f, 0.0f));
     cylinder_pivot->transform.update_transform();
     turret_cylinder->enabled = true;
@@ -52,7 +52,6 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
         bullets[i] = new Bullet(1.0f, -9.8f, true);
         bullets[i]->mesh = new Mesh(create_sphere(15, 10, 0.125f), shader);
         bullets[i]->transform.set_parent(&bullet_spawner->transform, false);
-        bullets[i]->spawn(bullet_spawner->transform, 5.0f);
         bullets[i]->collider = new Collider;
         *(bullets[i]->collider) = create_sphere_collider(bullets[i]->transform, 0.125f);
         bullets[i]->enabled = false;
@@ -65,6 +64,7 @@ void Tank::update(float time) {
     rotate_tank(time);
     move(time);
 
+    transform.update_transform();
     return;
 }
 
@@ -128,11 +128,11 @@ void Tank::rotate_turret(float time) {
 
     //Check horizontal rotation
     if (input->key_is_pressed(GLFW_KEY_J)) {
-        curr_turret_rotation.x -= rotation_delta;
+        curr_turret_rotation.x += rotation_delta;
     }
 
     if (input->key_is_pressed(GLFW_KEY_L)) {
-        curr_turret_rotation.x += rotation_delta;
+        curr_turret_rotation.x -= rotation_delta;
     }
 
     turret_transform->set_local_rotation(glm::quat(curr_turret_rotation));
@@ -158,6 +158,7 @@ void Tank::fire_bullet() {
             if (i != 3) {
                 bullets[i]->enabled = true;
                 bullets[i]->spawn(*spawner_transform, 10.0f);
+                transform.update_transform();
             }
         }
     }
@@ -166,7 +167,8 @@ void Tank::fire_bullet() {
 void Tank::update_bullets(float time) {
     for (int i = 0; i < 3; i++) {
         if (bullets[i]->enabled) {
-            bullets[i]->update(time);;
+            bullets[i]->update(time);
         }
     }
+    transform.update_transform();
 }
