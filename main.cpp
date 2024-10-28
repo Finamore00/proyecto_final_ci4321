@@ -17,6 +17,7 @@
 #include "src/gl_utils/shader.h"
 #include "src/game/bullet.hpp"
 #include "src/game/tank.hpp"
+#include "src/game/obstacle.hpp"
 #include "src/input/input.hpp"
 
 
@@ -117,6 +118,18 @@ int main()
     bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
     root.transform.update_transform();
 
+    Obstacle sphere = create_sphere_obstacle(root.transform, 30, 20, 2.0f, basicShader, boxTexture);
+    sphere.transform.set_world_position(glm::vec3(-5.0f, 2.0f, 3.0f));
+    sphere.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere.enabled = true;
+    root.transform.update_transform();
+
+    Obstacle box = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box.transform.set_world_position(glm::vec3(7.0f, 2.0f, -6.0f));
+    box.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    box.enabled = true;
+    root.transform.update_transform();
+
     Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.texture = &tankTexture;
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -154,6 +167,8 @@ int main()
 
     // Registering colliders
     physicsEngine.register_entity(*floor.collider, floor.transform);
+    physicsEngine.register_entity(*sphere.collider, sphere.transform);
+    physicsEngine.register_entity(*box.collider, box.transform);
     for (int i = 0; i < 3; i++) {
         physicsEngine.register_entity(*tank.bullets[i]->collider, tank.bullets[i]->transform);
     }
@@ -201,50 +216,6 @@ void windowResizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
     projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 5000.0f);
-}
-
-
-void processInput(GLFWwindow* window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    
-    float xInput = 0.0;
-    float yInput = 0.0;
-    float zInput = 0.0;
-    float yaw = 0.0;
-    float pitch = 0.0;
-    
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        yInput = 1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        yInput = -1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        xInput = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        xInput = 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        zInput = 1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        zInput = -1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        yaw = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        yaw = 1.0f;
-
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        pitch = -1.0f;
-    else if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        pitch = 1.0f;
-
-    input.x = xInput;
-    input.y = yInput;
-    input.z = zInput;
-    rotInput.y = yaw;
-    rotInput.x = pitch;
 }
 
 void draw_skybox(const Mesh& mesh, const Texture& text)
