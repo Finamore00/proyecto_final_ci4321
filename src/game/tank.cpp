@@ -161,27 +161,29 @@ void Tank::fire_bullet() {
     InputManager *input;
     input = input->get_instance();
 
+    bool any_key = input->key_is_pressed(GLFW_KEY_SPACE) || input->key_is_pressed(GLFW_KEY_RIGHT_ALT);
+
+    if (!any_key) {
+        return;
+    }
+
     float time = glfwGetTime();
     if (time - last_fired_time > 1.0f) {
         last_fired_time = time;
-        // Look for first fired bullet
+
+        //Look for first disabled bullet
         int i = 0;
         for (; i < 3 && bullets[i]->enabled; i++) {}
 
-        if (i == 3) {
+        if (i >= 3) {
             return; //No available bullet found
         }
 
-        if (input->key_is_pressed(GLFW_KEY_SPACE)) {
-            bullets[i]->spawn(*spawner_transform, 10.0f, true);
-            transform.update_transform();
-            bullets[i]->enabled = true;
-        } else if (input->key_is_pressed(GLFW_KEY_RIGHT_ALT)) {
-            bullets[i]->spawn(*spawner_transform, 10.0f, false);
-            transform.update_transform();
-            bullets[i]->enabled = true;
-        }
+        bool use_gravity = input->key_is_pressed(GLFW_KEY_SPACE);
 
+        bullets[i]->spawn(*spawner_transform, 10.0f, use_gravity);
+        transform.update_transform();
+        bullets[i]->enabled = true;
     }
 }
 
