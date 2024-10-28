@@ -90,10 +90,11 @@ int main()
     Texture pavementTexture({"../textures/pavement.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
     Texture skyBoxText = Texture(
         {
-            "../textures/skybox/cliff_right.bmp", "../textures/skybox/cliff_left.bmp", "../textures/skybox/cliff_up.bmp",
-            "../textures/skybox/cliff_down.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_front.bmp"
+            "../textures/skybox/cliff_front.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_down.bmp",
+            "../textures/skybox/cliff_up.bmp", "../textures/skybox/cliff_right.bmp", "../textures/skybox/cliff_left.bmp"
         }, GL_TEXTURE_CUBE_MAP, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE
     );
+
     Texture tankTexture({"../textures/tank.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
 
     Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
