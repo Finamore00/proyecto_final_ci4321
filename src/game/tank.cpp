@@ -18,7 +18,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 
     //Create sphere geometry for the turret
     SceneObject *turret_sphere = new SceneObject;
-    turret_sphere->transform.set_parent(&this->transform, true);
+    turret_sphere->transform.set_parent(&transform, true);
     turret_sphere->transform.set_local_position(glm::vec3(0.0f, 0.25f, 0));
     turret_sphere->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform.update_transform();
@@ -75,19 +75,24 @@ void Tank::update(float time) {
 void Tank::rotate_tank(float time) {
     InputManager *input;
     input = input->get_instance();
+    const float pi = glm::pi<float>();
 
-    glm::vec3 current_rotation = glm::eulerAngles(transform.get_world_rotation());
-    const float rotation_delta = 3.141592 * time;
+    glm::quat current_rotation = transform.get_world_rotation();
+    glm::vec3 up = glm::normalize(transform.get_up_vector());
+
+    glm::quat rotation;
 
     if (input->key_is_pressed(GLFW_KEY_A)) {
-        current_rotation.y += rotation_delta;
+        rotation = glm::angleAxis(pi * time, up);
+    } else if (input->key_is_pressed(GLFW_KEY_D)) {
+        rotation = glm::angleAxis(-pi * time, up);
+    } else {
+        return;
     }
 
-    if (input->key_is_pressed(GLFW_KEY_D)) {
-        current_rotation.y -= rotation_delta;
-    }
+    rotation = glm::normalize(rotation);
 
-    transform.set_world_rotation(glm::quat(current_rotation));
+    transform.set_world_rotation(current_rotation * rotation);
 }   
 
 void Tank::move(float time) {
@@ -95,8 +100,8 @@ void Tank::move(float time) {
     input = input->get_instance();
 
     glm::vec3 current_position = transform.get_world_position();
-    glm::vec3 fwd = -transform.get_front_vector();
-    const float move_delta = 1.0f * time;  // Decide on a maximum speed
+    glm::vec3 fwd = transform.get_front_vector();
+    const float move_delta = 5.0f * time;  // Decide on a maximum speed
 
     if (input->key_is_pressed(GLFW_KEY_W)) {
         current_position += move_delta * fwd;
@@ -122,9 +127,9 @@ void Tank::rotate_turret(float time) {
     glm::quat rotation;
     float rotDir = 0.0f;
     if (input->key_is_pressed(GLFW_KEY_J)) {
-        rotDir = -1.0f;
-    } else if (input->key_is_pressed(GLFW_KEY_L)) {
         rotDir = 1.0f;
+    } else if (input->key_is_pressed(GLFW_KEY_L)) {
+        rotDir = -1.0f;
     }
     
     if (rotDir != 0.0f)
@@ -156,23 +161,27 @@ void Tank::fire_bullet() {
     InputManager *input;
     input = input->get_instance();
 
-    if (input->key_is_pressed(GLFW_KEY_SPACE)) {
-        float time = glfwGetTime();
-        if (time - last_fired_time > 1.0f) {
-            last_fired_time = time;
+    float time = glfwGetTime();
+    if (time - last_fired_time > 1.0f) {
+        last_fired_time = time;
+        // Look for first fired bullet
+        int i = 0;
+        for (; i < 3 && bullets[i]->enabled; i++) {}
 
-            // Search for the first disabled bullet
-            int i = 0;
-            while (i < 3 && bullets[i]->enabled == true) {
-                i++;
-            }
-
-            if (i != 3) {
-                bullets[i]->spawn(*spawner_transform, 10.0f);
-                transform.update_transform();
-                bullets[i]->enabled = true;
-            }
+        if (i == 3) {
+            return; //No available bullet found
         }
+
+        if (input->key_is_pressed(GLFW_KEY_SPACE)) {
+            bullets[i]->spawn(*spawner_transform, 10.0f, true);
+            transform.update_transform();
+            bullets[i]->enabled = true;
+        } else if (input->key_is_pressed(GLFW_KEY_RIGHT_ALT)) {
+            bullets[i]->spawn(*spawner_transform, 10.0f, false);
+            transform.update_transform();
+            bullets[i]->enabled = true;
+        }
+
     }
 }
 

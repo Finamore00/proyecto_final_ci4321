@@ -124,8 +124,8 @@ int main()
     root.transform.update_transform();
 
     cam.transform.set_parent(&tank.transform, false);
-    cam.transform.set_world_position(glm::vec3(-3.0f, 2.0f, 0.0f));
-    cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
+    cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -3.0f));
+    cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.update_transform();
 
     SceneObject floor;

@@ -15,10 +15,12 @@ void Bullet::spawn(float initialSpeed)
 
 /// @brief Spawns a bullet using another transform as direction/position
 /// @param spawner Bullet spawner
-void Bullet::spawn(const Transform& spawner, float initialSpeed)
+void Bullet::spawn(const Transform& spawner, float initialSpeed, bool useGravity)
 {
     transform.set_world_position(spawner.get_world_position());
     transform.set_world_rotation(spawner.get_world_rotation());
+
+    m_useGravity = useGravity;
 
     glm::vec3 f = spawner.get_front_vector();
     m_velocity = f * initialSpeed;
