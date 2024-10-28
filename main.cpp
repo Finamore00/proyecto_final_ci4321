@@ -95,7 +95,7 @@ int main()
     );
     Texture tankTexture({"../textures/tank.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
 
-    Geometry boxGeo = create_box(1.0f, 1.0f);
+    Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
     // Creating meshes
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
@@ -117,7 +117,7 @@ int main()
     SceneObject bulletSpawn;
     bulletSpawn.transform.set_parent(&root.transform, false);
     bulletSpawn.transform.set_world_position(glm::vec3(1.0f, 0.0f, 0.0f));
-    bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 1 * 90.0f, 0.0f));
+    bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
     root.transform.update_transform();
     
     // Bullet bullet(5.0f, -9.8f, false);
@@ -132,7 +132,7 @@ int main()
     Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.texture = &tankTexture;
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    tank.transform.set_world_euler_rotation(glm::vec3(45.0f, 0.0f, 90.0f));
+    tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     root.transform.update_transform();
 
     SceneObject floor;

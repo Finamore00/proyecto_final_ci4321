@@ -5,10 +5,13 @@
 #include "../physics/collision_primitives.hpp"
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "../../thirdparty/glm/gtx/string_cast.hpp"
+
 Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 
     //The box will be the parent of all other shapes in the tank. So its parent must be set outside
-    mesh = new Mesh(create_box(0.5f, 1.0f), shader);
+    mesh = new Mesh(create_box(1.0f, 0.5f, 2.0f), shader);
     transform.set_parent(&parent.transform, true);
     enabled = true;
 
@@ -16,26 +19,27 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     //Create sphere geometry for the turret
     SceneObject *turret_sphere = new SceneObject;
     turret_sphere->transform.set_parent(&this->transform, true);
-    turret_sphere->transform.set_local_position(glm::vec3(0.25f, 0.0f, 0));
+    turret_sphere->transform.set_local_position(glm::vec3(0.0f, 0.25f, 0));
     turret_sphere->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     transform.update_transform();
     turret_sphere->enabled = true;
     turret_sphere->mesh = new Mesh(create_sphere(30, 20, 0.25), shader);
+    turret_transform = &turret_sphere->transform;
 
     //Create pivot point for the cylinder
     SceneObject *cylinder_pivot = new SceneObject;
     cylinder_pivot->transform.set_parent(&turret_sphere->transform, true);
     cylinder_pivot->transform.set_local_position(glm::vec3(0.0, 0.0, 0.0));
     cylinder_pivot->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    turret_transform = &turret_sphere->transform;
     turret_transform->update_transform();
+    cannon_pivot_transform = &cylinder_pivot->transform;
 
     //Create the actual turret cylinder
     SceneObject *turret_cylinder = new SceneObject;
     turret_cylinder->mesh = new Mesh(create_cylinder(30, 0.0625f, 1.0f), shader);
     turret_cylinder->transform.set_parent(&cylinder_pivot->transform, true);
-    turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
-    turret_cylinder->transform.set_local_position(glm::vec3(0.0f, -0.5f, 0.0f));
+    turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
+    turret_cylinder->transform.set_local_position(glm::vec3(0.5f, 0.0f, 0.0f));
     cylinder_pivot->transform.update_transform();
     turret_cylinder->enabled = true;
 
@@ -76,22 +80,22 @@ void Tank::rotate_tank(float time) {
     const float rotation_delta = 3.141592 * time;
 
     if (input->key_is_pressed(GLFW_KEY_A)) {
-        current_rotation.x += rotation_delta;
+        current_rotation.y += rotation_delta;
     }
 
     if (input->key_is_pressed(GLFW_KEY_D)) {
-        current_rotation.x -= rotation_delta;
+        current_rotation.y -= rotation_delta;
     }
 
     transform.set_world_rotation(glm::quat(current_rotation));
-}
+}   
 
 void Tank::move(float time) {
     InputManager *input;
     input = input->get_instance();
 
     glm::vec3 current_position = transform.get_world_position();
-    glm::vec3 fwd = -transform.get_up_vector();
+    glm::vec3 fwd = -transform.get_front_vector();
     const float move_delta = 1.0f * time;  // Decide on a maximum speed
 
     if (input->key_is_pressed(GLFW_KEY_W)) {
@@ -109,38 +113,46 @@ void Tank::move(float time) {
 void Tank::rotate_turret(float time) {
     InputManager *input;
     input = input->get_instance();
+    const float pi = glm::pi<float>();
 
-    glm::vec3 curr_turret_rotation = glm::eulerAngles(turret_transform->get_local_rotation());
-    const float rotation_delta = 3.141592f * time;
+    glm::quat turret_y_rotation = turret_transform->get_world_rotation();
+    glm::quat pivot_x_rotation  = cannon_pivot_transform->get_world_rotation();
+    glm::vec3 right = cannon_pivot_transform->get_front_vector();
 
-    //Check vertical rotation first
-    if (input->key_is_pressed(GLFW_KEY_K)) {
-        curr_turret_rotation.z -= rotation_delta;
-    }
-
-    if (input->key_is_pressed(GLFW_KEY_I)) {
-        curr_turret_rotation.z += rotation_delta;
-    }
-
-    //Prevent turret from going into the tank
-    curr_turret_rotation.z = curr_turret_rotation.z <= 0.0f ? 0.0f : curr_turret_rotation.z;
-    curr_turret_rotation.z = curr_turret_rotation.z >= 3.141592 ? 3.141592 : curr_turret_rotation.z;
-
-    //Check horizontal rotation
+    glm::quat rotation;
+    float rotDir = 0.0f;
     if (input->key_is_pressed(GLFW_KEY_J)) {
-        curr_turret_rotation.x -= rotation_delta;
+        rotDir = -1.0f;
+    } else if (input->key_is_pressed(GLFW_KEY_L)) {
+        rotDir = 1.0f;
+    }
+    
+    if (rotDir != 0.0f)
+    {
+        rotation = glm::angleAxis(pi * time * rotDir, glm::vec3(0.0f, 1.0f, 0.0f));
+        rotation = glm::normalize(rotation);
+        turret_transform->set_world_rotation(rotation * turret_y_rotation);
+        transform.update_transform();
     }
 
-    if (input->key_is_pressed(GLFW_KEY_L)) {
-        curr_turret_rotation.x += rotation_delta;
+    rotDir = 0.0f;
+    if (input->key_is_pressed(GLFW_KEY_I)) {
+        rotDir = 1.0f;
+    } else if (input->key_is_pressed(GLFW_KEY_K)) {
+        rotDir = -1.0f;
     }
 
-    turret_transform->set_local_rotation(glm::quat(curr_turret_rotation));
-    transform.update_transform();
+    if (rotDir != 0.0f)
+    {
+        rotation = glm::angleAxis(pi * time * rotDir, right);
+        rotation = glm::normalize(rotation);
+        cannon_pivot_transform->set_world_rotation(rotation * pivot_x_rotation);
+        transform.update_transform();
+    }
 }
 
-void Tank::fire_bullet() {
 
+void Tank::fire_bullet() {
     InputManager *input;
     input = input->get_instance();
 
@@ -156,8 +168,9 @@ void Tank::fire_bullet() {
             }
 
             if (i != 3) {
-                bullets[i]->enabled = true;
                 bullets[i]->spawn(*spawner_transform, 10.0f);
+                transform.update_transform();
+                bullets[i]->enabled = true;
             }
         }
     }

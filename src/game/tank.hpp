@@ -13,6 +13,7 @@ public:
    private:
     Transform *turret_transform;
     Transform *spawner_transform;
+    Transform *cannon_pivot_transform;
     void fire_bullet();
     void rotate_turret(float time);
     void rotate_tank(float time);

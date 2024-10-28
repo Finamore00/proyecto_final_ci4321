@@ -20,7 +20,7 @@ struct Geometry
 
 
 Geometry create_plane(float x, float z);
-Geometry create_box(float width, float height);
+Geometry create_box(float x, float y, float z);
 Geometry create_inverted_box(float width, float height);
 Geometry create_sphere(unsigned int segments, unsigned int arcs, float radius);
 Geometry create_cylinder(unsigned int segments, float radius, float height);

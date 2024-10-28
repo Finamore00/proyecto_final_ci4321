@@ -3,6 +3,9 @@
 #include "transform.hpp"
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "../../thirdparty/glm/gtx/string_cast.hpp"
+
 unsigned int SceneObject::m_curId = 0u;
 
 Transform::Transform(SceneObject &obj) : m_sceneObject(obj) {}
