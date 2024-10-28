@@ -1,6 +1,9 @@
 #include "bullet.hpp"
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "../../thirdparty/glm/gtx/string_cast.hpp"
+
 Bullet::Bullet(float xSpeed, float gravityAccel, bool useGravity) 
     : m_xSpeed(xSpeed), m_gravityAccel(gravityAccel), m_useGravity(useGravity)
 {}
@@ -11,6 +14,7 @@ void Bullet::spawn(float initialSpeed)
     glm::vec3 f = transform.get_front_vector();
     m_velocity = f * initialSpeed;
     m_horVector = glm::normalize(glm::vec3(f.x, 0.0f, f.z));
+    transform.update_transform();
 }
 
 /// @brief Spawns a bullet using another transform as direction/position
@@ -19,7 +23,8 @@ void Bullet::spawn(const Transform& spawner, float initialSpeed, bool useGravity
 {
     transform.set_world_position(spawner.get_world_position());
     transform.set_world_rotation(spawner.get_world_rotation());
-
+    transform.update_transform();
+    
     m_useGravity = useGravity;
 
     glm::vec3 f = spawner.get_front_vector();

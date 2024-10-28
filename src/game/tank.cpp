@@ -12,7 +12,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 
     //The box will be the parent of all other shapes in the tank. So its parent must be set outside
     mesh = new Mesh(create_box(1.0f, 0.5f, 2.0f), shader);
-    transform.set_parent(&parent.transform, true);
+    transform.set_parent(&parent.transform, false);
     enabled = true;
 
 
@@ -55,7 +55,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     for (int i = 0; i < 3; i++) {
         bullets[i] = new Bullet(1.0f, -9.8f, true);
         bullets[i]->mesh = new Mesh(create_sphere(15, 10, 0.125f), shader);
-        bullets[i]->transform.set_parent(&bullet_spawner->transform, false);
+        bullets[i]->transform.set_parent(&parent.transform, false);
         bullets[i]->collider = new Collider;
         *(bullets[i]->collider) = create_sphere_collider(bullets[i]->transform, 0.125f);
         bullets[i]->enabled = false;
@@ -161,7 +161,7 @@ void Tank::fire_bullet() {
     InputManager *input;
     input = input->get_instance();
 
-    bool any_key = input->key_is_pressed(GLFW_KEY_SPACE) || input->key_is_pressed(GLFW_KEY_RIGHT_ALT);
+    bool any_key = input->key_is_pressed(GLFW_KEY_SPACE) || input->key_is_pressed(GLFW_KEY_LEFT_CONTROL);
 
     if (!any_key) {
         return;
@@ -181,8 +181,8 @@ void Tank::fire_bullet() {
 
         bool use_gravity = input->key_is_pressed(GLFW_KEY_SPACE);
 
-        bullets[i]->spawn(*spawner_transform, 10.0f, use_gravity);
         transform.update_transform();
+        bullets[i]->spawn(*spawner_transform, 10.0f, use_gravity);
         bullets[i]->enabled = true;
     }
 }
