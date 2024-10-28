@@ -13,19 +13,21 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 
     //The box will be the parent of all other shapes in the tank. So its parent must be set outside
     mesh = new Mesh(create_box(1.0f, 0.5f, 2.0f), shader);
+    mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
     transform.set_parent(&parent.transform, false);
     enabled = true;
-
 
     //Create sphere geometry for the turret
     SceneObject *turret_sphere = new SceneObject;
     turret_sphere->transform.set_parent(&transform, true);
     turret_sphere->transform.set_local_position(glm::vec3(0.0f, 0.25f, 0));
     turret_sphere->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    transform.update_transform();
-    turret_sphere->enabled = true;
-    turret_sphere->mesh = new Mesh(create_sphere(30, 20, 0.25), shader);
     turret_transform = &turret_sphere->transform;
+    transform.update_transform();
+
+    turret_sphere->mesh = new Mesh(create_sphere(30, 20, 0.25), shader);
+    turret_sphere->mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
+    turret_sphere->enabled = true;
 
     //Create pivot point for the cylinder
     SceneObject *cylinder_pivot = new SceneObject;
@@ -38,6 +40,8 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     //Create the actual turret cylinder
     SceneObject *turret_cylinder = new SceneObject;
     turret_cylinder->mesh = new Mesh(create_cylinder(30, 0.0625f, 1.0f), shader);
+    turret_cylinder->mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
+
     turret_cylinder->transform.set_parent(&cylinder_pivot->transform, true);
     turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
     turret_cylinder->transform.set_local_position(glm::vec3(0.5f, 0.0f, 0.0f));
@@ -56,6 +60,8 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     for (int i = 0; i < 3; i++) {
         bullets[i] = new Bullet(1.0f, -9.8f, true);
         bullets[i]->mesh = new Mesh(create_sphere(15, 10, 0.125f), shader);
+        bullets[i]->mesh->shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
+        bullets[i]->mesh->shaderMaterial.ambient = glm::vec3(0.5f);
         bullets[i]->transform.set_parent(&parent.transform, false);
         bullets[i]->collider = new Collider;
         *(bullets[i]->collider) = create_sphere_collider(bullets[i]->transform, 0.125f);

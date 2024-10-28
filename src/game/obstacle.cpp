@@ -10,13 +10,13 @@ Obstacle create_sphere_obstacle(
     unsigned int segments, 
     unsigned int stacks, float radius, 
     gl_utils::shader_program &shader,
-    Texture &texture
+    Texture *texture
 ) {
     Obstacle obstacle;
 
     obstacle.transform.set_parent(&parent, true);
     obstacle.mesh = new Mesh(create_sphere(segments, stacks, radius), shader);
-    obstacle.mesh->shaderMaterial.texture = &texture;
+    obstacle.mesh->shaderMaterial.texture = texture;
     obstacle.collider = new Collider;
     *(obstacle.collider) = create_sphere_collider(obstacle.transform, radius);
     obstacle.enabled = false;

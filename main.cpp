@@ -113,24 +113,8 @@ int main()
     SceneObject root, cam;
     root.transform.update_transform();
 
-    SceneObject bulletSpawn;
-    bulletSpawn.transform.set_parent(&root.transform, false);
-    bulletSpawn.transform.set_world_position(glm::vec3(1.0f, 0.0f, 0.0f));
-    bulletSpawn.transform.set_world_euler_rotation(glm::vec3(0.0f, 90.0f, 0.0f));
-    root.transform.update_transform();
-
-    Obstacle sphere = create_sphere_obstacle(root.transform, 30, 20, 2.0f, basicShader, boxTexture);
-    sphere.transform.set_world_position(glm::vec3(-5.0f, 2.0f, 3.0f));
-    sphere.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    sphere.enabled = true;
-    root.transform.update_transform();
-
-    Obstacle box = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
-    box.transform.set_world_position(glm::vec3(7.0f, 2.0f, -6.0f));
-    box.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    box.enabled = true;
-    root.transform.update_transform();
-
+#pragma region Tank setup
+    // Tank set up
     Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.texture = &tankTexture;
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -141,47 +125,143 @@ int main()
     cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -3.0f));
     cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.update_transform();
+#pragma endregion
 
-    SceneObject floor;
-    floor.mesh = &floorMesh;
 
-    floor.transform.set_parent(&root.transform, false);
-    floor.transform.set_world_position(glm::vec3(0.0f, -1.0f, 0.0f));
-    floor.transform.set_world_scale(glm::vec3(100.0f, 0.5f, 100.0f));
-    floor.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    root.transform.update_transform();
-    
-    // Setting colliders
-    Collider floorCol = create_OBB_collider(floor.transform);
-    // Collider bulletCol = create_sphere_collider(bullet.transform, 0.5f);
-    floor.collider = &floorCol;
-    // bullet.collider = &bulletCol;
-
+#pragma region Environment
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    mainLight.intensity = 2.0f;
-
+    mainLight.intensity = 1.0f;
     mainLight.transform.set_parent(&root.transform, false);
     mainLight.transform.set_world_position(glm::vec3(1.0f, 10.0f, -1.0f));
     root.transform.update_transform();
 
-    // Registering colliders
-    physicsEngine.register_entity(*floor.collider, floor.transform);
-    physicsEngine.register_entity(*sphere.collider, sphere.transform);
-    physicsEngine.register_entity(*box.collider, box.transform);
-    for (int i = 0; i < 3; i++) {
-        physicsEngine.register_entity(*tank.bullets[i]->collider, tank.bullets[i]->transform);
-    }
+    Obstacle demoSphere1 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere1.transform.set_local_position(glm::vec3(-4.0f, -9.5f, 0.0f));
+    demoSphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere1.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere1.enabled = true;
 
+    Obstacle demoSphere2 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere2.transform.set_local_position(glm::vec3(4.0f, -9.5f, 0.0f));
+    demoSphere2.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere2.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere2.enabled = true;
+
+    Obstacle demoSphere3 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere3.transform.set_local_position(glm::vec3(0.0f, -9.5f, -4.0f));
+    demoSphere3.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere3.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere3.enabled = true;
+
+    Obstacle demoSphere4 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    demoSphere4.transform.set_local_position(glm::vec3(0.0f, -9.5f, 4.0f));
+    demoSphere4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    demoSphere4.mesh->shaderMaterial.tint = glm::vec3(1.0f);
+    demoSphere4.enabled = true;
+
+    SceneObject floor;
+    floor.mesh = &floorMesh;
+    floor.mesh->shaderMaterial.texUVscales = glm::vec3(100.0f);
+    floor.transform.set_parent(&root.transform, false);
+    floor.transform.set_world_position(glm::vec3(0.0f, -1.0f, 0.0f));
+    floor.transform.set_world_scale(glm::vec3(1000.0f, 0.5f, 1000.0f));
+    floor.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    root.transform.update_transform();
+
+    Obstacle sphere1 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere1.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 8.0f));
+    sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere1.mesh->shaderMaterial.tint = glm::vec3(0.0f, 1.0f, 0.0f);
+    sphere1.enabled = true;
+
+    Obstacle sphere2 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere2.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 6.0f));
+    sphere2.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere2.mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
+    sphere2.enabled = true;
+
+    Obstacle sphere3 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere3.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 4.0f));
+    sphere3.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere3.mesh->shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
+    sphere3.enabled = true;
+
+    Obstacle sphere4 = create_sphere_obstacle(mainLight.transform, 12, 12, 0.5f, basicShader, nullptr);
+    sphere4.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 2.0f));
+    sphere4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere4.mesh->shaderMaterial.tint = glm::vec3(1.0f, 1.0f, 1.0f);
+    sphere4.enabled = true;
+
+    Obstacle box1 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box1.transform.set_world_position(glm::vec3(10.0f, 0.2f, 10.0f));
+    box1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    box1.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box1.enabled = true;
+
+    Obstacle box2 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box2.transform.set_world_position(glm::vec3(7.0f, 1.2f, 10.0f));
+    box2.transform.set_world_euler_rotation(glm::vec3(45.0f, 0.0f, 0.0f));
+    box2.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box2.enabled = true;
+
+    Obstacle box3 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box3.transform.set_world_position(glm::vec3(4.0f, 2.2f, 10.0f));
+    box3.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
+    box3.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box3.enabled = true;
+
+    Obstacle box4 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box4.transform.set_world_position(glm::vec3(1.0f, 3.2f, 10.0f));
+    box4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 45.0f));
+    box4.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box4.enabled = true;
+
+    Obstacle box5 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box5.transform.set_world_position(glm::vec3(-2.0f, 4.2f, 10.0f));
+    box5.transform.set_world_euler_rotation(glm::vec3(45.0f, 45.0f, 0.0f));
+    box5.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box5.enabled = true;
+
+    Obstacle box6 = create_box_obstacle(root.transform, 1.0f, 1.0f, 1.0f, basicShader, boxTexture);
+    box6.transform.set_world_position(glm::vec3(-5.0f, 4.2f, 10.0f));
+    box6.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 45.0f));
+    box6.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
+    box6.enabled = true;
+#pragma endregion
+
+
+#pragma region Physic setup
+    // Registering colliders
+    Collider floorCol = create_OBB_collider(floor.transform);
+    floor.collider = &floorCol;
+
+    physicsEngine.register_entity(*floor.collider, floor.transform);
+    physicsEngine.register_entity(*sphere1.collider, sphere1.transform);
+    physicsEngine.register_entity(*sphere2.collider, sphere2.transform);
+    physicsEngine.register_entity(*sphere3.collider, sphere3.transform);
+    physicsEngine.register_entity(*sphere4.collider, sphere4.transform);
+    physicsEngine.register_entity(*box1.collider, box1.transform);
+    physicsEngine.register_entity(*box2.collider, box2.transform);
+    physicsEngine.register_entity(*box3.collider, box3.transform);
+    physicsEngine.register_entity(*box4.collider, box4.transform);
+    physicsEngine.register_entity(*box5.collider, box5.transform);
+    physicsEngine.register_entity(*box6.collider, box6.transform);
+
+    for (int i = 0; i < 3; i++)
+        physicsEngine.register_entity(*tank.bullets[i]->collider, tank.bullets[i]->transform);
+#pragma endregion
+
+#pragma region Rendering
     // Setting main camera and registering lights
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
+#pragma endregion
 
     float old_time = 0.0f;
     float dt = 0.0f;
     // Main loop!
-
     while (!glfwWindowShouldClose(window))
     {
         dt = glfwGetTime() - old_time;
