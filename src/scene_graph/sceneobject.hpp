@@ -5,6 +5,7 @@
 
 #include "transform.hpp"
 
+class ColliderComponent;
 class Component;
 class Collider;
 class Mesh;
@@ -17,7 +18,7 @@ protected:
     std::vector<Component*> m_components;
 
 public:
-    bool enabled = true;
+    bool active = true;
 
     Transform transform = Transform(*this);
     Collider* collider = nullptr;
@@ -27,6 +28,7 @@ public:
     
     unsigned int get_ID() const {return m_ID;};
     virtual void on_collision(Collider& collider, Transform& transform);
+    virtual void on_collision(ColliderComponent& collider, Transform& transform);
 
     void add_component(Component& component);
     

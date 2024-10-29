@@ -1,6 +1,9 @@
 #include "collision_primitives.hpp"
 
 #include <iostream>
+#include <typeinfo>
+
+#include "collider_component.hpp"
 
 /// @brief Creates a sphere collider
 /// @param radius Sphere radius
@@ -75,6 +78,23 @@ bool test_collision(const Collider& a, const Collider& b)
     std::cout << "[WARNING] Collisions between OBBs not implemented yet" << std::endl;
     return false;
 };
+
+bool test_collision(const ColliderComponent& a, const ColliderComponent& b)
+{
+    if (typeid(a) == typeid(SphereCollider))
+    {
+        const Sphere& aSphere = ((const SphereCollider&)(a)).get_shape();
+        if (typeid(b) == typeid(SphereCollider))
+            return test_sphere_sphere(aSphere, ((const SphereCollider&)(b)).get_shape());
+        return test_sphere_OBB(aSphere, ((const BoxCollider&)(b)).get_shape());
+    }
+
+    if (typeid(b) == typeid(SphereCollider))
+        return test_sphere_OBB(((const SphereCollider&)(b)).get_shape(), ((const BoxCollider&)(a)).get_shape());
+    
+    std::cout << "[WARNING] Collisions between OBBs not implemented yet" << std::endl;
+    return false;
+}
 
 /// @brief Finds a point in an OBB surface, closest to a specified point
 /// @param p Point 

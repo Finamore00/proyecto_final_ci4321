@@ -6,13 +6,12 @@ void ColliderComponent::update(float dt)
     sync_transform(); // maybe check for dirty transform somehow...
 }
 
-BoxCollider::BoxCollider(const glm::vec3& extents)
+BoxCollider::BoxCollider(SceneObject* sObj, const glm::vec3& extents): ColliderComponent(sObj)
 {
     Transform& transform = m_sceneObj->transform;
     glm::vec3 scale = transform.get_world_scale();
     m_extents = extents;
 
-    sync_transform();
     PhysicEngine::get_instance()->register_entity(this);
 }
 
@@ -37,10 +36,9 @@ void BoxCollider::set_dimensions(const glm::vec3& extents)
     sync_transform();
 }
 
-SphereCollider::SphereCollider(float radius)
+SphereCollider::SphereCollider(SceneObject* sObj, float radius): ColliderComponent(sObj)
 {
     set_radius(radius);
-    sync_transform();
     PhysicEngine::get_instance()->register_entity(this);
 }
 

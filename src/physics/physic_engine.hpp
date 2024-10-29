@@ -18,11 +18,11 @@ private:
     static PhysicEngine *g_instance;
     std::vector<PhysicEntity> m_physicEnts;
     std::vector<ColliderComponent*> m_colliders;
-    void sync_transforms();
 public:
     PhysicEngine();
 
     static PhysicEngine* get_instance();
+    void sync_transforms();
     
     void register_entity(Collider& collider, Transform& transform);
     void register_entity(ColliderComponent* collider);

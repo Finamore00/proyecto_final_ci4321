@@ -5,6 +5,8 @@
 #define SPHERE_COLLIDER 0
 #define OBB_COLLIDER 1
 
+class ColliderComponent;
+
 /// @brief Represents a sphere
 struct Sphere {
     float radius;
@@ -39,5 +41,6 @@ Collider create_OBB_collider(const glm::vec3& pos, const glm::vec3 up, const glm
 Collider create_sphere_collider(const Transform& t, float radius);
 Collider create_OBB_collider(const Transform& t);
 bool test_collision(const Collider& a, const Collider& b);
+bool test_collision(const ColliderComponent& a, const ColliderComponent& b);
 bool test_sphere_sphere(const Sphere& a, const Sphere& b);
 bool test_sphere_OBB(const Sphere& a, const OBB& b);

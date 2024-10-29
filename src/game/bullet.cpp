@@ -43,5 +43,5 @@ void Bullet::update(float dt)
 
 void Bullet::on_collision(Collider& collider, Transform& transform)
 {
-    enabled = false;
+    active = false;
 }
