@@ -5,6 +5,21 @@
 #include "../scene_graph/transform.hpp"
 #include "../scene_graph/sceneobject.hpp"
 
+PhysicEngine *PhysicEngine::g_instance = nullptr;
+
+PhysicEngine::PhysicEngine() {
+    if (g_instance != nullptr) {
+        throw;
+    }
+
+    g_instance = this;
+}
+
+PhysicEngine* PhysicEngine::get_instance()
+{
+    return g_instance;
+}
+
 /// @brief Syncs the transform properties of all the physics entities in the engine,
 ///        with the colliders properties.
 void PhysicEngine::sync_transforms()
@@ -31,6 +46,11 @@ void PhysicEngine::sync_transforms()
 void PhysicEngine::register_entity(Collider& collider, Transform& transform)
 {
     m_physicEnts.push_back({collider, transform});
+}
+
+void PhysicEngine::register_entity(ColliderComponent* collider) 
+{
+    m_colliders.push_back(collider);
 }
 
 /// @brief Simulates a step in the physic engine.

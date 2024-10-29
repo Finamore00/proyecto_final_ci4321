@@ -163,4 +163,9 @@ namespace gl_utils {
     {
         glUniform3fv(glGetUniformLocation(program_id, name.c_str()), 1, glm::value_ptr(val));
     }
+
+    void shader_program::set_vec2f(const std::string &name, const glm::vec2 &val) const
+    {
+        glUniform2fv(glGetUniformLocation(program_id, name.c_str()), 1, glm::value_ptr(val));
+    }
 }

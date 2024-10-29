@@ -26,7 +26,7 @@ public:
     SceneObject();
     
     unsigned int get_ID() const {return m_ID;};
-    virtual void on_collision(Collider& collider, Transform& transform) {};
+    virtual void on_collision(Collider& collider, Transform& transform);
 
     void add_component(Component& component);
     

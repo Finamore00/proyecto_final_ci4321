@@ -94,6 +94,13 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
         sync_lights();
     }
 
+    if (tree.mesh != nullptr && first)
+    {   
+        tree.mesh->shader->use();
+        tree.mesh->shader->set_mat4f("model", tree.transform.get_model_matrix());
+        tree.mesh->draw();
+    }
+
     for (auto &&c : tree.transform.get_children())
     {
         const SceneObject& co = c->get_scene_object();
@@ -102,8 +109,8 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
 
         if (co.mesh != nullptr)
         {   
-            co.mesh->shader.use();
-            co.mesh->shader.set_mat4f("model", c->get_model_matrix());
+            co.mesh->shader->use();
+            co.mesh->shader->set_mat4f("model", c->get_model_matrix());
             co.mesh->draw();
         }
 

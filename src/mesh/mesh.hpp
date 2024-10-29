@@ -9,13 +9,14 @@ private:
     Geometry m_geometry;
     unsigned int m_VBO, m_VAO, m_EBO;
 
-    void initialize_geometry(const Geometry& geometry);
     
 public:
-    const gl_utils::shader_program& shader;
+    const gl_utils::shader_program* shader;
     Material shaderMaterial;
 
     Mesh(const Geometry& geometry, const gl_utils::shader_program& shader);
+    void initialize_geometry(const Geometry& geometry);
+    void set_shader(const gl_utils::shader_program& ns);
     void draw() const;
 };
 
