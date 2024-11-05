@@ -7,7 +7,6 @@
 
 class ColliderComponent;
 class Component;
-class Collider;
 class Mesh;
 
 class SceneObject
@@ -21,13 +20,11 @@ public:
     bool active = true;
 
     Transform transform = Transform(*this);
-    Collider* collider = nullptr;
     Mesh* mesh = nullptr;
 
     SceneObject();
     
     unsigned int get_ID() const {return m_ID;};
-    virtual void on_collision(Collider& collider, Transform& transform);
     virtual void on_collision(ColliderComponent& collider, Transform& transform);
 
     void add_component(Component& component);

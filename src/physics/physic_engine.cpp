@@ -26,21 +26,6 @@ PhysicEngine* PhysicEngine::get_instance()
 ///        with the colliders properties.
 void PhysicEngine::sync_transforms()
 {
-   for (auto &&ent : m_physicEnts)
-   {
-        if (ent.collider.type == SPHERE_COLLIDER)
-        {
-            ent.collider.shape.sphere.pos = ent.transform.get_world_position();
-            continue;
-        }
-
-        ent.collider.shape.obb.center = ent.transform.get_world_position();
-        ent.collider.shape.obb.axes[0] = ent.transform.get_right_vector();
-        ent.collider.shape.obb.axes[1] = ent.transform.get_up_vector();
-        ent.collider.shape.obb.axes[2] = ent.transform.get_front_vector();
-        ent.collider.shape.obb.halfW = ent.transform.get_world_scale() / 2.0f;
-   }
-
     for (auto &&ent : m_colliders)
     {
         if (!ent->enabled || !ent->get_scene_object().active)
@@ -48,14 +33,6 @@ void PhysicEngine::sync_transforms()
 
         ent->sync_transform();
     }
-}
-
-/// @brief Register a collider and a transform within the physic engine
-/// @param collider Collider to register
-/// @param transform Transform to register
-void PhysicEngine::register_entity(Collider& collider, Transform& transform)
-{
-    m_physicEnts.push_back({collider, transform});
 }
 
 void PhysicEngine::register_entity(ColliderComponent* collider) 
@@ -69,30 +46,6 @@ void PhysicEngine::register_entity(ColliderComponent* collider)
 void PhysicEngine::simulate()
 {
     sync_transforms();
-    // dumb n^2 solution
-    for (auto e1 = m_physicEnts.cbegin(); e1 != m_physicEnts.cend(); e1++)
-    {
-        if (!e1->transform.get_scene_object().active)
-            continue;
-
-        for (auto e2 = e1 + 1; e2 != m_physicEnts.cend(); e2++)
-        {
-            if (!e2->transform.get_scene_object().active)
-                continue;
-
-            bool result = test_collision(e1->collider, e2->collider);
-            if (!result)
-                continue;
-
-            // Should this happen here? I'm not sure. How do I handle them? How I handle destructions?
-            std::cout << e1->transform.get_scene_object().get_ID() << " is in a collision with ";
-            std::cout << e2->transform.get_scene_object().get_ID() << std::endl;
-            
-            e1->transform.get_scene_object().on_collision(e2->collider, e2->transform);
-            e2->transform.get_scene_object().on_collision(e1->collider, e1->transform);
-        }
-    }
-
     for (auto e1 = m_colliders.cbegin(); e1 != m_colliders.cend(); e1++)
     {
         if (!(*e1)->get_scene_object().active || !(*e1)->enabled)

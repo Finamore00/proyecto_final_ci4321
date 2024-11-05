@@ -68,8 +68,6 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
         bullets[i]->mesh->shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
         bullets[i]->mesh->shaderMaterial.ambient = glm::vec3(0.5f);
         bullets[i]->transform.set_parent(&parent.transform, false);
-        bullets[i]->collider = new Collider;
-        *(bullets[i]->collider) = create_sphere_collider(bullets[i]->transform, 0.125f);
         bullets[i]->add_component(*bullCol);
         bullets[i]->add_component(*new DestroyableComponent(bullets[i]));
         bullets[i]->active = false;
