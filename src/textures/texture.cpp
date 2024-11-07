@@ -30,6 +30,14 @@ Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLin
     glBindTexture(texture_type, 0);
 }
 
+Texture::Texture(unsigned int id, GLenum texture_type, const std::vector<TextureMeta> &metas) : m_ID(id), m_textureType(texture_type), m_file_metas(metas)
+{};
+
+Texture::~Texture()
+{
+    glDeleteTextures(1, &m_ID);
+}
+
 /// @brief Binds the texture for his use
 /// @param unit Texture unit to use for
 void Texture::use_texture(GLenum unit) const

@@ -27,5 +27,8 @@ public:
     GLenum get_texture_type() const {return m_textureType;}
     void use_texture(GLenum unit) const;
     const std::vector<TextureMeta>& get_texture_properties() const {return m_file_metas;}
+    
+    ~Texture();
+    Texture(unsigned int id, GLenum texture_type, const std::vector<TextureMeta> &metas);
     Texture(const std::vector<std::string> paths, GLenum texture_type, GLint int_format, GLenum format, GLenum data_type);
 };
