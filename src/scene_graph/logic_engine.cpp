@@ -5,7 +5,7 @@
 
 void LogicEngine::register_component(SceneObject* obj, Component* comp)
 {
-    if (!m_comps.contains(obj))
+    if (m_comps.find(obj) == m_comps.end())
     {
         m_comps[obj] = {comp};
         return;
