@@ -29,12 +29,13 @@
 #include "src/game/tank.hpp"
 #include "src/input/input.hpp"
 
+#include "src/resource_management/resource_manager.hpp"
+#include "src/resource_management/texture_loader.hpp"
 
 // Window resize handler
 void windowResizeCallback(GLFWwindow* window, int width, int height);
 // Input processing
 void processInput(GLFWwindow* window);
-
 
 glm::vec3 input(0.0f);
 glm::vec2 rotInput(0.0f);
@@ -42,7 +43,7 @@ glm::mat4 projection, view;
 
 void logic(const SceneObject& root);
 void render_tree(const SceneObject& root);
-void draw_skybox(const Mesh& mesh, const Texture& text);
+void draw_skybox(const Mesh& mesh);
 
 int main()
 {
@@ -94,32 +95,23 @@ int main()
         "../shader_files/skybox.frag"
     );
 
-    Texture boxTexture({"../textures/crate.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-    Texture floorTexture({"../textures/floor.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-    Texture pavementTexture({"../textures/pavement.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-    Texture skyBoxText = Texture(
-        {
-            "../textures/skybox/cliff_front.bmp", "../textures/skybox/cliff_back.bmp", "../textures/skybox/cliff_down.bmp",
-            "../textures/skybox/cliff_up.bmp", "../textures/skybox/cliff_right.bmp", "../textures/skybox/cliff_left.bmp"
-        }, GL_TEXTURE_CUBE_MAP, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE
-    );
 
-    Texture tankTexture({"../textures/tank.bmp"}, GL_TEXTURE_2D, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-
+    TextureLoader txLoader;
+    ResourceManager<Texture> txManager(txLoader);
     Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
     // Creating meshes
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
-    skyboxMesh.shaderMaterial.texture = &skyBoxText;
+    skyboxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/skybox/cliff.bmp");
 
     Mesh bulletMesh(boxGeo, basicShader);
-    bulletMesh.shaderMaterial.texture = &boxTexture;
+    bulletMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
     Mesh floorMesh(boxGeo, basicShader);
-    floorMesh.shaderMaterial.texture = &floorTexture;
+    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
 
     Mesh boxMesh(boxGeo, basicShader);
-    boxMesh.shaderMaterial.texture = &boxTexture;
+    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
     Mesh sphereMesh(create_sphere(12, 12, 0.5f), basicShader);
     sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
@@ -131,7 +123,7 @@ int main()
 #pragma region Tank setup
     // Tank set up
     Tank tank(root, basicShader);
-    tank.mesh->shaderMaterial.texture = &tankTexture;
+    tank.mesh->shaderMaterial.albedo = txManager.load_resource("../textures/tank.bmp");
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     root.transform.update_transform();
@@ -300,7 +292,7 @@ int main()
 
         root.transform.update_transform();
         physicsEngine.simulate();
-        draw_skybox(skyboxMesh, skyBoxText);
+        draw_skybox(skyboxMesh);
         renderEngine.render_tree(root, true);
 
         glfwSwapBuffers(window);
@@ -323,7 +315,7 @@ void windowResizeCallback(GLFWwindow* window, int width, int height)
     projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 5000.0f);
 }
 
-void draw_skybox(const Mesh& mesh, const Texture& text)
+void draw_skybox(const Mesh& mesh)
 {
     glDepthMask(GL_FALSE);
     mesh.shader->use();

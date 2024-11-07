@@ -44,11 +44,6 @@ void Mesh::set_shader(const gl_utils::shader_program& ns)
 void Mesh::draw() const
 {
     shader->use();
-    //if (shaderMaterial.texture != nullptr)
-    //    shaderMaterial.texture->use_texture(GL_TEXTURE0);
-    //else
-    //    glBindTexture(GL_TEXTURE_2D, 0);
-
     if (shaderMaterial.albedo != nullptr)
         shaderMaterial.albedo->use_texture(GL_TEXTURE0);
     else
