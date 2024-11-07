@@ -40,8 +40,3 @@ void Bullet::update(float dt)
     glm::vec3 fVel = (m_velocity + m_horVector) * dt;
     transform.set_world_position(transform.get_world_position() + fVel);
 }
-
-void Bullet::on_collision(Collider& collider, Transform& transform)
-{
-    enabled = false;
-}

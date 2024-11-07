@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../scene_graph/sceneobject.hpp"
 #include "../scene_graph/transform.hpp"
 
 class Bullet: public SceneObject
@@ -15,5 +17,4 @@ public:
     void spawn(float initialSpeed);
     void spawn(const Transform& spawner, float initialSpeed, bool useGravity);
     void update(float dt);
-    void on_collision(Collider& collider, Transform& transform) override;
 };

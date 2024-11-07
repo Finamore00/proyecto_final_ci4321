@@ -3,20 +3,19 @@
 #include <map>
 #include "collision_primitives.hpp"
 
-struct Collider;
 class Transform;
-
-/// @brief Represents a physic entity in the physic simulation.
-struct PhysicEntity {
-    Collider& collider;
-    Transform& transform;
-};
+class ColliderComponent;
 
 class PhysicEngine {
 private:
-    std::vector<PhysicEntity> m_physicEnts;
-    void sync_transforms();
+    static PhysicEngine *g_instance;
+    std::vector<ColliderComponent*> m_colliders;
 public:
-    void register_entity(Collider& collider, Transform& transform);
+    PhysicEngine();
+
+    static PhysicEngine* get_instance();
+    void sync_transforms();
+    
+    void register_entity(ColliderComponent* collider);
     void simulate();
 };

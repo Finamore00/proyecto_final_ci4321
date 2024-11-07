@@ -5,8 +5,6 @@
 #include "../../thirdparty/glm/gtc/quaternion.hpp"
 
 class SceneObject;
-class Collider;
-class Mesh;
 
 class Transform
 {
@@ -27,15 +25,15 @@ protected:
     void compute_model_matrix(const glm::mat4& parentGlobalModelMat);
 
 public:
-    bool is_dirty() const {return m_isDirty;}
-    const glm::mat4& get_model_matrix() const {return m_modelMatrix;}
-    const std::vector<Transform*>& get_children() const {return m_children;}
-    SceneObject& get_scene_object() const {return m_sceneObject;}
+    bool is_dirty() const;
+    const glm::mat4& get_model_matrix() const;
+    const std::vector<Transform*>& get_children() const;
+    SceneObject& get_scene_object() const;
 
-    const glm::vec3& get_local_scale() const {return m_position;}
-    const glm::vec3& get_local_position() const {return m_position;}
-    const glm::quat& get_local_rotation() const {return m_rotation;}
-    glm::vec3 get_local_euler_rotation() const {return glm::eulerAngles(m_rotation);}
+    const glm::vec3& get_local_scale() const;
+    const glm::vec3& get_local_position() const;
+    const glm::quat& get_local_rotation() const;
+    glm::vec3 get_local_euler_rotation() const;
 
     glm::vec3 get_up_vector() const;
     glm::vec3 get_right_vector() const;
@@ -63,23 +61,4 @@ public:
     void update_transform();
 
     Transform(SceneObject &obj);
-};
-
-class SceneObject
-{
-protected:
-    static unsigned int m_curId; 
-    const unsigned int m_ID;
-
-public:
-    bool enabled = true;
-
-    Transform transform = Transform(*this);
-    Collider* collider = nullptr;
-    Mesh* mesh = nullptr;
-
-    SceneObject();
-    
-    unsigned int get_ID() const {return m_ID;};
-    virtual void on_collision(Collider& collider, Transform& transform) {};
 };

@@ -35,7 +35,7 @@ void RenderingEngine::sync_lights()
     for (unsigned int l = 0; l < m_lights.size(); ++l)
     {
         const Light& lo = m_lights[l].light;
-        float pow = lo.intensity * (lo.enabled ? 1.0f : 0.0f);
+        float pow = lo.intensity * (lo.active ? 1.0f : 0.0f);
         glm::vec3 lp = lo.transform.get_world_position();
 
         glBufferSubData(GL_UNIFORM_BUFFER, 0, 16, &lp); 
@@ -80,7 +80,7 @@ void RenderingEngine::set_projection_matrix(const glm::mat4& projection)
 /// @param light Light to register
 void RenderingEngine::register_light(const Light& light)
 {
-    m_lights.push_back({light, light.enabled});
+    m_lights.push_back({light, light.active});
 }
 
 /// @brief Renders a scene object tree
@@ -104,7 +104,7 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
     for (auto &&c : tree.transform.get_children())
     {
         const SceneObject& co = c->get_scene_object();
-        if (!co.enabled)
+        if (!co.active)
             continue;;
 
         if (co.mesh != nullptr)

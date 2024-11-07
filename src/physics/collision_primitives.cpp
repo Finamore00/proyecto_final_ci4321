@@ -1,82 +1,26 @@
 #include "collision_primitives.hpp"
 
 #include <iostream>
+#include <typeinfo>
 
-#include "../scene_graph/transform.hpp"
+#include "collider_component.hpp"
 
-/// @brief Creates a sphere collider
-/// @param radius Sphere radius
-/// @param pos Sphere center
-/// @return Sphere collider with the radius and center specified
-Collider create_sphere_collider(float radius, const glm::vec3& pos)
+bool test_collision(const ColliderComponent& a, const ColliderComponent& b)
 {
-    Collider res;
-    res.type = SPHERE_COLLIDER;
-    res.shape.sphere = Sphere{radius, pos};
-    return res;
-}
-
-/// @brief Create an Oriented Bounding Box (OBB) collider with
-///        a specific center, up, right, front axes, and half
-//         sizes for every axis.
-/// @param pos Center
-/// @param up Up axis
-/// @param right Right axis
-/// @param front Front axis
-/// @param halfW Half size for every axis
-/// @return Resulting OBB with the parameters specified
-Collider create_OBB_collider(const glm::vec3& pos, const glm::vec3 up, const glm::vec3 right, glm::vec3 front, const glm::vec3& halfW)
-{
-    Collider res;
-    res.type = OBB_COLLIDER;
-    res.shape.obb = OBB{pos, {right, up, front}, halfW};
-    return res;
-}
-
-/// @brief Creates a sphere collider centered in the position of
-///        a specific transform, and an arbitrary radius
-/// @param t Transform used to create sphere collider 
-/// @param radius Radius of the sphere collider
-/// @return Sphere collider centered in the transform and with the specified radius
-Collider create_sphere_collider(const Transform& t, float radius)
-{
-    return create_sphere_collider(radius, t.get_world_position());
-}
-
-/// @brief Creates an OBB using a transform. It uses the world position as the center,
-///        the world axes as the OBB axes, and its world scale as the axes scales.
-/// @param t Transform used to create the OBB collider
-/// @return OBB collider created using t
-Collider create_OBB_collider(const Transform& t)
-{
-    return create_OBB_collider(
-        t.get_world_position(),
-        t.get_right_vector(), 
-        t.get_up_vector(), 
-        t.get_front_vector(),
-        t.get_world_scale() / 2.0f
-    );
-}
-
-/// @brief Test the collision between two colliders
-/// @param a Collider a
-/// @param b Collider b
-/// @return True if there's a collision
-bool test_collision(const Collider& a, const Collider& b)
-{
-    if (a.type == SPHERE_COLLIDER)
+    if (typeid(a) == typeid(SphereCollider))
     {
-        if (b.type == SPHERE_COLLIDER)
-            return test_sphere_sphere(a.shape.sphere, b.shape.sphere);
-        return test_sphere_OBB(a.shape.sphere, b.shape.obb);
+        const Sphere& aSphere = ((const SphereCollider&)(a)).get_shape();
+        if (typeid(b) == typeid(SphereCollider))
+            return test_sphere_sphere(aSphere, ((const SphereCollider&)(b)).get_shape());
+        return test_sphere_OBB(aSphere, ((const BoxCollider&)(b)).get_shape());
     }
 
-    if (b.type == SPHERE_COLLIDER)
-        return test_sphere_OBB(b.shape.sphere, a.shape.obb);
+    if (typeid(b) == typeid(SphereCollider))
+        return test_sphere_OBB(((const SphereCollider&)(b)).get_shape(), ((const BoxCollider&)(a)).get_shape());
     
     std::cout << "[WARNING] Collisions between OBBs not implemented yet" << std::endl;
     return false;
-};
+}
 
 /// @brief Finds a point in an OBB surface, closest to a specified point
 /// @param p Point 

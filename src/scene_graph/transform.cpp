@@ -1,15 +1,17 @@
-#include <iostream>
-
 #include "transform.hpp"
+
+#include <iostream>
+#include <typeinfo>
+#include <type_traits>
+
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
+
+#include "sceneobject.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../thirdparty/glm/gtx/string_cast.hpp"
 
-unsigned int SceneObject::m_curId = 0u;
-
 Transform::Transform(SceneObject &obj) : m_sceneObject(obj) {}
-SceneObject::SceneObject() : m_ID(m_curId++) {}
 
 /// @brief Calculates the local model matrix
 /// @return Local model matrix
@@ -36,6 +38,16 @@ void Transform::compute_model_matrix(const glm::mat4& parentGlobalModelMat)
     m_modelMatrix = parentGlobalModelMat * get_local_model_matrix();
     m_isDirty = false;
 }
+
+bool Transform::is_dirty() const {return m_isDirty;}
+const glm::mat4& Transform::get_model_matrix() const {return m_modelMatrix;}
+const std::vector<Transform*>& Transform::get_children() const {return m_children;}
+SceneObject& Transform::get_scene_object() const {return m_sceneObject;}
+
+const glm::vec3& Transform::get_local_scale() const {return m_position;}
+const glm::vec3& Transform::get_local_position() const {return m_position;}
+const glm::quat& Transform::get_local_rotation() const {return m_rotation;}
+glm::vec3 Transform::get_local_euler_rotation() const {return glm::eulerAngles(m_rotation);}
 
 /// @brief Gets world up vector
 /// @return World up vector
