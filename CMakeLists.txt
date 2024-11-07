@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.2)
 project(proyecto-1)
 add_executable(proyecto-1 main.cpp)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXECUTABLE_SUFFIX_CXX .o)
 set(OpenGL_GL_PREFERENCE GLVND)

@@ -4,7 +4,8 @@
 
 #include "../../thirdparty/stb/stb_image.h"
 
-Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLint int_format, GLenum format, GLenum data_type): m_textureType(texture_type)
+Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLint int_format, GLenum format, GLenum data_type)
+    : m_textureType(texture_type)
 {
     glGenTextures(1, &m_ID);
     glBindTexture(texture_type, m_ID);
@@ -30,8 +31,8 @@ Texture::Texture(const std::vector<std::string> paths, GLenum texture_type, GLin
     glBindTexture(texture_type, 0);
 }
 
-Texture::Texture(unsigned int id, GLenum texture_type, const std::vector<TextureMeta> &metas) : m_ID(id), m_textureType(texture_type), m_file_metas(metas)
-{};
+Texture::Texture(unsigned int id, GLenum texture_type, const std::vector<TextureMeta> &metas) 
+    : m_ID(id), m_textureType(texture_type), m_file_metas(metas) {};
 
 Texture::~Texture()
 {

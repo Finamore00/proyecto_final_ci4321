@@ -18,7 +18,7 @@ std::vector<std::string> get_cubemap_files(const std::string& base);
 Texture* load_2d_text(const std::string& path, GLuint id, GLint int_format, GLenum format, GLenum data_type);
 Texture* load_cubemap(const std::vector<std::string>& path, GLuint id, GLint int_format, GLenum format, GLenum data_type);
 
-std::shared_ptr<Texture> TextureLoader::load_resource(std::string path)
+std::shared_ptr<Texture> TextureLoader::load_resource(std::string path) const
 {
     std::string metaPath = path;
     metaPath.append(".xml");

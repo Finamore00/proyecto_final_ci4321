@@ -28,6 +28,9 @@ public:
     void use_texture(GLenum unit) const;
     const std::vector<TextureMeta>& get_texture_properties() const {return m_file_metas;}
     
+    Texture(const Texture&) = delete;
+    Texture& operator=(const Texture&) = delete;
+
     ~Texture();
     Texture(unsigned int id, GLenum texture_type, const std::vector<TextureMeta> &metas);
     Texture(const std::vector<std::string> paths, GLenum texture_type, GLint int_format, GLenum format, GLenum data_type);

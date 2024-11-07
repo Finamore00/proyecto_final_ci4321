@@ -4,5 +4,5 @@
 class TextureLoader : public ResourceLoader<Texture>
 {
 public:
-    std::shared_ptr<Texture> load_resource(std::string path); 
+    std::shared_ptr<Texture> load_resource(std::string path) const; 
 };
