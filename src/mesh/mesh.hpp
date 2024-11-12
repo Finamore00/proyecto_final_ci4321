@@ -14,6 +14,7 @@ public:
     const gl_utils::shader_program* shader;
     Material shaderMaterial;
 
+    Mesh() = default;
     Mesh(const Geometry& geometry, const gl_utils::shader_program& shader);
     void initialize_geometry(const Geometry& geometry);
     void set_shader(const gl_utils::shader_program& ns);

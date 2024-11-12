@@ -30,7 +30,7 @@
 #include "src/input/input.hpp"
 
 #include "src/resource_management/resource_manager.hpp"
-#include "src/resource_management/texture_loader.hpp"
+#include "src/textures/texture_loader.hpp"
 
 // Window resize handler
 void windowResizeCallback(GLFWwindow* window, int width, int height);
@@ -39,11 +39,8 @@ void processInput(GLFWwindow* window);
 
 glm::vec3 input(0.0f);
 glm::vec2 rotInput(0.0f);
-glm::mat4 projection, view;
 
-void logic(const SceneObject& root);
-void render_tree(const SceneObject& root);
-void draw_skybox(const Mesh& mesh);
+RenderingEngine* re_ptr;
 
 int main()
 {
@@ -75,7 +72,8 @@ int main()
     input_mgr = input_mgr->get_instance();
     input_mgr->set_window(window);
     PhysicEngine physicsEngine;
-    RenderingEngine renderEngine(800.0f, 600.0f, 75.0f);
+    RenderingEngine renderEngine(*window, 800.0f, 600.0f, 75.0f);
+    re_ptr = &renderEngine;
 
     // Open GL settings
     glEnable(GL_DEPTH_TEST);
@@ -103,6 +101,7 @@ int main()
     // Creating meshes
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
     skyboxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/skybox/cliff.bmp");
+    std::shared_ptr<Texture> skyboxTx = txManager.load_resource("../textures/skybox/cliff.bmp");
 
     Mesh bulletMesh(boxGeo, basicShader);
     bulletMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
@@ -270,9 +269,10 @@ int main()
 #pragma endregion
 
 #pragma region Rendering
-    // Setting main camera and registering lights
+    renderEngine.set_scene_root(&root);
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
+    renderEngine.set_skybox_texture(skyboxTx);
 #pragma endregion
 
     float old_time = 0.0f;
@@ -292,10 +292,8 @@ int main()
 
         root.transform.update_transform();
         physicsEngine.simulate();
-        draw_skybox(skyboxMesh);
-        renderEngine.render_tree(root, true);
+        renderEngine.render();
 
-        glfwSwapBuffers(window);
         glfwPollEvents();
 
         if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE)) {
@@ -312,13 +310,5 @@ int main()
 void windowResizeCallback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 5000.0f);
-}
-
-void draw_skybox(const Mesh& mesh)
-{
-    glDepthMask(GL_FALSE);
-    mesh.shader->use();
-    mesh.draw();
-    glDepthMask(GL_TRUE);
+    re_ptr->set_resolution(width, height);
 }

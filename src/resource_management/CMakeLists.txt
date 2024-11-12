@@ -1,3 +1,3 @@
-add_library(resource_management STATIC resource_manager.cpp texture_loader.cpp)
+add_library(resource_management STATIC resource_manager.cpp)
 target_include_directories(resource_management PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(resource_management PUBLIC glad stb textures tinyxml2)
