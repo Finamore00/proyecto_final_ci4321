@@ -1,9 +1,13 @@
 #include "tank.hpp"
+
+#include <iostream>
+
+#include "components/destroyable_component.hpp"
 #include "../mesh/mesh.hpp"
 #include "../mesh/geometry.hpp"
 #include "../input/input.hpp"
 #include "../physics/collision_primitives.hpp"
-#include <iostream>
+#include "../physics/collider_component.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../thirdparty/glm/gtx/string_cast.hpp"
@@ -15,7 +19,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     mesh = new Mesh(create_box(1.0f, 0.5f, 2.0f), shader);
     mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
     transform.set_parent(&parent.transform, false);
-    enabled = true;
+    active = true;
 
     //Create sphere geometry for the turret
     SceneObject *turret_sphere = new SceneObject;
@@ -27,7 +31,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
 
     turret_sphere->mesh = new Mesh(create_sphere(30, 20, 0.25), shader);
     turret_sphere->mesh->shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 0.0f);
-    turret_sphere->enabled = true;
+    turret_sphere->active = true;
 
     //Create pivot point for the cylinder
     SceneObject *cylinder_pivot = new SceneObject;
@@ -46,7 +50,7 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     turret_cylinder->transform.set_local_euler_rotation(glm::vec3(0.0f, 0.0f, 90.0f));
     turret_cylinder->transform.set_local_position(glm::vec3(0.5f, 0.0f, 0.0f));
     cylinder_pivot->transform.update_transform();
-    turret_cylinder->enabled = true;
+    turret_cylinder->active = true;
 
     //Bullet spawner
     SceneObject *bullet_spawner = new SceneObject;
@@ -59,13 +63,14 @@ Tank::Tank(SceneObject &parent, gl_utils::shader_program &shader) {
     //Initiate bullets
     for (int i = 0; i < 3; i++) {
         bullets[i] = new Bullet(1.0f, -9.8f, true);
+        SphereCollider* bullCol = new SphereCollider(bullets[i], .125f);
         bullets[i]->mesh = new Mesh(create_sphere(15, 10, 0.125f), shader);
         bullets[i]->mesh->shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
         bullets[i]->mesh->shaderMaterial.ambient = glm::vec3(0.5f);
         bullets[i]->transform.set_parent(&parent.transform, false);
-        bullets[i]->collider = new Collider;
-        *(bullets[i]->collider) = create_sphere_collider(bullets[i]->transform, 0.125f);
-        bullets[i]->enabled = false;
+        bullets[i]->add_component(*bullCol);
+        bullets[i]->add_component(*new DestroyableComponent(bullets[i]));
+        bullets[i]->active = false;
     }
 }
 
@@ -189,7 +194,7 @@ void Tank::fire_bullet() {
 
         //Look for first disabled bullet
         int i = 0;
-        for (; i < 3 && bullets[i]->enabled; i++) {}
+        for (; i < 3 && bullets[i]->active; i++) {}
 
         if (i >= 3)
             i = last_fired_bullet;
@@ -198,14 +203,14 @@ void Tank::fire_bullet() {
 
         transform.update_transform();
         bullets[i]->spawn(*spawner_transform, 10.0f, use_gravity);
-        bullets[i]->enabled = true;
+        bullets[i]->active = true;
         last_fired_bullet = (last_fired_bullet + 1) % 3;
     }
 }
 
 void Tank::update_bullets(float time) {
     for (int i = 0; i < 3; i++) {
-        if (bullets[i]->enabled) {
+        if (bullets[i]->active) {
             bullets[i]->update(time);
         }
     }

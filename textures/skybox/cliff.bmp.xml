@@ -1,0 +1,8 @@
+<meta>
+    <texture_type array="false">GL_TEXTURE_CUBE_MAP</texture_type>
+    <filtering mipmap="true">
+        <min_filter>GL_LINEAR_MIPMAP_LINEAR</min_filter>
+        <mag_filter>GL_LINEAR</mag_filter>
+    </filtering>
+    <wrapping>GL_REPEAT</wrapping>
+</meta>
