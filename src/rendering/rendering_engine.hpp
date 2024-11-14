@@ -33,10 +33,12 @@ private:
     
     gl_utils::shader_program m_screen_prog;
     gl_utils::shader_program m_skybox_prog;
+    glm::mat4 m_ui_proj;
 
     Mesh m_skybox_mesh;
     const Transform* m_camera;
-    const SceneObject* m_scene_root = NULL, *m_ui_root = NULL;
+    const SceneObject* m_scene_root = nullptr;
+    SceneObject* m_ui_root = nullptr;
 
     unsigned int m_colTx[2] = {0, 0};
     unsigned int m_fbs[2] = {0, 0};
@@ -53,19 +55,20 @@ private:
     void prepare_container_quad();
     void prepare_framebuffers();
     void render_screen_texture(unsigned int tx);
-    void render_ui();
+    void render_tree(const SceneObject& tree, bool first);
+    void render_ui(SceneObject& tree, bool first);
 
 public:
     RenderingEngine(GLFWwindow& window, float width, float height, float pov);
 
     void set_resolution(float width, float height);
+    void set_ui_resolution(float width, float height);
     void set_pov(float pov);
     void set_main_camera(const Transform* cam);
     void set_projection_matrix(const glm::mat4& projection);
     void set_scene_root(const SceneObject* root);
-    void set_ui_root(const SceneObject* root);
+    void set_ui_root(SceneObject* root);
     void set_skybox_texture(shared_ptr<Texture> texture);
     void register_light(const Light& light);
-    void render_tree(const SceneObject& tree, bool first);
     void render();
 };

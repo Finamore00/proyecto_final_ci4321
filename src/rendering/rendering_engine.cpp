@@ -5,6 +5,7 @@
 
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
 
+#include "../ui/font/font_component.hpp"
 #include "../scene_graph/transform.hpp"
 #include "../mesh/mesh.hpp"
 
@@ -44,17 +45,18 @@ RenderingEngine::RenderingEngine(GLFWwindow& window, float width, float height, 
     glGenBuffers(BLOCKS_AMOUNT, m_uboBlocks);
     // Matrix block
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboBlocks[MATRIX_UBO_BP]);
-    glBufferData(GL_UNIFORM_BUFFER, MATRIX_UBO_SIZE, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, MATRIX_UBO_SIZE, NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_UNIFORM_BUFFER, MATRIX_UBO_BP, m_uboBlocks[MATRIX_UBO_BP]); 
 
     // Light block
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboBlocks[LIGHTS_UBO_BP]);
-    glBufferData(GL_UNIFORM_BUFFER, LIGHTS_UBO_SIZE, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, LIGHTS_UBO_SIZE, NULL, GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_UNIFORM_BUFFER, LIGHTS_UBO_BP, m_uboBlocks[LIGHTS_UBO_BP]); 
 
     set_projection_matrix(glm::perspective(glm::radians(pov), width/height, 0.1f, 2000.0f));
     prepare_framebuffers();
     prepare_container_quad();
+    set_ui_resolution(width, height);
 }
 
 #pragma region CONFS
@@ -95,7 +97,7 @@ void RenderingEngine::prepare_framebuffers()
     glGenTextures(1, &m_colTx[SCENE_COL]);
     glBindTexture(GL_TEXTURE_2D, m_colTx[SCENE_COL]);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colTx[SCENE_COL], 0);
@@ -108,13 +110,13 @@ void RenderingEngine::prepare_framebuffers()
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        std::cout << "ERROR::FRAMEBUFFER:: Scene Framebuffer is not complete!" << std::endl;
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbs[UI_FB]);
     glGenTextures(1, &m_colTx[UI_COL]);
     glBindTexture(GL_TEXTURE_2D, m_colTx[UI_COL]);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colTx[UI_COL], 0);
@@ -122,12 +124,12 @@ void RenderingEngine::prepare_framebuffers()
 
     glGenRenderbuffers(1, &m_rbfs[UI_ATT]);
     glBindRenderbuffer(GL_RENDERBUFFER, m_rbfs[UI_ATT]);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH, m_width, m_height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, m_width, m_height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rbfs[UI_ATT]);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        std::cout << "ERROR::FRAMEBUFFER:: UI Framebuffer is not complete!" << std::endl;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -138,6 +140,11 @@ void RenderingEngine::set_resolution(float width, float height)
     m_height = height;
     set_projection_matrix(glm::perspective(glm::radians(m_pov), width/height, 0.1f, 1000.0f));
     prepare_framebuffers();
+}
+
+void RenderingEngine::set_ui_resolution(float width, float height)
+{
+    m_ui_proj = glm::ortho(0.0f, width, 0.0f, height);
 }
 
 void RenderingEngine::set_pov(float pov)
@@ -167,7 +174,7 @@ void RenderingEngine::set_scene_root(const SceneObject* root)
     m_scene_root = root;
 }
 
-void RenderingEngine::set_ui_root(const SceneObject* root)
+void RenderingEngine::set_ui_root(SceneObject* root)
 {
     m_ui_root = root;
 }
@@ -255,6 +262,31 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
     }
 }
 
+
+void RenderingEngine::render_ui(SceneObject& tree, bool first)
+{
+    if (first)
+    {
+        UIComponent* uiComp = (UIComponent*)(tree.get_component<UIComponent>());
+        if (uiComp != nullptr)
+            uiComp->draw(m_ui_proj);
+    }
+
+    for (auto &&c : tree.transform.get_children())
+    {
+        SceneObject& co = c->get_scene_object();
+        if (!co.active)
+            continue;;
+
+        UIComponent* uiComp = (UIComponent*)(tree.get_component<UIComponent>());
+        if (uiComp != nullptr)
+            uiComp->draw(m_ui_proj);
+        
+        render_ui(co, false);
+    }
+}
+
+
 void RenderingEngine::render_screen_texture(unsigned int tx)
 {
     glUseProgram(m_screen_prog.program_id);
@@ -270,7 +302,7 @@ void RenderingEngine::render_screen_texture(unsigned int tx)
 void RenderingEngine::render()
 {    
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbs[SCENE_FB]);
-    glClearColor(0.136f, 0.136f, 0.136f, 1.0f);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     
@@ -278,21 +310,26 @@ void RenderingEngine::render()
     m_skybox_mesh.shader->use();
     m_skybox_mesh.draw();
 
+
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
+    std::cout << "[RENDERING ENGINE] SCENE PASS" << std::endl;
     render_tree(*m_scene_root, true);
 
-    //glBindFramebuffer(GL_FRAMEBUFFER, m_fbs[UI_FB]);
-    //glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //render_ui();
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbs[UI_FB]);
+    glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    std::cout << "[RENDERING ENGINE] UI PASS" << std::endl;
+    render_ui(*m_ui_root, true);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_DEPTH_TEST);
     render_screen_texture(m_colTx[SCENE_COL]);
-    //render_screen_texture(m_colTx[UI_COL]);
+    render_screen_texture(m_colTx[UI_COL]);
     glfwSwapBuffers(&m_window);
 }
 #pragma endregion

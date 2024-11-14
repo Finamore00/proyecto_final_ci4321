@@ -5,4 +5,5 @@
         <mag_filter>GL_LINEAR</mag_filter>
     </filtering>
     <wrapping>GL_REPEAT</wrapping>
+    <format>GL_RGB</format>
 </meta>

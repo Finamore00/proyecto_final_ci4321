@@ -32,6 +32,10 @@
 #include "src/resource_management/resource_manager.hpp"
 #include "src/textures/texture_loader.hpp"
 
+#include "src/ui/font/font_component.hpp"
+#include "src/ui/font/font_loader.hpp"
+
+
 // Window resize handler
 void windowResizeCallback(GLFWwindow* window, int width, int height);
 // Input processing
@@ -76,6 +80,9 @@ int main()
     re_ptr = &renderEngine;
 
     // Open GL settings
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
@@ -88,14 +95,23 @@ int main()
         "../shader_files/basic.vert",
         "../shader_files/basic.frag"
     );
+
     gl_utils::shader_program skyboxShader = gl_utils::shader_program(
         "../shader_files/skybox.vert",
         "../shader_files/skybox.frag"
     );
 
+    gl_utils::shader_program fontShader = gl_utils::shader_program(
+        "../shader_files/ui/font.vert",
+        "../shader_files/ui/font.frag"
+    );
 
     TextureLoader txLoader;
     ResourceManager<Texture> txManager(txLoader);
+
+    FontLoader fontLoader(txManager);
+    ResourceManager<FontAtlas> fontManager(fontLoader);
+    
     Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
     // Creating meshes
@@ -133,6 +149,10 @@ int main()
     tank.transform.update_transform();
 #pragma endregion
 
+    SceneObject ui_text;
+    ui_text.add_component(*new FontComponent(&ui_text, fontManager, fontShader, "../fonts/Peaberry.bmp", "Lorem Ipsum", 16.0f));
+    ui_text.transform.set_world_position(glm::vec3(0.0f));
+    ui_text.transform.update_transform();
 
 #pragma region Environment
     // Setting main light
@@ -270,6 +290,8 @@ int main()
 
 #pragma region Rendering
     renderEngine.set_scene_root(&root);
+    renderEngine.set_ui_root(&ui_text);
+    renderEngine.set_ui_resolution(200, 200);
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
     renderEngine.set_skybox_texture(skyboxTx);

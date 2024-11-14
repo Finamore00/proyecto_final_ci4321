@@ -36,11 +36,12 @@ template <class T>
 Component* SceneObject::get_component()
 {
     static_assert(std::is_base_of<Component, T>().value, "Trying to get_component a non component class");
-    std::cout << "Buscando componente de tipo: " << typeid(T).name() <<std::endl;
     for (Component*& c : m_components)
     {
-        std::cout << typeid(*c).name() << std::endl;
         if (typeid(*c) == typeid(T))
+            return c;
+
+        if (dynamic_cast<T*>(c) != nullptr)
             return c;
     }
 
