@@ -31,6 +31,9 @@
 
 #include "src/resource_management/resource_manager.hpp"
 #include "src/resource_management/texture_loader.hpp"
+#include "src/mesh/model_loader.hpp"
+
+//#include "src/mesh/model_loader.hpp"
 
 // Window resize handler
 void windowResizeCallback(GLFWwindow* window, int width, int height);
@@ -269,6 +272,15 @@ int main()
 
 #pragma endregion
 
+    ModelLoader mLoader;
+    std::shared_ptr<Model> firetruck = mLoader.load_resource("../models/firetruck.gltf");
+    for (int i = 0; i < firetruck.get()->mesh_number(); ++i)
+    {
+        firetruck.get()->get_mesh(i)->set_shader(basicShader);
+        firetruck.get()->get_mesh(i)->shaderMaterial.tint = glm::vec3(0.7f, 0, 0);
+    }
+    sphere1.model = firetruck;
+
 #pragma region Rendering
     // Setting main camera and registering lights
     renderEngine.set_main_camera(&cam.transform);
@@ -319,6 +331,6 @@ void draw_skybox(const Mesh& mesh)
 {
     glDepthMask(GL_FALSE);
     mesh.shader->use();
-    mesh.draw();
+    mesh.draw(glm::mat4(1.0f));
     glDepthMask(GL_TRUE);
 }

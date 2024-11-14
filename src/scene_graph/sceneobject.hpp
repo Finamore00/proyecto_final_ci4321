@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include <typeinfo>
 #include <iostream>
 
@@ -7,6 +8,7 @@
 
 class ColliderComponent;
 class Component;
+class Model;
 class Mesh;
 
 class SceneObject
@@ -21,6 +23,7 @@ public:
 
     Transform transform = Transform(*this);
     Mesh* mesh = nullptr;
+    std::shared_ptr<Model> model;
 
     SceneObject();
     

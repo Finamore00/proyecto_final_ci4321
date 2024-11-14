@@ -3,6 +3,19 @@
 
 #include "../../thirdparty/glad/include/glad/glad.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "../../thirdparty/glm/gtx/string_cast.hpp"
+
+// For empty mesh nodes.
+Mesh::Mesh(const glm::mat4& transform): m_transform(transform) {std::cout << "[MESH] jajajaj" << std::endl;}
+
+Mesh::Mesh(const Geometry& geometry, const glm::mat4& transform): m_transform(transform)
+{
+    std::cout << "[MESH] Transform" << std::endl;
+    std::cout << glm::to_string(transform) << std::endl;
+    initialize_geometry(geometry);
+}
+
 Mesh::Mesh(const Geometry& geometry, const gl_utils::shader_program& shader): shader(&shader)
 {
     initialize_geometry(geometry);
@@ -41,7 +54,7 @@ void Mesh::set_shader(const gl_utils::shader_program& ns)
 }
 
 /// @brief Draws the mesh
-void Mesh::draw() const
+void Mesh::draw(const glm::mat4& model) const
 {
     shader->use();
     if (shaderMaterial.albedo != nullptr)
@@ -49,6 +62,10 @@ void Mesh::draw() const
     else
         glBindTexture(GL_TEXTURE_2D, 0);
 
+    // Provisional.
+    if (m_transform[3][3] != 0)
+        shader->set_mat4f("model", model * m_transform);
+        
     shader->set_vec3f("ambient", shaderMaterial.ambient);
     shader->set_vec3f("tint", shaderMaterial.tint);
     shader->set_vec2f("uvt.uvOffset", shaderMaterial.texUVoffset);

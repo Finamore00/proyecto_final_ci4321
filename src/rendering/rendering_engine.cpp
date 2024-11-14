@@ -8,7 +8,10 @@
 
 #include "../scene_graph/transform.hpp"
 #include "../mesh/mesh.hpp"
+#include "../mesh/model.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "../../thirdparty/glm/gtx/string_cast.hpp"
 
 RenderingEngine::RenderingEngine(float width, float height, float pov)
 {
@@ -98,7 +101,7 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
     {   
         tree.mesh->shader->use();
         tree.mesh->shader->set_mat4f("model", tree.transform.get_model_matrix());
-        tree.mesh->draw();
+        tree.mesh->draw(tree.transform.get_model_matrix());
     }
 
     for (auto &&c : tree.transform.get_children())
@@ -111,7 +114,12 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
         {   
             co.mesh->shader->use();
             co.mesh->shader->set_mat4f("model", c->get_model_matrix());
-            co.mesh->draw();
+            co.mesh->draw(c->get_model_matrix());
+        }
+
+        if (co.model != nullptr)
+        {
+            co.model.get()->draw(c->get_model_matrix());
         }
 
         render_tree(co, false);
