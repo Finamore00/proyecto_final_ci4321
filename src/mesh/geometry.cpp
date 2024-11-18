@@ -188,8 +188,8 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
 
     for (unsigned int i = 0; i <= stacks; ++i) {
         const float stack_angle = (PI / 2.0f) - (i * stack_step);
-        const float xy_plane_coord = radius * cosf(stack_angle);
-        const float z_coord = radius * sinf(stack_angle);
+        const float xz_plane_coord = radius * cosf(stack_angle);
+        const float y_coord = radius * sinf(stack_angle);
 
         //Aux variables for indices
         int ind_aux1 = i * (sectors + 1);
@@ -197,11 +197,11 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
 
         for (unsigned int j = 0; j <= sectors; ++j) {
             const float sector_angle = j * sector_step;
-            const float x_coord = xy_plane_coord * cosf(sector_angle);
-            const float y_coord = xy_plane_coord * sinf(sector_angle);
+            const float z_coord = xz_plane_coord * cosf(sector_angle);
+            const float x_coord = xz_plane_coord * sinf(sector_angle);
 
             const glm::vec3 coords = {x_coord, y_coord, z_coord};
-            const glm::vec3 normals = {x_coord * rad_invert, y_coord * rad_invert, z_coord * rad_invert};
+            const glm::vec3 normals = glm::normalize(coords);
             const glm::vec2 tex_pos = {static_cast<float>(j) / sectors, static_cast<float>(i) / stacks};
 
             sphere.vertices.push_back({coords, normals, tex_pos});

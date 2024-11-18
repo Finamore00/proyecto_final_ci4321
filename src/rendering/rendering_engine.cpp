@@ -98,6 +98,7 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
     {   
         tree.mesh->shader->use();
         tree.mesh->shader->set_mat4f("model", tree.transform.get_model_matrix());
+        tree.mesh->shader->set_vec3f("camPos", m_camera->get_world_position());
         tree.mesh->draw();
     }
 

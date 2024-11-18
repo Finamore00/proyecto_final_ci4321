@@ -94,7 +94,10 @@ int main()
         "../shader_files/skybox.vert",
         "../shader_files/skybox.frag"
     );
-
+    gl_utils::shader_program specShader = gl_utils::shader_program(
+        "../shader_files/normalmap.vert",
+        "../shader_files/normalmap.frag"
+    );
 
     TextureLoader txLoader;
     ResourceManager<Texture> txManager(txLoader);
@@ -110,11 +113,12 @@ int main()
     Mesh floorMesh(boxGeo, basicShader);
     floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
 
-    Mesh boxMesh(boxGeo, basicShader);
+    Mesh boxMesh(boxGeo, specShader);
     boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
-    Mesh sphereMesh(create_sphere(12, 12, 0.5f), basicShader);
-    sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
+    Mesh sphereMesh(create_sphere(12, 12, 0.5f), specShader);
+    // sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
+    sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
     // Creating SceneObjects
     SceneObject root, cam;
@@ -122,7 +126,7 @@ int main()
 
 #pragma region Tank setup
     // Tank set up
-    Tank tank(root, basicShader);
+    Tank tank(root, specShader);
     tank.mesh->shaderMaterial.albedo = txManager.load_resource("../textures/tank.bmp");
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -141,7 +145,7 @@ int main()
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     mainLight.intensity = 1.0f;
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(1.0f, 10.0f, -1.0f));
+    mainLight.transform.set_world_position(glm::vec3(1.0f, 5.0f, -1.0f));
     root.transform.update_transform();
 
     SceneObject floor;
