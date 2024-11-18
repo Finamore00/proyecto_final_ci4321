@@ -262,7 +262,6 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
     }
 }
 
-
 void RenderingEngine::render_ui(SceneObject& tree, bool first)
 {
     if (first)
@@ -276,9 +275,9 @@ void RenderingEngine::render_ui(SceneObject& tree, bool first)
     {
         SceneObject& co = c->get_scene_object();
         if (!co.active)
-            continue;;
+            continue;
 
-        UIComponent* uiComp = (UIComponent*)(tree.get_component<UIComponent>());
+        UIComponent* uiComp = (UIComponent*)(c->get_scene_object().get_component<UIComponent>());
         if (uiComp != nullptr)
             uiComp->draw(m_ui_proj);
         
@@ -313,14 +312,11 @@ void RenderingEngine::render()
 
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
-    std::cout << "[RENDERING ENGINE] SCENE PASS" << std::endl;
     render_tree(*m_scene_root, true);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbs[UI_FB]);
     glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    std::cout << "[RENDERING ENGINE] UI PASS" << std::endl;
     render_ui(*m_ui_root, true);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

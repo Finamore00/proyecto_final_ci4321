@@ -51,22 +51,28 @@ void FontComponent::draw(const glm::mat4& uiProjection)
     m_shader->use();
     m_font.get()->use_font_texture(GL_TEXTURE0);
     m_shader->set_mat4f("projection", uiProjection);
-    
+    m_shader->set_mat4f("model", m_sceneObj->transform.get_model_matrix());
     glBindVertexArray(m_VAO);
 
-
-    int i = 0;
-    for (auto cit = m_text.cbegin(); cit != m_text.cend(); cit++, i++)
+    unsigned int col = 0;
+    unsigned int line = 0;
+    for (auto cit = m_text.cbegin(); cit != m_text.cend(); cit++, col++)
     {
-        //std::cout << "[FONT COMPONENT] Char: " << *cit << std::endl;
         glm::vec3 pos = m_sceneObj->transform.get_world_position();
+        if (*cit == '\n')
+        {
+            line += 1;
+            col = 0;
+            cit++;
+        }
+
         float vertices[6][4] = {
-            {pos.x + i * m_size, pos.y + m_size, 0.0f, 1.0f},
-            {pos.x + i * m_size, pos.y, 0.0f, 0.0f},
-            {pos.x + (i + 1) * m_size, pos.y, 1.0f, 0.0f},
-            {pos.x + i * m_size, pos.y + m_size , 0.0f, 1.0f},
-            {pos.x + (i + 1) * m_size, pos.y, 1.0f, 0.0f},
-            {pos.x + (i + 1) * m_size, pos.y + m_size, 1.0f, 1.0f}
+            {pos.x + col * m_size, pos.y + m_size - m_size * line, 0.0f, 1.0f},
+            {pos.x + col * m_size, pos.y - m_size * line, 0.0f, 0.0f},
+            {pos.x + (col + 1) * m_size, pos.y - m_size * line, 1.0f, 0.0f},
+            {pos.x + col * m_size, pos.y + m_size - m_size * line, 0.0f, 1.0f},
+            {pos.x + (col + 1) * m_size, pos.y - m_size * line, 1.0f, 0.0f},
+            {pos.x + (col + 1) * m_size, pos.y + m_size - m_size * line, 1.0f, 1.0f}
         };
 
         glm::vec2 offset = m_font.get()->get_char_uv(*cit);

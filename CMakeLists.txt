@@ -41,4 +41,5 @@ target_link_libraries(
     tinyxml2 
     resource_management
     fonts
+    sprites
     )

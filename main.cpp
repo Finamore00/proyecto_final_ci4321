@@ -32,6 +32,7 @@
 #include "src/resource_management/resource_manager.hpp"
 #include "src/textures/texture_loader.hpp"
 
+#include "src/ui/sprites/sprite_component.hpp"
 #include "src/ui/font/font_component.hpp"
 #include "src/ui/font/font_loader.hpp"
 
@@ -102,8 +103,13 @@ int main()
     );
 
     gl_utils::shader_program fontShader = gl_utils::shader_program(
-        "../shader_files/ui/font.vert",
+        "../shader_files/ui/ui.vert",
         "../shader_files/ui/font.frag"
+    );
+
+    gl_utils::shader_program spriteShader = gl_utils::shader_program(
+        "../shader_files/ui/ui.vert",
+        "../shader_files/ui/ui.basic.frag"
     );
 
     TextureLoader txLoader;
@@ -148,11 +154,6 @@ int main()
     cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.update_transform();
 #pragma endregion
-
-    SceneObject ui_text;
-    ui_text.add_component(*new FontComponent(&ui_text, fontManager, fontShader, "../fonts/Peaberry.bmp", "Lorem Ipsum", 16.0f));
-    ui_text.transform.set_world_position(glm::vec3(0.0f));
-    ui_text.transform.update_transform();
 
 #pragma region Environment
     // Setting main light
@@ -288,10 +289,22 @@ int main()
 
 #pragma endregion
 
+    SceneObject ui_text;
+    ui_text.add_component(*new FontComponent(&ui_text, fontManager, fontShader, "../fonts/Peaberry.bmp", "1234567890\nqwertyuiop\nasdfghjkl\nzxcvbnm", 9.0f));
+    ui_text.transform.set_world_position(glm::vec3(0.0f, 24.0f, 0.0f));
+    ui_text.transform.update_transform();
+
+    SceneObject sprite;
+    sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 256));
+    sprite.transform.set_parent(&ui_text.transform, false);
+    sprite.transform.update_transform();
+    sprite.transform.set_world_position(glm::vec3(256.0f, 256.0f, 0.0f));
+    sprite.transform.update_transform();
+
 #pragma region Rendering
     renderEngine.set_scene_root(&root);
     renderEngine.set_ui_root(&ui_text);
-    renderEngine.set_ui_resolution(200, 200);
+    renderEngine.set_ui_resolution(1024, 1024);
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
     renderEngine.set_skybox_texture(skyboxTx);
