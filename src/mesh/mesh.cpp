@@ -36,6 +36,7 @@ void Mesh::initialize_geometry(const Geometry& geometry)
     glVertexAttribPointer(VPOS_LAY_TAN, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(VPOS_LAY_BITAN, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+    glEnableVertexAttribArray(4);
 }
 
 void Mesh::set_shader(const gl_utils::shader_program& ns)

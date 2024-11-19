@@ -144,7 +144,7 @@ int main()
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    mainLight.intensity = 1.3f;
+    mainLight.intensity = 1.0f;
     mainLight.transform.set_parent(&root.transform, false);
     mainLight.transform.set_world_position(glm::vec3(1.0f, 3.5f, -1.0f));
     root.transform.update_transform();

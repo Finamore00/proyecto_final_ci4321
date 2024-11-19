@@ -40,7 +40,7 @@ void main()
 
    vec3 normal = texture(normalMap, TexCoord).rgb;
    normal = normal * 2.0 - 1.0;
-   normal = normalize(TBN * normal);
+   normal = -normalize(TBN * normal);
 
    vec3 lightDir = normalize(l1_pos - FragPos);
    float factor = max(dot(normal, lightDir), 0.0) * l1_pow;
