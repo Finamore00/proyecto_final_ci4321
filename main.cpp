@@ -14,7 +14,7 @@
 #include "src/rendering/rendering_engine.hpp"
 #include "src/rendering/lights.hpp"
 
-#include "src/gl_utils/shader.h"
+#include "src/gl_utils/shader.hpp"
 
 #include "src/textures/texture.hpp"
 #include "src/mesh/geometry.hpp"
@@ -94,7 +94,7 @@ int main()
         "../shader_files/skybox.vert",
         "../shader_files/skybox.frag"
     );
-    gl_utils::shader_program specShader = gl_utils::shader_program(
+    gl_utils::shader_program normalMapShader = gl_utils::shader_program(
         "../shader_files/normalmap.vert",
         "../shader_files/normalmap.frag"
     );
@@ -113,10 +113,11 @@ int main()
     Mesh floorMesh(boxGeo, basicShader);
     floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
 
-    Mesh boxMesh(boxGeo, specShader);
-    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
+    Mesh boxMesh(boxGeo, normalMapShader);
+    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
+    boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
-    Mesh sphereMesh(create_sphere(12, 12, 0.5f), specShader);
+    Mesh sphereMesh(create_sphere(12, 12, 0.5f), basicShader);
     // sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
     sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
@@ -126,7 +127,7 @@ int main()
 
 #pragma region Tank setup
     // Tank set up
-    Tank tank(root, specShader);
+    Tank tank(root, basicShader);
     tank.mesh->shaderMaterial.albedo = txManager.load_resource("../textures/tank.bmp");
     tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -143,9 +144,9 @@ int main()
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    mainLight.intensity = 1.0f;
+    mainLight.intensity = 1.3f;
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(1.0f, 5.0f, -1.0f));
+    mainLight.transform.set_world_position(glm::vec3(1.0f, 3.5f, -1.0f));
     root.transform.update_transform();
 
     SceneObject floor;

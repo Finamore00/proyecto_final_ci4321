@@ -1,7 +1,7 @@
 //
 // Created by satnififu on 10/16/24.
 //
-#include "shader.h"
+#include "shader.hpp"
 
 #include <iostream>
 #include <string>

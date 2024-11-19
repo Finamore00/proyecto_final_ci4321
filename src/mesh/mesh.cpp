@@ -33,6 +33,9 @@ void Mesh::initialize_geometry(const Geometry& geometry)
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(VPOS_LAY_UVS, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(sizeof(glm::vec3) * 2));
     glEnableVertexAttribArray(2);
+    glVertexAttribPointer(VPOS_LAY_TAN, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(2 * sizeof(glm::vec3) + sizeof(glm::vec2)));
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(VPOS_LAY_BITAN, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(3 * sizeof(glm::vec3) + sizeof(glm::vec2)));
 }
 
 void Mesh::set_shader(const gl_utils::shader_program& ns)
@@ -44,10 +47,16 @@ void Mesh::set_shader(const gl_utils::shader_program& ns)
 void Mesh::draw() const
 {
     shader->use();
-    if (shaderMaterial.albedo != nullptr)
+    if (shaderMaterial.albedo != nullptr) {
         shaderMaterial.albedo->use_texture(GL_TEXTURE0);
-    else
+
+        if (shaderMaterial.normal_map != nullptr) {
+            shaderMaterial.normal_map->use_texture(GL_TEXTURE1);
+        }
+    }
+    else {
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
 
     shader->set_vec3f("ambient", shaderMaterial.ambient);
     shader->set_vec3f("tint", shaderMaterial.tint);

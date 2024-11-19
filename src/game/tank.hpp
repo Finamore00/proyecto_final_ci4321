@@ -1,6 +1,6 @@
 #pragma once
 #include "../scene_graph/transform.hpp"
-#include "../gl_utils/shader.h"
+#include "../gl_utils/shader.hpp"
 #include "bullet.hpp"
 
 class Tank: public SceneObject {
