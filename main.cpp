@@ -110,8 +110,9 @@ int main()
     Mesh bulletMesh(boxGeo, basicShader);
     bulletMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
-    Mesh floorMesh(boxGeo, basicShader);
-    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
+    Mesh floorMesh(boxGeo, normalMapShader);
+    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
+    floorMesh.shaderMaterial.normal_map = txManager.load_resource("../texture/brickwall_normal.jpg");
 
     Mesh boxMesh(boxGeo, normalMapShader);
     boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
@@ -144,9 +145,9 @@ int main()
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    mainLight.intensity = 1.0f;
+    mainLight.intensity = 1.3f;
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(1.0f, 3.5f, -1.0f));
+    mainLight.transform.set_world_position(glm::vec3(1.0f, 5.0f, -1.0f));
     root.transform.update_transform();
 
     SceneObject floor;
@@ -299,6 +300,8 @@ int main()
         physicsEngine.simulate();
         draw_skybox(skyboxMesh);
         renderEngine.render_tree(root, true);
+
+        mainLight.transform.set_world_position(glm::vec3(4*glm::sin(glfwGetTime()), 5.0, 4*glm::cos(glfwGetTime())));
 
         glfwSwapBuffers(window);
         glfwPollEvents();

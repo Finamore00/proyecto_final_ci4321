@@ -14,7 +14,6 @@ layout (std140, binding = 0) uniform Matrices
 uniform mat4 model;
 
 out vec2 TexCoord;
-out vec3 Normal;
 out vec3 FragPos;
 out mat3 TBN;
 
@@ -22,7 +21,6 @@ void main()
 {
    gl_Position = projection * view * model * vec4(aPos, 1.0);
    FragPos = vec3(model * vec4(aPos, 1.0));
-   Normal = vec3(model * vec4(aNor, 0.0));
    vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
    vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
    vec3 N = normalize(vec3(model * vec4(aNor, 0.0)));

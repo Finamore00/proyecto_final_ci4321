@@ -8,7 +8,6 @@ layout (std140, binding = 1) uniform Lights
 };
 
 in vec2 TexCoord;
-in vec3 Normal;
 in vec3 FragPos;
 in mat3 TBN;
 
@@ -29,8 +28,8 @@ uniform vec3 tint;
 uniform Light light;
 uniform vec3 ambient;
 uniform vec3 camPos;
-uniform sampler2D base;
-uniform sampler2D normalMap;
+layout (binding = 0) uniform sampler2D base;
+layout (binding = 1) uniform sampler2D normalMap;
 uniform UVT uvt;
 
 out vec4 FragColor;
@@ -38,11 +37,13 @@ out vec4 FragColor;
 void main()
 {
 
-   vec3 normal = texture(normalMap, TexCoord).rgb;
-   normal = normal * 2.0 - 1.0;
-   normal = -normalize(TBN * normal);
+   vec2 uv = TexCoord * uvt.uvScale + uvt.uvOffset;
 
-   vec3 lightDir = normalize(l1_pos - FragPos);
+   vec3 normal = texture(normalMap, uv).rgb;
+   normal = normal * 2.0 - 1.0;
+   normal = normalize(TBN * normal);
+
+   vec3 lightDir =  normalize(l1_pos - FragPos);
    float factor = max(dot(normal, lightDir), 0.0) * l1_pow;
    vec3 diffuse = factor * l1_col;
 
@@ -52,5 +53,5 @@ void main()
    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64) * l1_pow;
    vec3 specular = specularStrength * spec * l1_col;
 
-   FragColor = ((texture(base, TexCoord * uvt.uvScale + uvt.uvOffset) + vec4(tint, 1.0)) * vec4(diffuse + ambient + specular, 1.0));
+   FragColor = ((texture(base, uv) + vec4(tint, 1.0)) * vec4(diffuse + ambient + specular, 1.0));
 }
