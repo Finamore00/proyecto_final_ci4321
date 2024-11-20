@@ -67,12 +67,12 @@ void FontComponent::draw(const glm::mat4& uiProjection)
         }
 
         float vertices[6][4] = {
-            {pos.x + col * m_size, pos.y + m_size - m_size * line, 0.0f, 1.0f},
-            {pos.x + col * m_size, pos.y - m_size * line, 0.0f, 0.0f},
-            {pos.x + (col + 1) * m_size, pos.y - m_size * line, 1.0f, 0.0f},
-            {pos.x + col * m_size, pos.y + m_size - m_size * line, 0.0f, 1.0f},
-            {pos.x + (col + 1) * m_size, pos.y - m_size * line, 1.0f, 0.0f},
-            {pos.x + (col + 1) * m_size, pos.y + m_size - m_size * line, 1.0f, 1.0f}
+            {col * m_size, m_size - m_size * line, 0.0f, 1.0f},
+            {col * m_size, m_size * line, 0.0f, 0.0f},
+            {(col + 1) * m_size, m_size * line, 1.0f, 0.0f},
+            {col * m_size, m_size - m_size * line, 0.0f, 1.0f},
+            {(col + 1) * m_size, m_size * line, 1.0f, 0.0f},
+            {(col + 1) * m_size, m_size - m_size * line, 1.0f, 1.0f}
         };
 
         glm::vec2 offset = m_font.get()->get_char_uv(*cit);

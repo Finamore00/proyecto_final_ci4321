@@ -26,8 +26,6 @@ void SpriteComponent::set_size(const glm::vec2& size)
 {
     UIComponent::set_size(size);
     glm::vec2 hSize = size / 2.0f;
-    std::cout << "==========================================" << std::endl;
-    std::cout << "(" << hSize.x << "," << hSize.y << ")" << std::endl;
     float verts[6][4] = {
         -hSize.x, hSize.y, 0.0f, 1.0f,
         -hSize.x, -hSize.y, 0.0f, 0.0f,

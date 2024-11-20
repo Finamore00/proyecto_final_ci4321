@@ -1,5 +1,6 @@
 #include "thirdparty/glad/include/glad/glad.h"
 #include <GLFW/glfw3.h>
+#include <functional>
 #include <iostream>
 
 #include "thirdparty/glm/gtc/matrix_transform.hpp"
@@ -25,6 +26,7 @@
 
 #include "src/game/components/destroyable_component.hpp"
 
+#include "src/game/components/obstacle_counter_component.hpp"
 #include "src/game/bullet.hpp"
 #include "src/game/tank.hpp"
 #include "src/input/input.hpp"
@@ -36,16 +38,17 @@
 #include "src/ui/font/font_component.hpp"
 #include "src/ui/font/font_loader.hpp"
 
+#include "src/scene_graph/logic_engine.hpp"
 
 // Window resize handler
-void windowResizeCallback(GLFWwindow* window, int width, int height);
+void windowResizeCallback(GLFWwindow *window, int width, int height);
 // Input processing
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow *window);
 
 glm::vec3 input(0.0f);
 glm::vec2 rotInput(0.0f);
 
-RenderingEngine* re_ptr;
+RenderingEngine *re_ptr;
 
 int main()
 {
@@ -56,7 +59,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Triangle", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(800, 600, "OpenGL Triangle", NULL, NULL);
     if (window == NULL)
     {
         glfwTerminate();
@@ -78,12 +81,13 @@ int main()
     input_mgr->set_window(window);
     PhysicEngine physicsEngine;
     RenderingEngine renderEngine(*window, 800.0f, 600.0f, 75.0f);
+    LogicEngine logicEngine;
     re_ptr = &renderEngine;
 
     // Open GL settings
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
@@ -94,30 +98,26 @@ int main()
     // Shaders and texture loading
     gl_utils::shader_program basicShader = gl_utils::shader_program(
         "../shader_files/basic.vert",
-        "../shader_files/basic.frag"
-    );
+        "../shader_files/basic.frag");
 
     gl_utils::shader_program skyboxShader = gl_utils::shader_program(
         "../shader_files/skybox.vert",
-        "../shader_files/skybox.frag"
-    );
+        "../shader_files/skybox.frag");
 
     gl_utils::shader_program fontShader = gl_utils::shader_program(
         "../shader_files/ui/ui.vert",
-        "../shader_files/ui/font.frag"
-    );
+        "../shader_files/ui/font.frag");
 
     gl_utils::shader_program spriteShader = gl_utils::shader_program(
         "../shader_files/ui/ui.vert",
-        "../shader_files/ui/ui.basic.frag"
-    );
+        "../shader_files/ui/ui.basic.frag");
 
     TextureLoader txLoader;
     ResourceManager<Texture> txManager(txLoader);
 
     FontLoader fontLoader(txManager);
     ResourceManager<FontAtlas> fontManager(fontLoader);
-    
+
     Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
     // Creating meshes
@@ -249,9 +249,7 @@ int main()
     box6.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
     box6.add_component(*new DestroyableComponent(&box6));
 
-
 #pragma endregion
-
 
 #pragma region Physic setup
     BoxCollider floorCollider(&floor, glm::vec3(1.0f));
@@ -289,21 +287,32 @@ int main()
 
 #pragma endregion
 
-    SceneObject ui_text;
-    ui_text.add_component(*new FontComponent(&ui_text, fontManager, fontShader, "../fonts/Peaberry.bmp", "1234567890\nqwertyuiop\nasdfghjkl\nzxcvbnm", 9.0f));
-    ui_text.transform.set_world_position(glm::vec3(0.0f, 24.0f, 0.0f));
-    ui_text.transform.update_transform();
+#pragma region UI
+    SceneObject ui_root;
+    SceneObject obstacle_counter, sprite;
 
-    SceneObject sprite;
+    obstacle_counter.transform.set_parent(&ui_root.transform, false);
+    obstacle_counter.add_component(*new FontComponent(&obstacle_counter, fontManager, fontShader, "../fonts/Peaberry.bmp", "", 40.0f));
+    obstacle_counter.add_component(
+        *new ObstacleCounterComponent(
+            &obstacle_counter, 
+            {&box1, &box2, &box3, &box4, &box5, &box6, &sphere1, &sphere2, &sphere3, &sphere4}, 
+            (FontComponent *)obstacle_counter.get_component<FontComponent>()
+            )
+        );
+    obstacle_counter.transform.set_world_position(glm::vec3(0.0f, 1024.0f - 40.0f, 0.0f));
+    obstacle_counter.transform.update_transform();
+
     sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 256));
-    sprite.transform.set_parent(&ui_text.transform, false);
+    sprite.transform.set_parent(&ui_root.transform, false);
     sprite.transform.update_transform();
-    sprite.transform.set_world_position(glm::vec3(256.0f, 256.0f, 0.0f));
+    sprite.transform.set_world_position(glm::vec3(0.0f, 512.0f, 0.0f));
     sprite.transform.update_transform();
+#pragma endregion
 
 #pragma region Rendering
     renderEngine.set_scene_root(&root);
-    renderEngine.set_ui_root(&ui_text);
+    renderEngine.set_ui_root(&ui_root);
     renderEngine.set_ui_resolution(1024, 1024);
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
@@ -326,12 +335,14 @@ int main()
         tank.update_bullets(dt);
 
         root.transform.update_transform();
+        logicEngine.update(dt);
         physicsEngine.simulate();
         renderEngine.render();
 
         glfwPollEvents();
 
-        if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE)) {
+        if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE))
+        {
             glfwSetWindowShouldClose(window, true);
             break;
         }
@@ -341,8 +352,7 @@ int main()
     return 0;
 }
 
-
-void windowResizeCallback(GLFWwindow* window, int width, int height)
+void windowResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
     re_ptr->set_resolution(width, height);
