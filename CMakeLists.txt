@@ -14,7 +14,6 @@ find_package(OpenGL REQUIRED)
 option(ASSIMP_BUILD_TESTS "Disabling tests" OFF)
 option(ASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT "Disabling all exporters" off)
 option(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT "Disabling all importers" off)
-option(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT "Disabling all importers" off)
 option(ASSIMP_BUILD_GLTF_IMPORTER "Enabling GLTF importer" on)
 
 add_subdirectory(thirdparty/glad)

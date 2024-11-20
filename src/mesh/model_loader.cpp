@@ -43,7 +43,7 @@ void process_model_scene(const aiNode* node, const aiScene* scene, Model& model)
     std::unique_ptr<Mesh> mesh = std::unique_ptr<Mesh>(mesh_from_node(node, scene, model));
     model.add_mesh(std::move(mesh));
     for (unsigned int m = 0; m < node->mNumChildren; m++)
-        process_model_scene(node->mChildren[0], scene, model);
+        process_model_scene(node->mChildren[m], scene, model);
 }
 
 // thanks stackoverflow
@@ -65,6 +65,8 @@ glm::vec3 ai_vector3_glm(const aiVector3D& from)
 
 Mesh* mesh_from_node(const aiNode* node, const aiScene* scene, Model& model)
 {
+    std::cout << "[MODEL LOADER] " << node->mName.C_Str() << std::endl;
+    std::cout << glm::to_string(ai_matrix44_glm(node->mTransformation)) << std::endl;
     Geometry geo;
     if (node->mNumMeshes > 0)
     {
@@ -75,7 +77,6 @@ Mesh* mesh_from_node(const aiNode* node, const aiScene* scene, Model& model)
         const aiVector3D* norms = mesh->mNormals;
         const aiVector3D* uvs = mesh->mTextureCoords[0];
 
-        //std::cout << "Vertex data" << std::endl;
         for(unsigned int v = 0; v < mesh->mNumVertices; ++v)
         {
             glm::vec3 p = ai_vector3_glm(verts[v]);
@@ -83,18 +84,14 @@ Mesh* mesh_from_node(const aiNode* node, const aiScene* scene, Model& model)
             glm::vec2 u = ai_vector3_glm(uvs[v]);
 
             geo.vertices.push_back({p, n, u});
-            //std::cout << glm::to_string(p) << " " << glm::to_string(n) << " " << glm::to_string(u) << std::endl;;
         }
 
-        //std::cout << "Faces data" << std::endl;
         const aiFace* faces = mesh->mFaces;
         for (unsigned int f = 0; f < mesh->mNumFaces; ++f)
         {
             geo.indices.push_back(faces[f].mIndices[0]);
             geo.indices.push_back(faces[f].mIndices[1]);
             geo.indices.push_back(faces[f].mIndices[2]);
-
-            //std::cout << faces[f].mIndices[0] << " " << faces[f].mIndices[1] << " " << faces[f].mIndices[2] << std::endl;
         }
 
         std::cout << "[MODEL LOADER] Loading non empty mesh" << std::endl;

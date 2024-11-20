@@ -19,7 +19,6 @@ void Model::add_mesh(std::unique_ptr<Mesh> mesh)
 
 void Model::draw(const glm::mat4& model) const
 {
-    std::cout << "[MODEL] Drawing mesh" << std::endl;
     for (auto &&m : m_meshes)
         m.get()->draw(model);
 }

@@ -18,7 +18,7 @@ bool test_collision(const ColliderComponent& a, const ColliderComponent& b)
     if (typeid(b) == typeid(SphereCollider))
         return test_sphere_OBB(((const SphereCollider&)(b)).get_shape(), ((const BoxCollider&)(a)).get_shape());
     
-    std::cout << "[WARNING] Collisions between OBBs not implemented yet" << std::endl;
+    //std::cout << "[WARNING] Collisions between OBBs not implemented yet" << std::endl;
     return false;
 }
 

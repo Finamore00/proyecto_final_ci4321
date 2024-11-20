@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/thirdparty/glad/include"
+                "${workspaceFolder}/thirdparty/glad/include",
+                "${workspaceFolder}/build/thirdparty/assimp/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

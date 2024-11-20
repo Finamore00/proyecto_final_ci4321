@@ -11,8 +11,6 @@ Mesh::Mesh(const glm::mat4& transform): m_transform(transform) {std::cout << "[M
 
 Mesh::Mesh(const Geometry& geometry, const glm::mat4& transform): m_transform(transform)
 {
-    std::cout << "[MESH] Transform" << std::endl;
-    std::cout << glm::to_string(transform) << std::endl;
     initialize_geometry(geometry);
 }
 

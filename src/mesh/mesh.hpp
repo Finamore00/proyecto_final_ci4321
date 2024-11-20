@@ -9,7 +9,7 @@
 class Mesh
 {
 private:
-    glm::mat4 m_transform = glm::mat4(0.0f);
+    glm::mat4 m_transform = glm::mat4(1.0f);
     Geometry m_geometry;
     unsigned int m_VBO, m_VAO, m_EBO;
     

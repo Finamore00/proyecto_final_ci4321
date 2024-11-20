@@ -29,6 +29,8 @@
 #include "src/game/tank.hpp"
 #include "src/input/input.hpp"
 
+#include "src/game/firetruck_component.hpp"
+
 #include "src/resource_management/resource_manager.hpp"
 #include "src/resource_management/texture_loader.hpp"
 #include "src/mesh/model_loader.hpp"
@@ -103,6 +105,7 @@ int main()
     ResourceManager<Texture> txManager(txLoader);
     Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
+#pragma region Model loading
     // Creating meshes
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
     skyboxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/skybox/cliff.bmp");
@@ -119,22 +122,40 @@ int main()
     Mesh sphereMesh(create_sphere(12, 12, 0.5f), basicShader);
     sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
 
+    ModelLoader mLoader;
+    std::shared_ptr<Model> firetruckModel = mLoader.load_resource("../models/firetruck.gltf");
+    for (int i = 0; i < firetruckModel.get()->mesh_number(); ++i)
+    {
+        firetruckModel.get()->get_mesh(i)->set_shader(basicShader);
+        firetruckModel.get()->get_mesh(i)->shaderMaterial.albedo = txLoader.load_resource("../textures/firetruck.png");
+        firetruckModel.get()->get_mesh(i)->shaderMaterial.ambient = glm::vec3(0.5f);
+    }
+#pragma endregion
+
     // Creating SceneObjects
     SceneObject root, cam;
     root.transform.update_transform();
 
 #pragma region Tank setup
-    // Tank set up
-    Tank tank(root, basicShader);
-    tank.mesh->shaderMaterial.albedo = txManager.load_resource("../textures/tank.bmp");
-    tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    SceneObject firetruck;
+    firetruck.transform.set_parent(&root.transform, false);
+    firetruck.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
+    firetruck.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     root.transform.update_transform();
 
-    cam.transform.set_parent(&tank.transform, false);
+    firetruck.model = firetruckModel;
+    firetruck.add_component(*new FiretruckComponent(&firetruck));
+    // Tank set up
+    //Tank tank(root, basicShader);
+    //tank.mesh->shaderMaterial.albedo = txManager.load_resource("../textures/tank.bmp");
+    //tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
+    //tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    //root.transform.update_transform();
+
+    cam.transform.set_parent(&firetruck.transform, false);
     cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -3.0f));
     cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    tank.transform.update_transform();
+    //tank.transform.update_transform();
 #pragma endregion
 
 
@@ -159,8 +180,8 @@ int main()
     SceneObject sphere1;
     sphere1.mesh = &sphereMesh;
     sphere1.transform.set_parent(&root.transform, false);
-    sphere1.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 8.0f));
-    sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    sphere1.transform.set_world_position(glm::vec3(10.0f, 2.0f, 0.0f));
+    sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
     sphere1.add_component(*new DestroyableComponent(&sphere1));
 
     SceneObject sphere2;
@@ -272,15 +293,6 @@ int main()
 
 #pragma endregion
 
-    ModelLoader mLoader;
-    std::shared_ptr<Model> firetruck = mLoader.load_resource("../models/firetruck.gltf");
-    for (int i = 0; i < firetruck.get()->mesh_number(); ++i)
-    {
-        firetruck.get()->get_mesh(i)->set_shader(basicShader);
-        firetruck.get()->get_mesh(i)->shaderMaterial.tint = glm::vec3(0.7f, 0, 0);
-    }
-    sphere1.model = firetruck;
-
 #pragma region Rendering
     // Setting main camera and registering lights
     renderEngine.set_main_camera(&cam.transform);
@@ -299,8 +311,8 @@ int main()
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        tank.update(dt);
-        tank.update_bullets(dt);
+        //tank.update(dt);
+        //tank.update_bullets(dt);
 
         root.transform.update_transform();
         physicsEngine.simulate();
