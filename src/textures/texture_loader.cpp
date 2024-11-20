@@ -2,20 +2,19 @@
 
 #include <filesystem>
 #include <iostream>
-#include <sstream>
 
 #include "../../thirdparty/glad/include/glad/glad.h"
 #include "../../thirdparty/tinyxml/tinyxml2.h"
 #include "../../thirdparty/stb/stb_image.h"
 
 using namespace tinyxml2;
-using std::istringstream;
 
 GLenum texture_type_from_str(std::string str);
 GLenum texture_wrap_from_str(std::string str);
 GLenum texture_filt_from_str(std::string str);
+GLenum texture_format_from_str(std::string str);
 std::vector<std::string> get_cubemap_files(const std::string& base);
-Texture* load_2d_text(const std::string& path, GLuint id, GLint int_format, GLenum format, GLenum data_type);
+Texture* load_2d_text(const std::string& path, GLuint id, GLint int_format, GLenum format, GLenum data_type, bool hasMipMap);
 Texture* load_cubemap(const std::vector<std::string>& path, GLuint id, GLint int_format, GLenum format, GLenum data_type);
 
 std::shared_ptr<Texture> TextureLoader::load_resource(std::string path) const
@@ -34,14 +33,15 @@ std::shared_ptr<Texture> TextureLoader::load_resource(std::string path) const
     XMLElement* txTypeElem = rootElem->FirstChildElement("texture_type");
     XMLElement* txWrapElem = rootElem->FirstChildElement("wrapping");
     XMLElement* txFiltElem = rootElem->FirstChildElement("filtering");
+    XMLElement* txFormElem = rootElem->FirstChildElement("format");
     XMLElement* minFiltElem = txFiltElem->FirstChildElement("min_filter");
     XMLElement* magFiltElem = txFiltElem->FirstChildElement("mag_filter");
 
-    istringstream(txTypeElem->Attribute("array", nullptr)) >> std::boolalpha >> isArray;
-    istringstream(txFiltElem->Attribute("mipmap", nullptr)) >> std::boolalpha >> hasMipMap;
+    isArray = txTypeElem->BoolAttribute("array", false);
+    hasMipMap = txFiltElem->BoolAttribute("mipmap", false);
 
-    GLint int_format = GL_RGB; 
-    GLenum format = GL_RGB;
+    GLint int_format = texture_format_from_str(txFormElem->GetText());
+    GLenum format = texture_format_from_str(txFormElem->GetText());
     GLenum data_type = GL_UNSIGNED_BYTE;
 
     GLuint id;
@@ -62,7 +62,7 @@ std::shared_ptr<Texture> TextureLoader::load_resource(std::string path) const
     switch (txTypeEnum)
     {
     case GL_TEXTURE_2D:
-        tx = load_2d_text(path, id, int_format, format, data_type);
+        tx = load_2d_text(path, id, int_format, format, data_type, hasMipMap);
         break;
     case GL_TEXTURE_CUBE_MAP:
         tx = load_cubemap(get_cubemap_files(path), id, int_format, format, data_type);
@@ -126,6 +126,17 @@ GLenum texture_filt_from_str(std::string str)
     return GL_INVALID_ENUM;
 }
 
+GLenum texture_format_from_str(std::string str)
+{
+    if (str == "GL_RGB")
+        return GL_RGB;
+    
+    if (str == "GL_RGBA")
+        return GL_RGBA;
+    
+    return GL_INVALID_ENUM;
+}
+
 std::vector<std::string> get_cubemap_files(const std::string& path)
 {
     std::filesystem::path basePath(path);
@@ -154,14 +165,15 @@ std::vector<std::string> get_cubemap_files(const std::string& path)
 /// @param int_format Internal format of the texture
 /// @param format Format of the texture
 /// @param data_type Type of data in the texture
-Texture* load_2d_text(const std::string& path, GLuint id, GLint int_format, GLenum format, GLenum data_type)
+Texture* load_2d_text(const std::string& path, GLuint id, GLint int_format, GLenum format, GLenum data_type, bool hasMipmap)
 {
     std::vector<TextureMeta> file_metas{{}};
     unsigned char *data = stbi_load(path.c_str(), &file_metas.front().width, &file_metas.front().height, &file_metas.front().nrChannels, 0); 
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, int_format, file_metas.front().width, file_metas.front().height, 0, format, data_type, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        if (hasMipmap)
+            glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {

@@ -30,6 +30,8 @@ add_subdirectory(src/physics)
 add_subdirectory(src/input)
 add_subdirectory(src/mesh)
 add_subdirectory(src/game)
+add_subdirectory(src/input)
+add_subdirectory(src/ui)
 
 target_link_libraries(
     ${PROJECT_NAME} 
@@ -49,4 +51,6 @@ target_link_libraries(
     input 
     tinyxml2 
     resource_management
+    fonts
+    sprites
     )

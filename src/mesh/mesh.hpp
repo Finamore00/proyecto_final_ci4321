@@ -17,6 +17,7 @@ public:
     const gl_utils::shader_program* shader;
     Material shaderMaterial;
 
+    Mesh() = default;
     Mesh(const glm::mat4& transform);
     Mesh(const Geometry& geometry, const glm::mat4& transform);
     Mesh(const Geometry& geometry, const gl_utils::shader_program& shader);

@@ -3,6 +3,22 @@
 #include "sceneobject.hpp"
 #include "component.hpp"
 
+LogicEngine *LogicEngine::g_instance = nullptr;
+
+LogicEngine::LogicEngine()
+{
+    if (g_instance != nullptr) {
+        throw;
+    }
+
+    g_instance = this;
+}
+
+LogicEngine* LogicEngine::get_instance()
+{
+    return g_instance;
+}
+
 void LogicEngine::register_component(SceneObject* obj, Component* comp)
 {
     if (m_comps.find(obj) == m_comps.end())

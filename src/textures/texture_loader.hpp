@@ -1,4 +1,5 @@
-#include "resource_loader.hpp"
+#pragma once
+#include "../resource_management/resource_loader.hpp"
 #include "../textures/texture.hpp"
 
 class TextureLoader : public ResourceLoader<Texture>

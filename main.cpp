@@ -1,5 +1,6 @@
 #include "thirdparty/glad/include/glad/glad.h"
 #include <GLFW/glfw3.h>
+#include <functional>
 #include <iostream>
 
 #include "thirdparty/glm/gtc/matrix_transform.hpp"
@@ -25,6 +26,7 @@
 
 #include "src/game/components/destroyable_component.hpp"
 
+#include "src/game/components/obstacle_counter_component.hpp"
 #include "src/game/bullet.hpp"
 #include "src/game/tank.hpp"
 #include "src/input/input.hpp"
@@ -32,23 +34,26 @@
 #include "src/game/firetruck_component.hpp"
 
 #include "src/resource_management/resource_manager.hpp"
-#include "src/resource_management/texture_loader.hpp"
 #include "src/mesh/model_loader.hpp"
 
 //#include "src/mesh/model_loader.hpp"
+#include "src/textures/texture_loader.hpp"
+
+#include "src/ui/sprites/sprite_component.hpp"
+#include "src/ui/font/font_component.hpp"
+#include "src/ui/font/font_loader.hpp"
+
+#include "src/scene_graph/logic_engine.hpp"
 
 // Window resize handler
-void windowResizeCallback(GLFWwindow* window, int width, int height);
+void windowResizeCallback(GLFWwindow *window, int width, int height);
 // Input processing
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow *window);
 
 glm::vec3 input(0.0f);
 glm::vec2 rotInput(0.0f);
-glm::mat4 projection, view;
 
-void logic(const SceneObject& root);
-void render_tree(const SceneObject& root);
-void draw_skybox(const Mesh& mesh);
+RenderingEngine *re_ptr;
 
 int main()
 {
@@ -59,7 +64,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Triangle", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(800, 600, "OpenGL Triangle", NULL, NULL);
     if (window == NULL)
     {
         glfwTerminate();
@@ -80,9 +85,14 @@ int main()
     input_mgr = input_mgr->get_instance();
     input_mgr->set_window(window);
     PhysicEngine physicsEngine;
-    RenderingEngine renderEngine(800.0f, 600.0f, 75.0f);
+    RenderingEngine renderEngine(*window, 800.0f, 600.0f, 75.0f);
+    LogicEngine logicEngine;
+    re_ptr = &renderEngine;
 
     // Open GL settings
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
@@ -93,22 +103,33 @@ int main()
     // Shaders and texture loading
     gl_utils::shader_program basicShader = gl_utils::shader_program(
         "../shader_files/basic.vert",
-        "../shader_files/basic.frag"
-    );
+        "../shader_files/basic.frag");
+
     gl_utils::shader_program skyboxShader = gl_utils::shader_program(
         "../shader_files/skybox.vert",
-        "../shader_files/skybox.frag"
-    );
+        "../shader_files/skybox.frag");
 
+    gl_utils::shader_program fontShader = gl_utils::shader_program(
+        "../shader_files/ui/ui.vert",
+        "../shader_files/ui/font.frag");
+
+    gl_utils::shader_program spriteShader = gl_utils::shader_program(
+        "../shader_files/ui/ui.vert",
+        "../shader_files/ui/ui.basic.frag");
 
     TextureLoader txLoader;
     ResourceManager<Texture> txManager(txLoader);
+
+    FontLoader fontLoader(txManager);
+    ResourceManager<FontAtlas> fontManager(fontLoader);
+
     Geometry boxGeo = create_box(1.0f, 1.0f, 1.0f);
 
 #pragma region Model loading
     // Creating meshes
     Mesh skyboxMesh(create_inverted_box(1000.0f, 1000.0f), skyboxShader);
     skyboxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/skybox/cliff.bmp");
+    std::shared_ptr<Texture> skyboxTx = txManager.load_resource("../textures/skybox/cliff.bmp");
 
     Mesh bulletMesh(boxGeo, basicShader);
     bulletMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
@@ -157,7 +178,6 @@ int main()
     cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     //tank.transform.update_transform();
 #pragma endregion
-
 
 #pragma region Environment
     // Setting main light
@@ -253,9 +273,7 @@ int main()
     box6.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
     box6.add_component(*new DestroyableComponent(&box6));
 
-
 #pragma endregion
-
 
 #pragma region Physic setup
     BoxCollider floorCollider(&floor, glm::vec3(1.0f));
@@ -293,10 +311,36 @@ int main()
 
 #pragma endregion
 
+#pragma region UI
+    SceneObject ui_root;
+    SceneObject obstacle_counter, sprite;
+
+    obstacle_counter.transform.set_parent(&ui_root.transform, false);
+    obstacle_counter.add_component(*new FontComponent(&obstacle_counter, fontManager, fontShader, "../fonts/Peaberry.bmp", "", 40.0f));
+    obstacle_counter.add_component(
+        *new ObstacleCounterComponent(
+            &obstacle_counter, 
+            {&box1, &box2, &box3, &box4, &box5, &box6, &sphere1, &sphere2, &sphere3, &sphere4}, 
+            (FontComponent *)obstacle_counter.get_component<FontComponent>()
+            )
+        );
+    obstacle_counter.transform.set_world_position(glm::vec3(0.0f, 1024.0f - 40.0f, 0.0f));
+    obstacle_counter.transform.update_transform();
+
+    sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 256));
+    sprite.transform.set_parent(&ui_root.transform, false);
+    sprite.transform.update_transform();
+    sprite.transform.set_world_position(glm::vec3(0.0f, 512.0f, 0.0f));
+    sprite.transform.update_transform();
+#pragma endregion
+
 #pragma region Rendering
-    // Setting main camera and registering lights
+    renderEngine.set_scene_root(&root);
+    renderEngine.set_ui_root(&ui_root);
+    renderEngine.set_ui_resolution(1024, 1024);
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
+    renderEngine.set_skybox_texture(skyboxTx);
 #pragma endregion
 
     float old_time = 0.0f;
@@ -315,14 +359,14 @@ int main()
         //tank.update_bullets(dt);
 
         root.transform.update_transform();
+        logicEngine.update(dt);
         physicsEngine.simulate();
-        draw_skybox(skyboxMesh);
-        renderEngine.render_tree(root, true);
+        renderEngine.render();
 
-        glfwSwapBuffers(window);
         glfwPollEvents();
 
-        if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE)) {
+        if (input_mgr->key_is_pressed(GLFW_KEY_ESCAPE))
+        {
             glfwSetWindowShouldClose(window, true);
             break;
         }
@@ -332,17 +376,8 @@ int main()
     return 0;
 }
 
-
-void windowResizeCallback(GLFWwindow* window, int width, int height)
+void windowResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 5000.0f);
-}
-
-void draw_skybox(const Mesh& mesh)
-{
-    glDepthMask(GL_FALSE);
-    mesh.shader->use();
-    mesh.draw(glm::mat4(1.0f));
-    glDepthMask(GL_TRUE);
+    re_ptr->set_resolution(width, height);
 }
