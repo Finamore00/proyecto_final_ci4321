@@ -1,6 +1,5 @@
 add_library(game STATIC 
-    bullet.cpp 
-    tank.cpp 
+    bullet_component.cpp 
     firetruck_component.cpp 
     firetruck_cannon.cpp
     components/destroyable_component.cpp 

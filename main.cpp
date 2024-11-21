@@ -17,7 +17,10 @@
 
 #include "src/gl_utils/shader.h"
 
+#include "src/textures/texture_loader.hpp"
 #include "src/textures/texture.hpp"
+
+#include "src/mesh/model_loader.hpp"
 #include "src/mesh/geometry.hpp"
 #include "src/mesh/mesh.hpp"
 
@@ -27,18 +30,13 @@
 #include "src/game/components/destroyable_component.hpp"
 
 #include "src/game/components/obstacle_counter_component.hpp"
-#include "src/game/bullet.hpp"
-#include "src/game/tank.hpp"
+#include "src/game/bullet_component.hpp"
 #include "src/input/input.hpp"
 
 #include "src/game/firetruck_component.hpp"
 #include "src/game/firetruck_cannon.hpp"
 
 #include "src/resource_management/resource_manager.hpp"
-#include "src/mesh/model_loader.hpp"
-
-//#include "src/mesh/model_loader.hpp"
-#include "src/textures/texture_loader.hpp"
 
 #include "src/ui/sprites/sprite_component.hpp"
 #include "src/ui/font/font_component.hpp"
@@ -132,8 +130,8 @@ int main()
     skyboxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/skybox/cliff.bmp");
     std::shared_ptr<Texture> skyboxTx = txManager.load_resource("../textures/skybox/cliff.bmp");
 
-    Mesh bulletMesh(boxGeo, basicShader);
-    bulletMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
+    Mesh bulletMesh(create_sphere(12, 12, 0.5f), basicShader);
+    bulletMesh.shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
 
     Mesh floorMesh(boxGeo, basicShader);
     floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
@@ -166,14 +164,41 @@ int main()
     SceneObject root, cam;
     root.transform.update_transform();
 
+#pragma region Bullets setup
+    SceneObject b1, b2, b3;
+    b1.mesh = &bulletMesh;
+    b2.mesh = &bulletMesh;
+    b3.mesh = &bulletMesh;
+
+    b1.add_component(*new BulletComponent(&b1, 10.0f, -9.8f, false));
+    b2.add_component(*new BulletComponent(&b2, 10.0f, -9.8f, false));
+    b3.add_component(*new BulletComponent(&b3, 10.0f, -9.8f, false));
+
+    b1.add_component(*new SphereCollider(&b1, 0.5f));
+    b2.add_component(*new SphereCollider(&b2, 0.5f));
+    b3.add_component(*new SphereCollider(&b3, 0.5f));
+
+    b1.transform.set_parent(&root.transform, false);
+    b2.transform.set_parent(&root.transform, false);
+    b3.transform.set_parent(&root.transform, false);
+
+    b1.transform.set_world_scale(glm::vec3(0.5f, 0.5f, 0.5f));
+    b2.transform.set_world_scale(glm::vec3(0.5f, 0.5f, 0.5f));
+    b3.transform.set_world_scale(glm::vec3(0.5f, 0.5f, 0.5f));
+
+    b1.active = false;
+    b2.active = false;
+    b3.active = false;
+
+#pragma endregion
+
 #pragma region Tank setup
-    SceneObject firetruck, firetruckVisual, turret, cannon_pivot, cannon;
+    SceneObject firetruck, firetruckVisual, turret, cannonPivot, cannon, bulletSpawn;
     firetruck.transform.set_parent(&root.transform, false);
     firetruck.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     firetruck.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     firetruck.add_component(*new FiretruckComponent(&firetruck));
     root.transform.update_transform();
-
 
     firetruckVisual.transform.set_parent(&firetruck.transform, false);
     firetruckVisual.transform.set_world_euler_rotation(glm::vec3(0.0f, -90.0f, 0.0f));
@@ -182,13 +207,16 @@ int main()
 
     turret.transform.set_parent(&firetruck.transform, false);
     turret.transform.set_local_position(glm::vec3(0.0f, 1.0f, 0.0f));
-    turret.add_component(*new FiretruckCannonComponent(&turret, cannon_pivot.transform));
+    turret.add_component(*new FiretruckCannonComponent(&turret, cannonPivot.transform, bulletSpawn.transform, {&b1, &b2, &b3}));
     turret.model = turretModel;
 
-    cannon_pivot.transform.set_parent(&turret.transform, false);
-    cannon_pivot.transform.set_local_position(glm::vec3(0.0f, 0.25f, 0.0f));
-    cannon.transform.set_parent(&cannon_pivot.transform, false);
+    cannonPivot.transform.set_parent(&turret.transform, false);
+    cannonPivot.transform.set_local_position(glm::vec3(0.0f, 0.25f, 0.0f));
+    cannon.transform.set_parent(&cannonPivot.transform, false);
     cannon.model = cannonModel;
+
+    bulletSpawn.transform.set_parent(&cannon.transform, false);
+    bulletSpawn.transform.set_local_position(glm::vec3(0.0f, 0.0f, 1.0f));
 
     cam.transform.set_parent(&firetruck.transform, false);
     cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -7.0f));
@@ -372,8 +400,6 @@ int main()
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //tank.update(dt);
-        //tank.update_bullets(dt);
         sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, glfwGetTime() * 20.0f, 0.0f));
         root.transform.update_transform();
         logicEngine.update(dt);

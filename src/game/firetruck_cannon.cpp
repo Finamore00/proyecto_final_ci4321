@@ -5,9 +5,16 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../thirdparty/glm/gtx/vector_angle.hpp"
 
-FiretruckCannonComponent::FiretruckCannonComponent(SceneObject *sObj, Transform& cannon) 
-    : Component(sObj), m_cannon_pivot(cannon) 
+
+FiretruckCannonComponent::FiretruckCannonComponent(SceneObject *sObj, Transform &cannon, Transform& bulletSpawn, const std::vector<SceneObject*>& bullets)
+    : Component(sObj), m_cannon_pivot(cannon), m_bullet_spawn(bulletSpawn)
 {
+    for (auto &&b : bullets)
+    {
+        BulletComponent* cBullet = (BulletComponent*)b->get_component<BulletComponent>();
+        m_bullets.push_back(cBullet);
+    }
+    
 }
 
 void FiretruckCannonComponent::rotate_turret(float dir, float dt)
@@ -44,8 +51,12 @@ void FiretruckCannonComponent::rotate_cannon(float dir, float dt)
     }
 }
 
-void FiretruckCannonComponent::shoot()
+void FiretruckCannonComponent::shoot(bool grav)
 {
+    m_last_bullet = (m_last_bullet + 1) % m_bullets.size();
+    BulletComponent*& bull = m_bullets.at(m_last_bullet);
+    bull->get_scene_object().active = true;
+    bull->spawn(m_bullet_spawn, 20.0f, grav);
 }
 
 void FiretruckCannonComponent::update(float dt)
@@ -65,6 +76,18 @@ void FiretruckCannonComponent::update(float dt)
         cannonRot = -1.0f;
     else if (input->key_is_pressed(GLFW_KEY_K))
         cannonRot = 1.0f;
+
+    bool shootNormal = input->key_is_pressed(GLFW_KEY_SPACE);
+    bool shootGrav = input->key_is_pressed(GLFW_KEY_LEFT_CONTROL);
+    if (shootNormal || shootGrav)
+    {
+        float time = glfwGetTime();
+        if (time - m_last_shot_time >= m_fire_rate)
+        {
+            m_last_shot_time = time;
+            shoot(shootNormal ? !shootNormal : shootGrav);
+        }
+    }
 
     rotate_turret(turretRot, dt);
     rotate_cannon(cannonRot, dt);
