@@ -8,6 +8,14 @@ FiretruckComponent::FiretruckComponent(SceneObject* sObj) : Component(sObj)
 
 void FiretruckComponent::rotate_tank(float dir, float dt)
 {
+    Transform& transform = m_sceneObj->transform;
+    glm::quat current_rotation = transform.get_world_rotation();
+    glm::vec3 up = glm::normalize(transform.get_up_vector());
+
+    glm::quat rotation = glm::angleAxis(glm::radians(dir * 60.0f * dt), up);
+    rotation = glm::normalize(rotation);
+
+    transform.set_world_rotation(current_rotation * rotation);
 }
 
 void FiretruckComponent::move(const glm::vec3 &dir, float dt)
@@ -36,5 +44,6 @@ void FiretruckComponent::update(float dt)
         movementInput = -1;
 
     move(m_sceneObj->transform.get_front_vector() * movementInput, dt);
-    rotate_tank(rotationInput, dt);
+    if (movementInput != 0.0f)
+        rotate_tank(rotationInput * movementInput, dt);
 }

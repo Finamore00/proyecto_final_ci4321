@@ -315,8 +315,7 @@ void RenderingEngine::render()
     
     glDepthMask(GL_FALSE);
     m_skybox_mesh.shader->use();
-    m_skybox_mesh.draw();
-
+    m_skybox_mesh.draw(glm::mat4(1.0f));
 
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);

@@ -46,8 +46,6 @@ void FontComponent::set_text(const std::string& text)
 
 void FontComponent::draw(const glm::mat4& uiProjection)
 {
-    //std::cout << "[FONT COMPONENT] Start draw text" << std::endl;
-
     m_shader->use();
     m_font.get()->use_font_texture(GL_TEXTURE0);
     m_shader->set_mat4f("projection", uiProjection);

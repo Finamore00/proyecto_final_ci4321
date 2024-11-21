@@ -66,7 +66,6 @@ glm::vec3 ai_vector3_glm(const aiVector3D& from)
 Mesh* mesh_from_node(const aiNode* node, const aiScene* scene, Model& model)
 {
     std::cout << "[MODEL LOADER] " << node->mName.C_Str() << std::endl;
-    std::cout << glm::to_string(ai_matrix44_glm(node->mTransformation)) << std::endl;
     Geometry geo;
     if (node->mNumMeshes > 0)
     {

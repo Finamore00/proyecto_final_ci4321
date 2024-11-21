@@ -32,6 +32,7 @@
 #include "src/input/input.hpp"
 
 #include "src/game/firetruck_component.hpp"
+#include "src/game/firetruck_cannon.hpp"
 
 #include "src/resource_management/resource_manager.hpp"
 #include "src/mesh/model_loader.hpp"
@@ -145,12 +146,20 @@ int main()
 
     ModelLoader mLoader;
     std::shared_ptr<Model> firetruckModel = mLoader.load_resource("../models/firetruck.gltf");
+    std::shared_ptr<Model> turretModel = mLoader.load_resource("../models/firetruck_turret_mount.gltf");
+    std::shared_ptr<Model> cannonModel = mLoader.load_resource("../models/firetruck_cannon.gltf");
     for (int i = 0; i < firetruckModel.get()->mesh_number(); ++i)
     {
         firetruckModel.get()->get_mesh(i)->set_shader(basicShader);
         firetruckModel.get()->get_mesh(i)->shaderMaterial.albedo = txLoader.load_resource("../textures/firetruck.png");
-        firetruckModel.get()->get_mesh(i)->shaderMaterial.ambient = glm::vec3(0.5f);
     }
+
+    turretModel.get()->get_mesh(0)->set_shader(basicShader);
+    turretModel.get()->get_mesh(0)->shaderMaterial.albedo = txLoader.load_resource("../textures/firetruck.png");
+
+    cannonModel.get()->get_mesh(0)->set_shader(basicShader);
+    cannonModel.get()->get_mesh(0)->shaderMaterial.albedo = txLoader.load_resource("../textures/firetruck.png");
+
 #pragma endregion
 
     // Creating SceneObjects
@@ -158,25 +167,32 @@ int main()
     root.transform.update_transform();
 
 #pragma region Tank setup
-    SceneObject firetruck;
+    SceneObject firetruck, firetruckVisual, turret, cannon_pivot, cannon;
     firetruck.transform.set_parent(&root.transform, false);
     firetruck.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     firetruck.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    firetruck.add_component(*new FiretruckComponent(&firetruck));
     root.transform.update_transform();
 
-    firetruck.model = firetruckModel;
-    firetruck.add_component(*new FiretruckComponent(&firetruck));
-    // Tank set up
-    //Tank tank(root, basicShader);
-    //tank.mesh->shaderMaterial.albedo = txManager.load_resource("../textures/tank.bmp");
-    //tank.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
-    //tank.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    //root.transform.update_transform();
+
+    firetruckVisual.transform.set_parent(&firetruck.transform, false);
+    firetruckVisual.transform.set_world_euler_rotation(glm::vec3(0.0f, -90.0f, 0.0f));
+    firetruckVisual.transform.set_world_scale(glm::vec3(0.6f));
+    firetruckVisual.model = firetruckModel;
+
+    turret.transform.set_parent(&firetruck.transform, false);
+    turret.transform.set_local_position(glm::vec3(0.0f, 1.0f, 0.0f));
+    turret.add_component(*new FiretruckCannonComponent(&turret, cannon_pivot.transform));
+    turret.model = turretModel;
+
+    cannon_pivot.transform.set_parent(&turret.transform, false);
+    cannon_pivot.transform.set_local_position(glm::vec3(0.0f, 0.25f, 0.0f));
+    cannon.transform.set_parent(&cannon_pivot.transform, false);
+    cannon.model = cannonModel;
 
     cam.transform.set_parent(&firetruck.transform, false);
-    cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -3.0f));
+    cam.transform.set_world_position(glm::vec3(0.0f, 2.0f, -7.0f));
     cam.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    //tank.transform.update_transform();
 #pragma endregion
 
 #pragma region Environment
@@ -327,13 +343,14 @@ int main()
     obstacle_counter.transform.set_world_position(glm::vec3(0.0f, 1024.0f - 40.0f, 0.0f));
     obstacle_counter.transform.update_transform();
 
-    sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 256));
+    sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 64));
     sprite.transform.set_parent(&ui_root.transform, false);
     sprite.transform.update_transform();
-    sprite.transform.set_world_position(glm::vec3(0.0f, 512.0f, 0.0f));
+    sprite.transform.set_world_position(glm::vec3(128.0f, 128.0f, 0.0f));
     sprite.transform.update_transform();
 #pragma endregion
 
+    sphere1.model = firetruckModel;
 #pragma region Rendering
     renderEngine.set_scene_root(&root);
     renderEngine.set_ui_root(&ui_root);
@@ -357,7 +374,7 @@ int main()
 
         //tank.update(dt);
         //tank.update_bullets(dt);
-
+        sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, glfwGetTime() * 20.0f, 0.0f));
         root.transform.update_transform();
         logicEngine.update(dt);
         physicsEngine.simulate();
