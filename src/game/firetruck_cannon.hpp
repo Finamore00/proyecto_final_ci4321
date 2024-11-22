@@ -10,7 +10,7 @@ class FiretruckCannonComponent: public Component
 protected:
     Transform& m_cannon_pivot;
     Transform& m_bullet_spawn;
-    std::vector<BulletComponent*> m_bullets;
+    std::vector<std::weak_ptr<BulletComponent>> m_bullets;
 
     unsigned int m_last_bullet = 0;
     float m_fire_rate = 0.2f;

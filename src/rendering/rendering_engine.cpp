@@ -274,9 +274,9 @@ void RenderingEngine::render_ui(SceneObject& tree, bool first)
 {
     if (first)
     {
-        UIComponent* uiComp = (UIComponent*)(tree.get_component<UIComponent>());
-        if (uiComp != nullptr)
-            uiComp->draw(m_ui_proj);
+        std::weak_ptr<UIComponent> uiComp = tree.get_component<UIComponent>();
+        if (auto u = uiComp.lock())
+            u->draw(m_ui_proj);
     }
 
     for (auto &&c : tree.transform.get_children())
@@ -285,9 +285,9 @@ void RenderingEngine::render_ui(SceneObject& tree, bool first)
         if (!co.active)
             continue;
 
-        UIComponent* uiComp = (UIComponent*)(c->get_scene_object().get_component<UIComponent>());
-        if (uiComp != nullptr)
-            uiComp->draw(m_ui_proj);
+        std::weak_ptr<UIComponent> uiComp = c->get_scene_object().get_component<UIComponent>();
+        if (auto u = uiComp.lock())
+            u->draw(m_ui_proj);
         
         render_ui(co, false);
     }

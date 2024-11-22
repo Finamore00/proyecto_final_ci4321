@@ -1,10 +1,11 @@
 #include "obstacle_counter_component.hpp"
 
-ObstacleCounterComponent::ObstacleCounterComponent(SceneObject* sObj, const std::vector<SceneObject*>& obstacles, FontComponent* text)
+ObstacleCounterComponent::ObstacleCounterComponent(SceneObject* sObj, const std::vector<SceneObject*>& obstacles, std::weak_ptr<FontComponent> text)
     : Component(sObj), m_obstacles(obstacles) , m_text(text) 
 {
     m_count = m_obstacles.size();
-    m_text->set_text("Remaining obstacles: " + std::to_string(m_count));
+    if (auto t = m_text.lock())
+        t->set_text("Remaining obstacles: " + std::to_string(m_count));
 }
 
 
@@ -16,7 +17,9 @@ void ObstacleCounterComponent::update(float dt)
 
     if (remaining != m_count)
     {
-        m_text->set_text("Remaining obstacles: " + std::to_string(remaining));
+        if (auto t = m_text.lock())
+            t->set_text("Remaining obstacles: " + std::to_string(remaining));
+            
         m_count = remaining;
     }
 }

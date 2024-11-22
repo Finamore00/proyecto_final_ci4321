@@ -17,6 +17,7 @@ protected:
     static unsigned int m_curId; 
     const unsigned int m_ID;
     std::vector<Component*> m_components;
+    std::vector<std::shared_ptr<Component>> m_components_s;
 
 public:
     bool active = true;
@@ -30,23 +31,29 @@ public:
     unsigned int get_ID() const {return m_ID;};
     virtual void on_collision(ColliderComponent& collider, Transform& transform);
 
-    void add_component(Component& component);
-    
-    template <class T> Component* get_component();
+    template <class T,  class... Args> void add_component(Args&&... args);
+    template <class T> std::weak_ptr<T> get_component();
 };
 
+template <class T, class... Args>
+void SceneObject::add_component(Args &&...args)
+{
+    static_assert(std::is_base_of<Component, T>().value, "Trying to add_component a non component class");
+    m_components_s.push_back(std::make_shared<T>(std::forward<Args>(args)...));
+}
+
 template <class T>
-Component* SceneObject::get_component()
+std::weak_ptr<T> SceneObject::get_component()
 {
     static_assert(std::is_base_of<Component, T>().value, "Trying to get_component a non component class");
-    for (Component*& c : m_components)
+    for (auto &&c : m_components_s)
     {
         if (typeid(*c) == typeid(T))
-            return c;
+            return std::dynamic_pointer_cast<T>(c);
 
-        if (dynamic_cast<T*>(c) != nullptr)
-            return c;
+        if (dynamic_cast<T*>(c.get()) != nullptr)
+            return std::dynamic_pointer_cast<T>(c);
     }
 
-    return nullptr;
+    return std::weak_ptr<T>();
 }

@@ -32,6 +32,7 @@ void LogicEngine::register_component(SceneObject* obj, Component* comp)
 
 void LogicEngine::update(float dt) const
 {
+    std::cout << "[WARNING] NOT USING WEAK_PTR FOR LOGIC UPDATE. CHANGE ASAP" << std::endl;
     for (auto oiter = m_comps.begin(); oiter != m_comps.end(); oiter++)
     {
         if (!oiter->first->active)

@@ -61,8 +61,8 @@ void PhysicEngine::simulate()
                 continue;
 
             // Should this happen here? I'm not sure. How do I handle them? How I handle destructions?
-            std::cout << (*e1)->get_scene_object().get_ID() << " is in a collision with: ";
-            std::cout << (*e2)->get_scene_object().get_ID() << std::endl;
+            //std::cout << (*e1)->get_scene_object().get_ID() << " is in a collision with: ";
+            //std::cout << (*e2)->get_scene_object().get_ID() << std::endl;
             
             (*e1)->get_scene_object().on_collision(**e2, (*e2)->get_scene_object().transform);
             (*e2)->get_scene_object().on_collision(**e1, (*e1)->get_scene_object().transform);

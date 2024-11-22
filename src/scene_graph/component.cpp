@@ -4,7 +4,8 @@
 
 #include "logic_engine.hpp"
 
-Component::Component(SceneObject* sObj): m_sceneObj(sObj) 
+
+Component::Component(SceneObject* sObj): m_sceneObj(sObj)
 {
-    LogicEngine::get_instance()->register_component(sObj, this);
-};
+    LogicEngine::get_instance()->register_component(sObj, this); // change this to weak_ptr
+}

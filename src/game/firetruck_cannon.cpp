@@ -10,11 +10,7 @@ FiretruckCannonComponent::FiretruckCannonComponent(SceneObject *sObj, Transform 
     : Component(sObj), m_cannon_pivot(cannon), m_bullet_spawn(bulletSpawn)
 {
     for (auto &&b : bullets)
-    {
-        BulletComponent* cBullet = (BulletComponent*)b->get_component<BulletComponent>();
-        m_bullets.push_back(cBullet);
-    }
-    
+        m_bullets.push_back(b->get_component<BulletComponent>());
 }
 
 void FiretruckCannonComponent::rotate_turret(float dir, float dt)
@@ -54,9 +50,12 @@ void FiretruckCannonComponent::rotate_cannon(float dir, float dt)
 void FiretruckCannonComponent::shoot(bool grav)
 {
     m_last_bullet = (m_last_bullet + 1) % m_bullets.size();
-    BulletComponent*& bull = m_bullets.at(m_last_bullet);
-    bull->get_scene_object().active = true;
-    bull->spawn(m_bullet_spawn, 20.0f, grav);
+    std::weak_ptr<BulletComponent>bull = m_bullets.at(m_last_bullet);
+    if (auto b = bull.lock())
+    {
+        b->get_scene_object().active = true;
+        b->spawn(m_bullet_spawn, 20.0f, grav);
+    }
 }
 
 void FiretruckCannonComponent::update(float dt)

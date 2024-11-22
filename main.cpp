@@ -170,13 +170,13 @@ int main()
     b2.mesh = &bulletMesh;
     b3.mesh = &bulletMesh;
 
-    b1.add_component(*new BulletComponent(&b1, 10.0f, -9.8f, false));
-    b2.add_component(*new BulletComponent(&b2, 10.0f, -9.8f, false));
-    b3.add_component(*new BulletComponent(&b3, 10.0f, -9.8f, false));
+    b1.add_component<BulletComponent>(&b1, 10.0f, -9.8f, false);
+    b2.add_component<BulletComponent>(&b2, 10.0f, -9.8f, false);
+    b3.add_component<BulletComponent>(&b3, 10.0f, -9.8f, false);
 
-    b1.add_component(*new SphereCollider(&b1, 0.5f));
-    b2.add_component(*new SphereCollider(&b2, 0.5f));
-    b3.add_component(*new SphereCollider(&b3, 0.5f));
+    b1.add_component<SphereCollider>(&b1, 0.5f);
+    b2.add_component<SphereCollider>(&b2, 0.5f);
+    b3.add_component<SphereCollider>(&b3, 0.5f);
 
     b1.transform.set_parent(&root.transform, false);
     b2.transform.set_parent(&root.transform, false);
@@ -197,7 +197,7 @@ int main()
     firetruck.transform.set_parent(&root.transform, false);
     firetruck.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     firetruck.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    firetruck.add_component(*new FiretruckComponent(&firetruck));
+    firetruck.add_component<FiretruckComponent>(&firetruck);
     root.transform.update_transform();
 
     firetruckVisual.transform.set_parent(&firetruck.transform, false);
@@ -207,7 +207,7 @@ int main()
 
     turret.transform.set_parent(&firetruck.transform, false);
     turret.transform.set_local_position(glm::vec3(0.0f, 1.0f, 0.0f));
-    turret.add_component(*new FiretruckCannonComponent(&turret, cannonPivot.transform, bulletSpawn.transform, {&b1, &b2, &b3}));
+    turret.add_component<FiretruckCannonComponent>(&turret, cannonPivot.transform, bulletSpawn.transform, (std::vector<SceneObject*>){&b1, &b2, &b3});
     turret.model = turretModel;
 
     cannonPivot.transform.set_parent(&turret.transform, false);
@@ -246,28 +246,28 @@ int main()
     sphere1.transform.set_parent(&root.transform, false);
     sphere1.transform.set_world_position(glm::vec3(10.0f, 2.0f, 0.0f));
     sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
-    sphere1.add_component(*new DestroyableComponent(&sphere1));
+    sphere1.add_component<DestroyableComponent>(&sphere1);
 
     SceneObject sphere2;
     sphere2.mesh = &sphereMesh;
     sphere2.transform.set_parent(&root.transform, false);
     sphere2.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 6.0f));
     sphere2.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    sphere2.add_component(*new DestroyableComponent(&sphere2));
+    sphere2.add_component<DestroyableComponent>(&sphere2);
 
     SceneObject sphere3;
     sphere3.mesh = &sphereMesh;
     sphere3.transform.set_parent(&root.transform, false);
     sphere3.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 4.0f));
     sphere3.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    sphere3.add_component(*new DestroyableComponent(&sphere3));
+    sphere3.add_component<DestroyableComponent>(&sphere3);
 
     SceneObject sphere4;
     sphere4.mesh = &sphereMesh;
     sphere4.transform.set_parent(&root.transform, false);
     sphere4.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 2.0f));
     sphere4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    sphere4.add_component(*new DestroyableComponent(&sphere4));
+    sphere4.add_component<DestroyableComponent>(&sphere4);
 
     SceneObject box1;
     box1.mesh = &boxMesh;
@@ -275,7 +275,7 @@ int main()
     box1.transform.set_world_position(glm::vec3(10.0f, 0.2f, 10.0f));
     box1.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     box1.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    box1.add_component(*new DestroyableComponent(&box1));
+    box1.add_component<DestroyableComponent>(&box1);
 
     SceneObject box2;
     box2.mesh = &boxMesh;
@@ -283,7 +283,7 @@ int main()
     box2.transform.set_world_position(glm::vec3(7.0f, 1.2f, 10.0f));
     box2.transform.set_world_euler_rotation(glm::vec3(45.0f, 0.0f, 0.0f));
     box2.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    box2.add_component(*new DestroyableComponent(&box2));
+    box2.add_component<DestroyableComponent>(&box2);
 
     SceneObject box3;
     box3.mesh = &boxMesh;
@@ -291,7 +291,7 @@ int main()
     box3.transform.set_world_position(glm::vec3(4.0f, 2.2f, 10.0f));
     box3.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
     box3.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    box3.add_component(*new DestroyableComponent(&box3));
+    box3.add_component<DestroyableComponent>(&box3);
 
     SceneObject box4;
     box4.mesh = &boxMesh;
@@ -299,7 +299,7 @@ int main()
     box4.transform.set_world_position(glm::vec3(1.0f, 3.2f, 10.0f));
     box4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 45.0f));
     box4.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    box4.add_component(*new DestroyableComponent(&box4));
+    box4.add_component<DestroyableComponent>(&box4);
 
     SceneObject box5;
     box5.mesh = &boxMesh;
@@ -307,7 +307,7 @@ int main()
     box5.transform.set_world_position(glm::vec3(-2.0f, 4.2f, 10.0f));
     box5.transform.set_world_euler_rotation(glm::vec3(45.0f, 45.0f, 0.0f));
     box5.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    box5.add_component(*new DestroyableComponent(&box5));
+    box5.add_component<DestroyableComponent>(&box5);
 
     SceneObject box6;
     box6.mesh = &boxMesh;
@@ -315,43 +315,24 @@ int main()
     box6.transform.set_world_position(glm::vec3(-5.0f, 4.2f, 10.0f));
     box6.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 45.0f));
     box6.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
-    box6.add_component(*new DestroyableComponent(&box6));
+    box6.add_component<DestroyableComponent>(&box6);
 
 #pragma endregion
 
 #pragma region Physic setup
-    BoxCollider floorCollider(&floor, glm::vec3(1.0f));
-    floor.add_component(floorCollider);
+    floor.add_component<BoxCollider>(&floor, glm::vec3(1.0f));
 
-    BoxCollider box1Collider(&box1, glm::vec3(1.0f));
-    box1.add_component(box1Collider);
+    box1.add_component<BoxCollider>(&box1, glm::vec3(1.0f));
+    box2.add_component<BoxCollider>(&box2, glm::vec3(1.0f));
+    box3.add_component<BoxCollider>(&box3, glm::vec3(1.0f));
+    box4.add_component<BoxCollider>(&box4, glm::vec3(1.0f));
+    box5.add_component<BoxCollider>(&box5, glm::vec3(1.0f));
+    box6.add_component<BoxCollider>(&box6, glm::vec3(1.0f));
 
-    BoxCollider box2Collider(&box2, glm::vec3(1.0f));
-    box2.add_component(box2Collider);
-
-    BoxCollider box3Collider(&box3, glm::vec3(1.0f));
-    box3.add_component(box3Collider);
-
-    BoxCollider box4Collider(&box4, glm::vec3(1.0f));
-    box4.add_component(box4Collider);
-
-    BoxCollider box5Collider(&box5, glm::vec3(1.0f));
-    box5.add_component(box5Collider);
-
-    BoxCollider box6Collider(&box6, glm::vec3(1.0f));
-    box6.add_component(box6Collider);
-
-    SphereCollider sphere1Collider(&sphere1, 0.5f);
-    sphere1.add_component(sphere1Collider);
-
-    SphereCollider sphere2Collider(&sphere2, 0.5f);
-    sphere2.add_component(sphere2Collider);
-
-    SphereCollider sphere3Collider(&sphere3, 0.5f);
-    sphere3.add_component(sphere3Collider);
-
-    SphereCollider sphere4Collider(&sphere4, 0.5f);
-    sphere4.add_component(sphere4Collider);
+    sphere1.add_component<SphereCollider>(&sphere1, 0.5f);
+    sphere2.add_component<SphereCollider>(&sphere2, 0.5f);
+    sphere3.add_component<SphereCollider>(&sphere3, 0.5f);
+    sphere4.add_component<SphereCollider>(&sphere4, 0.5f);
 
 #pragma endregion
 
@@ -360,18 +341,17 @@ int main()
     SceneObject obstacle_counter, sprite;
 
     obstacle_counter.transform.set_parent(&ui_root.transform, false);
-    obstacle_counter.add_component(*new FontComponent(&obstacle_counter, fontManager, fontShader, "../fonts/Peaberry.bmp", "", 40.0f));
-    obstacle_counter.add_component(
-        *new ObstacleCounterComponent(
-            &obstacle_counter, 
-            {&box1, &box2, &box3, &box4, &box5, &box6, &sphere1, &sphere2, &sphere3, &sphere4}, 
-            (FontComponent *)obstacle_counter.get_component<FontComponent>()
-            )
-        );
+    obstacle_counter.add_component<FontComponent>(&obstacle_counter, fontManager, fontShader, "../fonts/Peaberry.bmp", "", 40.0f);
+    obstacle_counter.add_component<ObstacleCounterComponent>(
+        &obstacle_counter, 
+        (std::vector<SceneObject*>){&box1, &box2, &box3, &box4, &box5, &box6, &sphere1, &sphere2, &sphere3, &sphere4}, 
+        obstacle_counter.get_component<FontComponent>()
+    );
+
     obstacle_counter.transform.set_world_position(glm::vec3(0.0f, 1024.0f - 40.0f, 0.0f));
     obstacle_counter.transform.update_transform();
 
-    sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 64));
+    sprite.add_component<SpriteComponent>(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 64);
     sprite.transform.set_parent(&ui_root.transform, false);
     sprite.transform.update_transform();
     sprite.transform.set_world_position(glm::vec3(128.0f, 128.0f, 0.0f));
