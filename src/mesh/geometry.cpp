@@ -49,10 +49,10 @@ Geometry create_box(float x, float y, float z)
         {{halfX, -halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
 
         // Back
-        {{halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-        {{halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-        {{-halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-        {{-halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+        {{halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+        {{halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
 
         // Left
         {{-halfX, halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
@@ -224,6 +224,41 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
                 ind_aux2++;
             }
         }
+    }
+
+    std::cout << sphere.indices.size() << std::endl;
+
+    //Add tangent-bitangent pairs
+    for (int i = 0; i < sphere.indices.size(); i += 3) {
+        VertexData v = sphere.vertices[sphere.indices[i]];
+        VertexData v1 = sphere.vertices[sphere.indices[i + 1]];
+        VertexData v2 = sphere.vertices[sphere.indices[i + 2]];
+
+        glm::vec3 edge1 = v1.position - v.position;
+        glm::vec3 edge2 = v2.position - v.position;
+
+        glm::vec2 dUV1 = v1.uv - v.uv;
+        glm::vec2 dUV2 = v2.uv - v.uv;
+
+        float factor = 1.0f / (dUV1.x * dUV2.y - dUV2.x * dUV1.y);
+
+        glm::vec3 tangent(0.0f);
+        glm::vec3 bitangent(0.0f);
+
+        tangent.x = factor * (dUV2.y * edge1.x - dUV1.y * edge2.x);
+        tangent.y = factor * (dUV2.y * edge1.y - dUV1.y * edge2.y);
+        tangent.z = factor * (dUV2.y * edge1.z - dUV1.y * edge2.z);
+
+        bitangent.x = factor * (-dUV2.x * edge1.x + dUV1.x * edge2.x);
+        bitangent.y = factor * (-dUV2.x * edge1.y + dUV1.x * edge2.y);
+        bitangent.z = factor * (-dUV2.x * edge1.z + dUV1.x * edge2.z);
+
+        sphere.vertices[sphere.indices[i]].tangent = tangent;
+        sphere.vertices[sphere.indices[i]].bitangent = bitangent;
+        sphere.vertices[sphere.indices[i + 1]].tangent = tangent;
+        sphere.vertices[sphere.indices[i + 1]].bitangent = bitangent;
+        sphere.vertices[sphere.indices[i + 2]].tangent = tangent;
+        sphere.vertices[sphere.indices[i + 2]].bitangent = bitangent;
     }
 
     return sphere;

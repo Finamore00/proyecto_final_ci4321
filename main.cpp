@@ -115,12 +115,12 @@ int main()
     floorMesh.shaderMaterial.normal_map = txManager.load_resource("../texture/brickwall_normal.jpg");
 
     Mesh boxMesh(boxGeo, normalMapShader);
-    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
-    boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
+    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/stonefloor.png");
+    boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/stonefloor_normal.png");
 
-    Mesh sphereMesh(create_sphere(12, 12, 0.5f), basicShader);
-    // sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
-    sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
+    Mesh sphereMesh(create_sphere(12, 12, 0.5f), normalMapShader);
+    sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
+    sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
     // Creating SceneObjects
     SceneObject root, cam;
@@ -147,7 +147,7 @@ int main()
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     mainLight.intensity = 1.3f;
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(1.0f, 5.0f, -1.0f));
+    mainLight.transform.set_world_position(glm::vec3(0.0f, 5.0f, -0.0f));
     root.transform.update_transform();
 
     SceneObject floor;
