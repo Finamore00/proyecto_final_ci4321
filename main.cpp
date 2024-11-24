@@ -146,7 +146,7 @@ int main()
     std::cout << "hi" << std::endl;
     boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
-    Mesh sphereMesh(create_sphere(12, 12, 0.5f), normalMapShader);
+    Mesh sphereMesh(create_sphere(12, 12, 1.3f), normalMapShader);
     sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
     sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
@@ -266,14 +266,14 @@ int main()
     SceneObject sphere3;
     sphere3.mesh = &sphereMesh;
     sphere3.transform.set_parent(&root.transform, false);
-    sphere3.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 4.0f));
+    sphere3.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 3.0f));
     sphere3.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     sphere3.add_component(*new DestroyableComponent(&sphere3));
 
     SceneObject sphere4;
     sphere4.mesh = &sphereMesh;
     sphere4.transform.set_parent(&root.transform, false);
-    sphere4.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 2.0f));
+    sphere4.transform.set_world_position(glm::vec3(-8.0f, 1.0f, 0.0f));
     sphere4.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
     sphere4.add_component(*new DestroyableComponent(&sphere4));
 
