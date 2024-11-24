@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../scene_graph/component.hpp"
-#include "../gl_utils/shader.h"
+#include "../gl_utils/shader.hpp"
 
 class UIComponent : public Component
 {

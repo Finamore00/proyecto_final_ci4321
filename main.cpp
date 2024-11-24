@@ -15,7 +15,7 @@
 #include "src/rendering/rendering_engine.hpp"
 #include "src/rendering/lights.hpp"
 
-#include "src/gl_utils/shader.h"
+#include "src/gl_utils/shader.hpp"
 
 #include "src/textures/texture_loader.hpp"
 #include "src/textures/texture.hpp"
@@ -115,6 +115,11 @@ int main()
     gl_utils::shader_program spriteShader = gl_utils::shader_program(
         "../shader_files/ui/ui.vert",
         "../shader_files/ui/ui.basic.frag");
+        
+    gl_utils::shader_program normalMapShader = gl_utils::shader_program(
+        "../shader_files/normalmap.vert",
+        "../shader_files/normalmap.frag"
+    );
 
     TextureLoader txLoader;
     ResourceManager<Texture> txManager(txLoader);
@@ -136,11 +141,14 @@ int main()
     Mesh floorMesh(boxGeo, basicShader);
     floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
 
-    Mesh boxMesh(boxGeo, basicShader);
-    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
+    Mesh boxMesh(boxGeo, normalMapShader);
+    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
+    std::cout << "hi" << std::endl;
+    boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
-    Mesh sphereMesh(create_sphere(12, 12, 0.5f), basicShader);
-    sphereMesh.shaderMaterial.tint = glm::vec3(1.0f, 0.0f, 1.0f);
+    Mesh sphereMesh(create_sphere(12, 12, 0.5f), normalMapShader);
+    sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
+    sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
     ModelLoader mLoader;
     std::shared_ptr<Model> firetruckModel = mLoader.load_resource("../models/firetruck.gltf");
@@ -227,9 +235,9 @@ int main()
     // Setting main light
     Light mainLight;
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
-    mainLight.intensity = 1.0f;
+    mainLight.intensity = 1.5f;
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(1.0f, 10.0f, -1.0f));
+    mainLight.transform.set_world_position(glm::vec3(3.0f, 5.0f, 3.0f));
     root.transform.update_transform();
 
     SceneObject floor;
@@ -401,6 +409,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, glfwGetTime() * 20.0f, 0.0f));
+        mainLight.transform.set_world_position(glm::vec3(3.0 * glm::sin(glfwGetTime()), 5.0, 3.0 * glm::cos(glfwGetTime())));
         root.transform.update_transform();
         logicEngine.update(dt);
         physicsEngine.simulate();

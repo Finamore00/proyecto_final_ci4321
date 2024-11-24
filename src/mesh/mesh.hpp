@@ -1,8 +1,5 @@
 #pragma once
-
-#include "../../thirdparty/glm/glm.hpp"
-
-#include "../gl_utils/shader.h"
+#include "../gl_utils/shader.hpp"
 #include "geometry.hpp"
 #include "material.hpp"
 
@@ -30,3 +27,5 @@ public:
 #define VPOS_LAY_LOC 0
 #define VPOS_LAY_NOR 1
 #define VPOS_LAY_UVS 2
+#define VPOS_LAY_TAN 3
+#define VPOS_LAY_BITAN 4

@@ -11,10 +11,10 @@ Geometry create_plane(float x, float z)
     float halfZ = z / 2.0f;
     Geometry plane = {};
     plane.vertices = {
-        {{-halfX, 0.0f, -halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfX, 0.0f, halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfX, 0.0f, -halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfX, 0.0f, halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}}
+        {{-halfX, 0.0f, -halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+        {{-halfX, 0.0f, halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+        {{halfX, 0.0f, -halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+        {{halfX, 0.0f, halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}}
     };
 
     plane.indices = {
@@ -37,40 +37,40 @@ Geometry create_box(float x, float y, float z)
     Geometry box = {};
     box.vertices = {
         // Front
-        {{-halfX, halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{-halfX, -halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{halfX, halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{halfX, -halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{-halfX, halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+        {{-halfX, -halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+        {{halfX, halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+        {{halfX, -halfY, halfZ}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
 
         // Right
-        {{halfX, halfY, halfZ}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-        {{halfX, -halfY, halfZ}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfX, halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfX, -halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{halfX, halfY, halfZ}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{halfX, -halfY, halfZ}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{halfX, halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{halfX, -halfY, -halfZ}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f, 0.0f}},
 
         // Back
-        {{halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
-        {{halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
-        {{-halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
-        {{-halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+        {{halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+        {{halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
+        {{-halfX, -halfY, -halfZ}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f}},
 
         // Left
-        {{-halfX, halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfX, -halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{-halfX, halfY, halfZ}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{-halfX, -halfY, halfZ}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{-halfX, -halfY, -halfZ}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{-halfX, halfY, halfZ}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
+        {{-halfX, -halfY, halfZ}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}},
 
         // Top
-        {{-halfX, halfY, -halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfX, halfY, halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfX, halfY, -halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfX, halfY, halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-halfX, halfY, -halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+        {{-halfX, halfY, halfZ}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+        {{halfX, halfY, -halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
+        {{halfX, halfY, halfZ}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -1.0f}},
 
         // Bottom
-        {{-halfX, -halfY, -halfZ}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfX, -halfY, halfZ}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfX, -halfY, -halfZ}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfX, -halfY, halfZ}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}}
+        {{-halfX, -halfY, -halfZ}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{-halfX, -halfY, halfZ}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{halfX, -halfY, -halfZ}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{halfX, -halfY, halfZ}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}}
     };
 
     box.indices = {
@@ -108,40 +108,40 @@ Geometry create_inverted_box(float width, float height)
     Geometry box = {};
     box.vertices = {
         // Front
-        {{-halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+        {{-halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, -halfH, halfW}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
 
         // Right
-        {{halfW, halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{halfW, halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}, {0.0f ,0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, -halfH, halfW}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f ,0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f ,0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, -halfH, -halfW}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f ,0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
 
         // Back
-        {{halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, -halfH, -halfW}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
 
         // Left
-        {{-halfW, halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{-halfW, halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-halfW, halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, -halfH, -halfW}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, -halfH, halfW}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
 
         // Top
-        {{-halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, halfH, -halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, halfH, halfW}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
 
         // Bottom
-        {{-halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-        {{-halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}}
+        {{-halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{-halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, -halfH, -halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},
+        {{halfW, -halfH, halfW}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}}
     };
 
     box.indices = {
@@ -188,8 +188,8 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
 
     for (unsigned int i = 0; i <= stacks; ++i) {
         const float stack_angle = (PI / 2.0f) - (i * stack_step);
-        const float xy_plane_coord = radius * cosf(stack_angle);
-        const float z_coord = radius * sinf(stack_angle);
+        const float xz_plane_coord = radius * cosf(stack_angle);
+        const float y_coord = radius * sinf(stack_angle);
 
         //Aux variables for indices
         int ind_aux1 = i * (sectors + 1);
@@ -197,14 +197,14 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
 
         for (unsigned int j = 0; j <= sectors; ++j) {
             const float sector_angle = j * sector_step;
-            const float x_coord = xy_plane_coord * cosf(sector_angle);
-            const float y_coord = xy_plane_coord * sinf(sector_angle);
+            const float z_coord = xz_plane_coord * cosf(sector_angle);
+            const float x_coord = xz_plane_coord * sinf(sector_angle);
 
             const glm::vec3 coords = {x_coord, y_coord, z_coord};
-            const glm::vec3 normals = {x_coord * rad_invert, y_coord * rad_invert, z_coord * rad_invert};
+            const glm::vec3 normals = glm::normalize(coords);
             const glm::vec2 tex_pos = {static_cast<float>(j) / sectors, static_cast<float>(i) / stacks};
 
-            sphere.vertices.push_back({coords, normals, tex_pos});
+            sphere.vertices.push_back({coords, normals, tex_pos, glm::vec3(0.0f), glm::vec3(0.0f)});
 
             //Adding indices
             if (j < sectors) {
@@ -224,6 +224,39 @@ Geometry create_sphere(unsigned int sectors, unsigned int stacks, float radius)
                 ind_aux2++;
             }
         }
+    }
+
+    //Add tangent-bitangent pairs
+    for (int i = 0; i < sphere.indices.size(); i += 3) {
+        VertexData v = sphere.vertices[sphere.indices[i]];
+        VertexData v1 = sphere.vertices[sphere.indices[i + 1]];
+        VertexData v2 = sphere.vertices[sphere.indices[i + 2]];
+
+        glm::vec3 edge1 = v1.position - v.position;
+        glm::vec3 edge2 = v2.position - v.position;
+
+        glm::vec2 dUV1 = v1.uv - v.uv;
+        glm::vec2 dUV2 = v2.uv - v.uv;
+
+        float factor = 1.0f / (dUV1.x * dUV2.y - dUV2.x * dUV1.y);
+
+        glm::vec3 tangent(0.0f);
+        glm::vec3 bitangent(0.0f);
+
+        tangent.x = factor * (dUV2.y * edge1.x - dUV1.y * edge2.x);
+        tangent.y = factor * (dUV2.y * edge1.y - dUV1.y * edge2.y);
+        tangent.z = factor * (dUV2.y * edge1.z - dUV1.y * edge2.z);
+
+        bitangent.x = factor * (-dUV2.x * edge1.x + dUV1.x * edge2.x);
+        bitangent.y = factor * (-dUV2.x * edge1.y + dUV1.x * edge2.y);
+        bitangent.z = factor * (-dUV2.x * edge1.z + dUV1.x * edge2.z);
+
+        sphere.vertices[sphere.indices[i]].tangent = tangent;
+        sphere.vertices[sphere.indices[i]].bitangent = bitangent;
+        sphere.vertices[sphere.indices[i + 1]].tangent = tangent;
+        sphere.vertices[sphere.indices[i + 1]].bitangent = bitangent;
+        sphere.vertices[sphere.indices[i + 2]].tangent = tangent;
+        sphere.vertices[sphere.indices[i + 2]].bitangent = bitangent;
     }
 
     return sphere;
