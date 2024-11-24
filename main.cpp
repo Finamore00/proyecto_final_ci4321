@@ -146,7 +146,7 @@ int main()
     std::cout << "hi" << std::endl;
     boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
-    Mesh sphereMesh(create_sphere(12, 12, 1.3f), normalMapShader);
+    Mesh sphereMesh(create_sphere(12, 12, 1.2f), normalMapShader);
     sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
     sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
