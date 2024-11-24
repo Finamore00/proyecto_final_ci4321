@@ -15,6 +15,7 @@ uniform mat4 model;
 
 out vec2 TexCoord;
 out vec3 FragPos;
+out vec3 Normal;
 out mat3 TBN;
 
 void main()
@@ -26,4 +27,5 @@ void main()
    vec3 N = normalize(vec3(model * vec4(aNor, 0.0)));
    TBN = mat3(T, B, N);
    TexCoord = aTexCoord;
+   Normal = vec3(model * vec4(aNor, 0.0));
 }

@@ -110,13 +110,12 @@ int main()
     Mesh bulletMesh(boxGeo, basicShader);
     bulletMesh.shaderMaterial.albedo = txManager.load_resource("../textures/crate.bmp");
 
-    Mesh floorMesh(boxGeo, normalMapShader);
-    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
-    floorMesh.shaderMaterial.normal_map = txManager.load_resource("../texture/brickwall_normal.jpg");
+    Mesh floorMesh(boxGeo, basicShader);
+    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
 
     Mesh boxMesh(boxGeo, normalMapShader);
-    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/stonefloor.png");
-    boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/stonefloor_normal.png");
+    boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
+    boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
     Mesh sphereMesh(create_sphere(12, 12, 0.5f), normalMapShader);
     sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");

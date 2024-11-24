@@ -8,6 +8,7 @@ layout (std140, binding = 1) uniform Lights
 };
 
 in vec2 TexCoord;
+in vec3 Normal;
 in vec3 FragPos;
 in mat3 TBN;
 
@@ -44,13 +45,17 @@ void main()
    normal = normalize(TBN * normal);
 
    vec3 lightDir =  normalize(l1_pos - FragPos);
+   float normalFactor = max(dot(Normal, lightDir), -1.0);
    float factor = max(dot(normal, lightDir), 0.0) * l1_pow;
+   
    vec3 diffuse = factor * l1_col;
 
    float specularStrength = 0.5;
    vec3 viewDir = normalize(camPos - FragPos);
    vec3 reflectDir = reflect(-lightDir, normal);
-   float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64) * l1_pow;
+   float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128) * l1_pow;
+   spec = spec * step(0.0, normalFactor);
+   
    vec3 specular = specularStrength * spec * l1_col;
 
    FragColor = ((texture(base, uv) + vec4(tint, 1.0)) * vec4(diffuse + ambient + specular, 1.0));

@@ -306,8 +306,8 @@ Geometry create_cylinder(unsigned int sectors, float radius, float height)
         const glm::vec3 normals_bottom = {x_coord * rad_inv, hf_height * hf_height_inv, 0.0f};
         const glm::vec2 uvs_bottom = {(float)i / sectors, 0.0f};
 
-        cylinder.vertices.push_back({coords_top, normals_top, uvs_top, glm::vec3(0.0f), glm::vec3(0.0f)});
-        cylinder.vertices.push_back({coords_bottom, normals_bottom, uvs_bottom, glm::vec3(0.0f), glm::vec3(0.0f)});
+        cylinder.vertices.push_back({coords_top, normals_top, uvs_top});
+        cylinder.vertices.push_back({coords_bottom, normals_bottom, uvs_bottom});
 
         //Push indices for top triangle
         cylinder.indices.push_back(0);
