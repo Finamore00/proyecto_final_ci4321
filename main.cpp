@@ -143,12 +143,15 @@ int main()
 
     Mesh boxMesh(boxGeo, normalMapShader);
     boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
-    std::cout << "hi" << std::endl;
     boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
     Mesh sphereMesh(create_sphere(12, 12, 1.2f), normalMapShader);
     sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
     sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
+
+    Mesh lightMesh(create_sphere(12, 12, 0.5f), basicShader);
+    lightMesh.shaderMaterial.tint = glm::vec3(1.0f);
+    lightMesh.shaderMaterial.ambient = glm::vec3(1.0f);
 
     ModelLoader mLoader;
     std::shared_ptr<Model> firetruckModel = mLoader.load_resource("../models/firetruck.gltf");
@@ -238,6 +241,7 @@ int main()
     mainLight.intensity = 1.5f;
     mainLight.transform.set_parent(&root.transform, false);
     mainLight.transform.set_world_position(glm::vec3(3.0f, 5.0f, 3.0f));
+    mainLight.mesh = &lightMesh;
     root.transform.update_transform();
 
     SceneObject floor;
