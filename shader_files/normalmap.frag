@@ -45,7 +45,7 @@ void main()
    normal = normalize(TBN * normal);
 
    vec3 lightDir =  normalize(l1_pos - FragPos);
-   float normalFactor = max(dot(Normal, lightDir), -1.0);
+   float normalFactor = max(dot(Normal, lightDir), 0.0);
    float factor = max(dot(normal, lightDir), 0.0) * l1_pow;
    
    vec3 diffuse = factor * l1_col;
@@ -54,7 +54,7 @@ void main()
    vec3 viewDir = normalize(camPos - FragPos);
    vec3 reflectDir = reflect(-lightDir, normal);
    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128) * l1_pow;
-   spec = spec * step(0.0, normalFactor);
+   spec = spec * step(0.0, -step(normalFactor, 0.0));
    
    vec3 specular = specularStrength * spec * l1_col;
 
