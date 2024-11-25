@@ -138,8 +138,9 @@ int main()
     Mesh bulletMesh(create_sphere(12, 12, 0.5f), basicShader);
     bulletMesh.shaderMaterial.tint = glm::vec3(0.0f, 0.0f, 1.0f);
 
-    Mesh floorMesh(boxGeo, basicShader);
-    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/floor.bmp");
+    Mesh floorMesh(boxGeo, normalMapShader);
+    floorMesh.shaderMaterial.albedo = txManager.load_resource("../textures/stonefloor.png");
+    floorMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/stonefloor_normal.jpg");
 
     Mesh boxMesh(boxGeo, normalMapShader);
     boxMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
