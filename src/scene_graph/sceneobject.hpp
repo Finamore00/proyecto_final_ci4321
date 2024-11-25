@@ -16,8 +16,7 @@ class SceneObject
 protected:
     static unsigned int m_curId; 
     const unsigned int m_ID;
-    std::vector<Component*> m_components;
-    std::vector<std::shared_ptr<Component>> m_components_s;
+    std::vector<std::shared_ptr<Component>> m_components;
 
 public:
     bool active = true;
@@ -39,14 +38,14 @@ template <class T, class... Args>
 void SceneObject::add_component(Args &&...args)
 {
     static_assert(std::is_base_of<Component, T>().value, "Trying to add_component a non component class");
-    m_components_s.push_back(std::make_shared<T>(std::forward<Args>(args)...));
+    m_components.push_back(std::make_shared<T>(std::forward<Args>(args)...));
 }
 
 template <class T>
 std::weak_ptr<T> SceneObject::get_component()
 {
     static_assert(std::is_base_of<Component, T>().value, "Trying to get_component a non component class");
-    for (auto &&c : m_components_s)
+    for (auto &&c : m_components)
     {
         if (typeid(*c) == typeid(T))
             return std::dynamic_pointer_cast<T>(c);
