@@ -17,6 +17,9 @@ std::vector<std::string> get_cubemap_files(const std::string& base);
 Texture* load_2d_text(const std::string& path, GLuint id, GLint int_format, GLenum format, GLenum data_type, bool hasMipMap);
 Texture* load_cubemap(const std::vector<std::string>& path, GLuint id, GLint int_format, GLenum format, GLenum data_type);
 
+/// @brief Loads the texture in a path.
+/// @param path Path of the texture
+/// @return Shared pointer to the loaded texture
 std::shared_ptr<Texture> TextureLoader::load_resource(std::string path) const
 {
     std::string metaPath = path;
@@ -75,6 +78,9 @@ std::shared_ptr<Texture> TextureLoader::load_resource(std::string path) const
     return std::shared_ptr<Texture>(tx);
 }
 
+/// @brief Retrieves GL texture type from a str
+/// @param str str to convert
+/// @return GL texture type
 GLenum texture_type_from_str(std::string str)
 {
     if (str == "GL_TEXTURE_2D")
@@ -86,6 +92,9 @@ GLenum texture_type_from_str(std::string str)
     return GL_INVALID_ENUM;
 }
 
+/// @brief Retrieves GL texture wrap from a str
+/// @param str str to convert
+/// @return GL texture wrap
 GLenum texture_wrap_from_str(std::string str)
 {
     if (str == "GL_REPEAT")
@@ -103,6 +112,9 @@ GLenum texture_wrap_from_str(std::string str)
     return GL_INVALID_ENUM;
 }
 
+/// @brief Retrieves GL texture filterig from a str
+/// @param str str to convert
+/// @return GL texture filterig
 GLenum texture_filt_from_str(std::string str)
 {
     if (str == "GL_NEAREST")
@@ -126,6 +138,9 @@ GLenum texture_filt_from_str(std::string str)
     return GL_INVALID_ENUM;
 }
 
+/// @brief Retrieves GL texture format from a str
+/// @param str str to convert
+/// @return GL texture format
 GLenum texture_format_from_str(std::string str)
 {
     if (str == "GL_RGB")
@@ -137,6 +152,10 @@ GLenum texture_format_from_str(std::string str)
     return GL_INVALID_ENUM;
 }
 
+/// @brief Retrieves all of the files that compose a cubemap
+/// @param path Base path of the cubemap
+/// @return vector containing all the paths to all the cubemap files in the
+//          following order: front, back, down, up, right, left
 std::vector<std::string> get_cubemap_files(const std::string& path)
 {
     std::filesystem::path basePath(path);

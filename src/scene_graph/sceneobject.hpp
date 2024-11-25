@@ -35,6 +35,9 @@ public:
     template <class T> Component* get_component();
 };
 
+/// @brief Retrieves a component attached to a scene object
+/// @tparam T A subclass of the Component class
+/// @return The first component of type T found. nullptr otherwise
 template <class T>
 Component* SceneObject::get_component()
 {

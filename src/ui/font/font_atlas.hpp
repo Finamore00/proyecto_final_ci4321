@@ -8,6 +8,8 @@
 
 class Texture;
 
+/// @brief Class that contains a font atlas and all the information
+//         needed to draw it
 class FontAtlas
 {
 private:

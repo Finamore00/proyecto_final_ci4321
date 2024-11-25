@@ -27,14 +27,14 @@
 #include "src/physics/physic_engine.hpp"
 #include "src/physics/collider_component.hpp"
 
-#include "src/game/components/destroyable_component.hpp"
-
 #include "src/game/components/obstacle_counter_component.hpp"
-#include "src/game/bullet_component.hpp"
-#include "src/input/input.hpp"
-
+#include "src/game/components/destroyable_component.hpp"
+#include "src/game/speedo_meter_component.hpp"
 #include "src/game/firetruck_component.hpp"
+#include "src/game/bullet_component.hpp"
 #include "src/game/firetruck_cannon.hpp"
+
+#include "src/input/input.hpp"
 
 #include "src/resource_management/resource_manager.hpp"
 
@@ -147,8 +147,8 @@ int main()
     boxMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
 
     Mesh sphereMesh(create_sphere(12, 12, 1.2f), normalMapShader);
-    sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/brickwall.jpg");
-    sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/brickwall_normal.jpg");
+    sphereMesh.shaderMaterial.albedo = txManager.load_resource("../textures/stonefloor.png");
+    sphereMesh.shaderMaterial.normal_map = txManager.load_resource("../textures/stonefloor_normal.jpg");
 
     Mesh lightMesh(create_sphere(12, 12, 0.5f), basicShader);
     lightMesh.shaderMaterial.tint = glm::vec3(1.0f);
@@ -255,9 +255,9 @@ int main()
     root.transform.update_transform();
 
     SceneObject sphere1;
-    sphere1.mesh = &sphereMesh;
+    sphere1.model = firetruckModel;
     sphere1.transform.set_parent(&root.transform, false);
-    sphere1.transform.set_world_position(glm::vec3(10.0f, 2.0f, 0.0f));
+    sphere1.transform.set_world_position(glm::vec3(30.0f, 2.0f, 0.0f));
     sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, 45.0f, 0.0f));
     sphere1.add_component(*new DestroyableComponent(&sphere1));
 
@@ -370,7 +370,8 @@ int main()
 
 #pragma region UI
     SceneObject ui_root;
-    SceneObject obstacle_counter, sprite;
+    SceneObject obstacle_counter;
+    SceneObject speedoMeter, speedGaugePivot, speedGauge;
 
     obstacle_counter.transform.set_parent(&ui_root.transform, false);
     obstacle_counter.add_component(*new FontComponent(&obstacle_counter, fontManager, fontShader, "../fonts/Peaberry.bmp", "", 40.0f));
@@ -384,14 +385,23 @@ int main()
     obstacle_counter.transform.set_world_position(glm::vec3(0.0f, 1024.0f - 40.0f, 0.0f));
     obstacle_counter.transform.update_transform();
 
-    sprite.add_component(*new SpriteComponent(&sprite, spriteShader, txManager.load_resource("../textures/heart.png"), 64));
-    sprite.transform.set_parent(&ui_root.transform, false);
-    sprite.transform.update_transform();
-    sprite.transform.set_world_position(glm::vec3(128.0f, 128.0f, 0.0f));
-    sprite.transform.update_transform();
+    speedoMeter.add_component(*new SpriteComponent(&speedoMeter, spriteShader, txManager.load_resource("../textures/speedo_meter.png"), 256));
+    speedoMeter.add_component(*new SpeedoMeterComponent(&speedoMeter, 90.0f, -90.0f, speedGaugePivot.transform));
+    speedoMeter.transform.set_parent(&ui_root.transform, false);
+    speedoMeter.transform.update_transform();
+    speedoMeter.transform.set_world_position(glm::vec3(128.0f, 128.0f, 0.1f));
+    
+    //speedGaugePivot.add_component(*new SpriteComponent(&speedoMeter, spriteShader, txManager.load_resource("../textures/heart.png"), 0));
+    speedGaugePivot.transform.set_parent(&speedoMeter.transform, false);
+    speedGaugePivot.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.2f));
+    speedGaugePivot.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 125.0f));
+    
+    speedGauge.add_component(*new SpriteComponent(&speedGauge, spriteShader, txManager.load_resource("../textures/speed_gauge.png"), 128));
+    speedGauge.transform.set_parent(&speedGaugePivot.transform, false);
+    speedGauge.transform.set_world_position(glm::vec3(0.0f, 45.0f, 0.3f));
+
 #pragma endregion
 
-    sphere1.model = firetruckModel;
 #pragma region Rendering
     renderEngine.set_scene_root(&root);
     renderEngine.set_ui_root(&ui_root);
@@ -416,6 +426,7 @@ int main()
         sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, glfwGetTime() * 20.0f, 0.0f));
         mainLight.transform.set_world_position(glm::vec3(3.0 * glm::sin(glfwGetTime()), 5.0, 3.0 * glm::cos(glfwGetTime())));
         root.transform.update_transform();
+        ui_root.transform.update_transform();
         logicEngine.update(dt);
         physicsEngine.simulate();
         renderEngine.render();

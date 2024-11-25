@@ -22,6 +22,8 @@ SpriteComponent::SpriteComponent(SceneObject* sObj, const gl_utils::shader_progr
     glBindVertexArray(0);
 }
 
+/// @brief Sets the size of the sprite
+/// @param size Sprite size
 void SpriteComponent::set_size(const glm::vec2& size)
 {
     UIComponent::set_size(size);
@@ -39,13 +41,16 @@ void SpriteComponent::set_size(const glm::vec2& size)
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(verts), &verts);
 }
 
-
+/// @brief Sets the sprite texture
+/// @param sprite Sprite texture
 void SpriteComponent::set_sprite(const std::shared_ptr<Texture>& sprite)
 {
     m_texture = sprite;
 }
 
 
+/// @brief Draws the sprite
+/// @param uiProjection UI layer projection
 void SpriteComponent::draw(const glm::mat4& uiProjection)
 {
     m_shader->use();

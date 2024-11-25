@@ -5,6 +5,7 @@
 class Component;
 class SceneObject;
 
+/// @brief System in charge of updating all components
 class LogicEngine {
 private:
     static LogicEngine *g_instance;

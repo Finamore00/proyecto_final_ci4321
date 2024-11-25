@@ -3,6 +3,7 @@
 
 class ColliderComponent;
 
+/// @brief Base class of a component for a scene object
 class Component {
 private:
     void friend SceneObject::on_collision(ColliderComponent& collider, Transform& transform);

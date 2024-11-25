@@ -5,6 +5,10 @@
 
 #include "collider_component.hpp"
 
+/// @brief Tests the collision between two colliders
+/// @param a collider a to test
+/// @param b collider b to test
+/// @return true if there's a collision between a and b, false otherwise
 bool test_collision(const ColliderComponent& a, const ColliderComponent& b)
 {
     if (typeid(a) == typeid(SphereCollider))

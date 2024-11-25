@@ -39,11 +39,15 @@ FontComponent::FontComponent(
     std::cout << "Created font component" << std::endl;
 }
 
+/// @brief Sets the text to draw
+/// @param text text to draw
 void FontComponent::set_text(const std::string& text)
 {
     m_text = text;
 }
 
+/// @brief Draws the text
+/// @param uiProjection UI Layer projection
 void FontComponent::draw(const glm::mat4& uiProjection)
 {
     m_shader->use();
@@ -52,6 +56,7 @@ void FontComponent::draw(const glm::mat4& uiProjection)
     m_shader->set_mat4f("model", m_sceneObj->transform.get_model_matrix());
     glBindVertexArray(m_VAO);
 
+    // Draw a quad for every char
     unsigned int col = 0;
     unsigned int line = 0;
     for (auto cit = m_text.cbegin(); cit != m_text.cend(); cit++, col++)

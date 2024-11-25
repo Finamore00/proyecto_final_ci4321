@@ -4,6 +4,7 @@
 #include "collision_primitives.hpp"
 #include "physic_engine.hpp"
 
+/// @brief Base component for object colliders. Not intended to be instantiated
 class ColliderComponent: public Component {
 protected:
     ColliderComponent(SceneObject* sObj): Component(sObj) {}; // Not to be used!
@@ -13,6 +14,7 @@ public:
     void update(float dt) override;
 };
 
+/// @brief Collider shaped like a box
 class BoxCollider: public ColliderComponent {
 private:
     OBB m_obb;
@@ -25,6 +27,7 @@ public:
     void set_dimensions(const glm::vec3& extents);
 };
 
+/// @brief Collider shaped like a sphere
 class SphereCollider: public ColliderComponent {
 private:
     Sphere m_sphere;

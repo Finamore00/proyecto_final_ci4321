@@ -15,6 +15,7 @@ BoxCollider::BoxCollider(SceneObject* sObj, const glm::vec3& extents): ColliderC
     PhysicEngine::get_instance()->register_entity(this);
 }
 
+/// @brief Syncs the collider shape with the transform
 void BoxCollider::sync_transform() {
     Transform& transform = m_sceneObj->transform;
     glm::vec3 scale = transform.get_world_scale();
@@ -30,6 +31,8 @@ void BoxCollider::sync_transform() {
     m_obb.halfW[2] = m_extents.z * scale.z / 2.0f;
 }
 
+/// @brief Sets the size of the collider box
+/// @param extents Size of each box's axes
 void BoxCollider::set_dimensions(const glm::vec3& extents)
 {
     m_extents = extents;
@@ -42,11 +45,14 @@ SphereCollider::SphereCollider(SceneObject* sObj, float radius): ColliderCompone
     PhysicEngine::get_instance()->register_entity(this);
 }
 
+/// @brief Syncs the collider shape with the transform
 void SphereCollider::sync_transform()
 {
     m_sphere.pos = m_sceneObj->transform.get_world_position();
 }
 
+/// @brief Sets the radius of the sphere
+/// @param radius Sphere radius
 void SphereCollider::set_radius(float radius)
 {
     m_sphere.radius = radius;

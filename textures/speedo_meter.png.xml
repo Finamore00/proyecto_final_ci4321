@@ -1,0 +1,9 @@
+<meta>
+    <texture_type array="false">GL_TEXTURE_2D</texture_type>
+    <filtering mipmap="false">
+        <min_filter>GL_NEAREST</min_filter>
+        <mag_filter>GL_NEAREST</mag_filter>
+    </filtering>
+    <wrapping>GL_REPEAT</wrapping>
+    <format>GL_RGBA</format>
+</meta>

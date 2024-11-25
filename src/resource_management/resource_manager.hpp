@@ -7,6 +7,8 @@
 
 #include "resource_loader.hpp"
 
+/// @brief Class that loads a filesystem resource, caches it and creates resource pointers to it.
+/// @tparam T Resource to load
 template <class T>
 class ResourceManager {
 public:
@@ -20,6 +22,10 @@ private:
     ResourceManager& operator=(const ResourceManager&) = delete;
 };
 
+/// @brief Loads a resource
+/// @tparam T Type of resource to load
+/// @param path Path of the resource to load
+/// @return Shared pointer to the loaded resource.
 template <class T>
 std::shared_ptr<T> ResourceManager<T>::load_resource(const std::string& path)
 {

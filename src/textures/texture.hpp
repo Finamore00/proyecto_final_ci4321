@@ -5,6 +5,7 @@
 
 #include "../../thirdparty/glad/include/glad/glad.h"
 
+/// @brief Texture files meta data
 struct TextureMeta
 {
     int width, height, nrChannels; 

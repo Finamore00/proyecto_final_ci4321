@@ -5,7 +5,7 @@
 #include "../../resource_management/resource_manager.hpp"
 #include "../ui_component.hpp"
 
-
+/// @brief Component used to draw text
 class FontComponent : public UIComponent
 {
 private:

@@ -3,6 +3,7 @@
 #include "../scene_graph/component.hpp"
 #include "../gl_utils/shader.hpp"
 
+/// @brief Base component for an ui component
 class UIComponent : public Component
 {
 protected:
