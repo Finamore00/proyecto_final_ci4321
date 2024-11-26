@@ -7,7 +7,7 @@
 #include "../../thirdparty/glm/glm.hpp"
 
 #include "../textures/texture.hpp"
-#include "../gl_utils/shader.h"
+#include "../gl_utils/shader.hpp"
 #include "../mesh/mesh.hpp"
 
 #define MATRIX_UBO_BP 0

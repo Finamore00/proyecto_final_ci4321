@@ -6,6 +6,7 @@
 class Transform;
 class ColliderComponent;
 
+/// @brief System in charge of physics
 class PhysicEngine {
 private:
     static PhysicEngine *g_instance;

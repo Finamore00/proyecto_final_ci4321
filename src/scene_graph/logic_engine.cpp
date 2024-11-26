@@ -19,6 +19,8 @@ LogicEngine* LogicEngine::get_instance()
     return g_instance;
 }
 
+/// @brief Registers a component into the system
+/// @param comp Component to register
 void LogicEngine::register_component(Component* comp)
 {
     if (m_comps.find(comp->ID()) != m_comps.end())
@@ -41,6 +43,8 @@ void LogicEngine::unregister_component(unsigned int id)
     m_comps.erase(id);
 }
 
+/// @brief Updates all the registered active components
+/// @param dt Update delta time
 void LogicEngine::update(float dt) const
 {
     std::cout << "[WARNING] NOT USING WEAK_PTR FOR LOGIC UPDATE. CHANGE ASAP" << std::endl;

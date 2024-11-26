@@ -41,6 +41,9 @@ void SceneObject::add_component(Args &&...args)
     m_components.push_back(std::make_shared<T>(std::forward<Args>(args)...));
 }
 
+/// @brief Retrieves a component attached to a scene object
+/// @tparam T A subclass of the Component class
+/// @return The first component of type T found. nullptr otherwise
 template <class T>
 std::weak_ptr<T> SceneObject::get_component()
 {

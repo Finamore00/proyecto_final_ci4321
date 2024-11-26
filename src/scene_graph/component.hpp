@@ -4,6 +4,7 @@
 
 class ColliderComponent;
 
+/// @brief Base class of a component for a scene object
 class Component {
 protected:
     static unsigned int s_nextID;

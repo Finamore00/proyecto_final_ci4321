@@ -5,6 +5,7 @@
 
 #include "mesh.hpp"
 
+/// @brief Class that represents a model as a collection of meshes
 class Model 
 {
 private:

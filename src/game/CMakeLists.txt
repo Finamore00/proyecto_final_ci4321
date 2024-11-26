@@ -2,6 +2,7 @@ add_library(game STATIC
     bullet_component.cpp 
     firetruck_component.cpp 
     firetruck_cannon.cpp
+    speedo_meter_component.cpp
     components/destroyable_component.cpp 
     components/obstacle_counter_component.cpp
     )

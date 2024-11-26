@@ -14,6 +14,9 @@ glm::mat4 ai_matrix44_glm(const aiMatrix4x4& from);
 glm::vec3 ai_vector3_glm(const aiVector3D& from);
 Mesh* mesh_from_node(const aiNode* node, const aiScene* scene, Model& model);
 
+/// @brief Loads a model with assimp
+/// @param path Path of the model
+/// @return Model loaded or nullptr
 std::shared_ptr<Model> ModelLoader::load_resource(std::string path) const
 {
     Assimp::Importer m_importer;
@@ -22,7 +25,6 @@ std::shared_ptr<Model> ModelLoader::load_resource(std::string path) const
         aiProcess_JoinIdenticalVertices  |
         aiProcess_SortByPType
     );
-
 
     if (scene == nullptr)
     {
@@ -38,6 +40,10 @@ std::shared_ptr<Model> ModelLoader::load_resource(std::string path) const
     return std::shared_ptr<Model>(model);
 }
 
+/// @brief Process a node from the model scene hierarchy
+/// @param node Node to process
+/// @param scene Scene info
+/// @param model Target model
 void process_model_scene(const aiNode* node, const aiScene* scene, Model& model)
 {
     std::unique_ptr<Mesh> mesh = std::unique_ptr<Mesh>(mesh_from_node(node, scene, model));
@@ -47,6 +53,9 @@ void process_model_scene(const aiNode* node, const aiScene* scene, Model& model)
 }
 
 // thanks stackoverflow
+/// @brief Transforms an assimp4x4 matrix to a glm4x4 matrix
+/// @param from assimp matrix to transform
+/// @return Resulting glm matrix
 glm::mat4 ai_matrix44_glm(const aiMatrix4x4& from)
 {
     glm::mat4 to;
@@ -58,11 +67,19 @@ glm::mat4 ai_matrix44_glm(const aiMatrix4x4& from)
     return to;
 }
 
+/// @brief Transforms an assimp vec3 to a glm vec3
+/// @param from assimp vec3 to transform
+/// @return Resulting glm vec3
 glm::vec3 ai_vector3_glm(const aiVector3D& from)
 {
     return {from.x, from.y, from.z};
 }
 
+/// @brief Creates a mesh from from a model hierarchy node
+/// @param node Node to create mesh from
+/// @param scene Model scene info
+/// @param model Target model
+/// @return Resulting mesh
 Mesh* mesh_from_node(const aiNode* node, const aiScene* scene, Model& model)
 {
     std::cout << "[MODEL LOADER] " << node->mName.C_Str() << std::endl;

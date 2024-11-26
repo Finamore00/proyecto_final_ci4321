@@ -35,6 +35,8 @@ void PhysicEngine::sync_transforms()
     }
 }
 
+/// @brief Registers a collider into the physic engine
+/// @param collider Collider to register
 void PhysicEngine::register_entity(ColliderComponent* collider) 
 {
     m_colliders.push_back(collider);

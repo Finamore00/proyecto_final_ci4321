@@ -6,6 +6,7 @@
 
 class Texture;
 
+/// @brief Loads a texture atlas
 class FontLoader : public ResourceLoader<FontAtlas>
 {
 private:

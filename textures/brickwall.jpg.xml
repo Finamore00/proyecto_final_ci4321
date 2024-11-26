@@ -1,0 +1,9 @@
+<meta>
+    <texture_type array="false">GL_TEXTURE_2D</texture_type>
+    <filtering mipmap="true">
+        <min_filter>GL_LINEAR_MIPMAP_LINEAR</min_filter>
+        <mag_filter>GL_LINEAR</mag_filter>
+    </filtering>
+    <wrapping>GL_REPEAT</wrapping>
+    <format>GL_RGB</format>
+</meta>

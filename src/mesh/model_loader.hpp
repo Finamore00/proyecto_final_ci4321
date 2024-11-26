@@ -6,6 +6,7 @@
 
 #include "model.hpp"
 
+/// @brief Class used to load models
 class ModelLoader : public ResourceLoader<Model>
 {
 public:

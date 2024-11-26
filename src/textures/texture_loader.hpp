@@ -2,6 +2,7 @@
 #include "../resource_management/resource_loader.hpp"
 #include "../textures/texture.hpp"
 
+/// @brief Loads textures
 class TextureLoader : public ResourceLoader<Texture>
 {
 public:

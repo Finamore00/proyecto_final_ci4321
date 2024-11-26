@@ -3,9 +3,10 @@
 #include <memory>
 
 #include "../../textures/texture.hpp"
-#include "../../gl_utils/shader.h"
+#include "../../gl_utils/shader.hpp"
 #include "../ui_component.hpp"
 
+/// @brief Component for drawing sprites
 class SpriteComponent: public UIComponent
 {
 protected:

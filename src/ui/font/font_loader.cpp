@@ -12,11 +12,12 @@
 using namespace tinyxml2;
 using std::istringstream;
 
-#define START_CHAR 32
-#define END_CHAR 159
 
 FontLoader::FontLoader(ResourceManager<Texture>& txLoader): m_txLoader(txLoader) {}
 
+/// @brief Loads a font atlas resource
+/// @param path Path of the font to load
+/// @return Shared pointer to loaded font
 std::shared_ptr<FontAtlas> FontLoader::load_resource(std::string path) const
 {
     std::cout << "[FONT LOADER] Loading atlas at: " << path << std::endl;

@@ -11,15 +11,21 @@ FontAtlas::FontAtlas(std::shared_ptr<Texture> atlas, unsigned int startChar, uns
     unsigned int w = txMeta.width;
     unsigned int h = txMeta.height;
 
+    // uv offset/scale to draw this font correctly
     m_colOffset = 1.0f / cols;
     m_rowOffset = 1.0f / rows;
 }
 
+/// @brief Activates the font's texture
+/// @param unit Target texcoord
 void FontAtlas::use_font_texture(GLenum unit) const
 {
     m_atlas.get()->use_texture(unit);
 }
 
+/// @brief Calculates the uv offset and scaling to draw certain character
+/// @param c Character to draw
+/// @return UV offset and scaling to draw character c
 glm::vec2 FontAtlas::get_char_uv(char c) const
 {
     unsigned int ascii = (unsigned int)c;
