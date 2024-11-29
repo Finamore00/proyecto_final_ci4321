@@ -35,12 +35,19 @@ const float CONTAINER_QUAD_VTX[] = {
          1.0f,  1.0f,  1.0f, 1.0f
 };
 
+RenderingEngine *RenderingEngine::g_instance = nullptr;
 
 RenderingEngine::RenderingEngine(GLFWwindow& window, float width, float height, float pov)
     :   m_window(window), m_width(width), m_height(height), m_pov(pov), 
         m_screen_prog("../shader_files/screen.fb.vert", "../shader_files/screen.fb.frag"),
         m_skybox_prog("../shader_files/skybox.vert", "../shader_files/skybox.frag")
 {
+    if (g_instance != nullptr) {
+        throw;
+    }
+
+    g_instance = this;
+
     m_skybox_mesh.initialize_geometry(create_inverted_box(1000.0f, 1000.0f));
     m_skybox_mesh.set_shader(m_skybox_prog);
 
@@ -227,6 +234,12 @@ void RenderingEngine::sync_view_matrix()
 void RenderingEngine::register_light(const Light& light)
 {
     m_lights.push_back({light, light.active});
+    std::cout << "[WARNING] Registering deprecated lights" << std::endl;
+}
+
+void RenderingEngine::register_light(const LightComponent &light)
+{
+    m_shadows.register_light(light);
 }
 
 #pragma region RENDER

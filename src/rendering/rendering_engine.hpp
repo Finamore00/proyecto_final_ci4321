@@ -4,6 +4,9 @@
 #include <memory>
 #include <vector>
 
+#include "shadow_engine.hpp"
+#include "light_component.hpp"
+
 #include "../../thirdparty/glm/glm.hpp"
 
 #include "../textures/texture.hpp"
@@ -28,6 +31,8 @@ struct LightEntity
 
 class RenderingEngine {
 private:
+    static RenderingEngine *g_instance;
+
     GLFWwindow& m_window;
     float m_width, m_height, m_pov;
     
@@ -47,11 +52,11 @@ private:
     unsigned int m_uboBlocks[BLOCKS_AMOUNT];
     unsigned int m_cqvbo = 0, m_cqvao = 0;
 
+    ShadowEngine m_shadows;
     std::vector<LightEntity> m_lights;
     
     void sync_lights();
     void sync_view_matrix();
-
     void prepare_container_quad();
     void prepare_framebuffers();
     void render_screen_texture(unsigned int tx);
@@ -60,6 +65,8 @@ private:
 
 public:
     RenderingEngine(GLFWwindow& window, float width, float height, float pov);
+
+    static RenderingEngine* get_instance();
 
     void set_resolution(float width, float height);
     void set_ui_resolution(float width, float height);
@@ -70,5 +77,6 @@ public:
     void set_ui_root(SceneObject* root);
     void set_skybox_texture(shared_ptr<Texture> texture);
     void register_light(const Light& light);
+    void register_light(const LightComponent& light);
     void render();
 };
