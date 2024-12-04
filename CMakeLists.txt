@@ -24,6 +24,7 @@ add_subdirectory(thirdparty/assimp)
 add_subdirectory(src/resource_management)
 add_subdirectory(src/scene_graph)
 add_subdirectory(src/rendering)
+add_subdirectory(src/particles)
 add_subdirectory(src/textures)
 add_subdirectory(src/gl_utils)
 add_subdirectory(src/physics)
@@ -52,4 +53,5 @@ target_link_libraries(
     resource_management
     fonts
     sprites
+    particles
     )

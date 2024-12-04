@@ -5,6 +5,7 @@
 
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
 
+#include "../particles/particle_system.hpp"
 #include "../ui/font/font_component.hpp"
 #include "../scene_graph/transform.hpp"
 #include "../mesh/mesh.hpp"
@@ -273,10 +274,13 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
             co.mesh->shader->set_mat4f("model", c->get_model_matrix());
             co.mesh->draw(c->get_model_matrix());
         }
-
-        if (co.model != nullptr)
+        else if (co.model != nullptr)
         {
             co.model.get()->draw(c->get_model_matrix());
+        }
+        else
+        {
+            std::weak_ptr<ParticleSystemComponent> particles = co.get_component<ParticleSystemComponent>();
         }
 
         render_tree(co, false);
