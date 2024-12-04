@@ -278,10 +278,10 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
         {
             co.model.get()->draw(c->get_model_matrix());
         }
-        else
-        {
-            std::weak_ptr<ParticleSystemComponent> particles = co.get_component<ParticleSystemComponent>();
-        }
+        //else
+        //{
+        //    std::weak_ptr<ParticleSystemComponent> particles = co.get_component<ParticleSystemComponent>();
+        //}
 
         render_tree(co, false);
     }
