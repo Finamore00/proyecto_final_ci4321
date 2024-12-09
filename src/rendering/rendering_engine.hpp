@@ -17,7 +17,7 @@
 #define LIGHTS_UBO_BP 1
 #define BLOCKS_AMOUNT 2
 #define MATRIX_UBO_SIZE 128
-#define LIGHTS_UBO_SIZE 36
+#define LIGHTS_UBO_SIZE 8208
 
 class Light;
 class Transform;

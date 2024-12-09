@@ -202,17 +202,25 @@ void RenderingEngine::set_skybox_texture(shared_ptr<Texture> texture)
 void RenderingEngine::sync_lights()
 {
     glBindBuffer(GL_UNIFORM_BUFFER, m_uboBlocks[LIGHTS_UBO_BP]);
-    for (unsigned int l = 0; l < m_lights.size(); ++l)
-    {
+    GLintptr base_address = 0;
+
+    for (unsigned int l = 0; l < m_lights.size(); ++l) {
         const Light& lo = m_lights[l].light;
         float pow = lo.intensity * (lo.active ? 1.0f : 0.0f);
         glm::vec3 lp = lo.transform.get_world_position();
 
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, 16, &lp); 
-        glBufferSubData(GL_UNIFORM_BUFFER, 16, 16, &lo.color);
-        glBufferSubData(GL_UNIFORM_BUFFER, 32, 4, &pow); 
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 0, 12, &lp);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 16, 12, &lo.color);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 32, 12, &lo.direction);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 44, 4, &lo.type);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 48, 4, &lo.cutoff);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 52, 4, &pow);
+
+        base_address += 64;
     }
+    int light_count = m_lights.size();
+    glBufferSubData(GL_UNIFORM_BUFFER, 8192, 4, &light_count);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 /// @brief Syncs the view matrix in the UBO Matrices block with the camera
@@ -266,7 +274,7 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
     {
         const SceneObject& co = c->get_scene_object();
         if (!co.active)
-            continue;;
+            continue;
 
         if (co.mesh != nullptr)
         {   

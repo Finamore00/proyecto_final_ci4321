@@ -245,6 +245,12 @@ int main()
     mainLight.mesh = &lightMesh;
     root.transform.update_transform();
 
+    Light secondary_light;
+    secondary_light.transform.set_parent(&root.transform, false);
+    secondary_light.transform.set_world_position(glm::vec3(20.0, 3.0, 0.0));
+    secondary_light.mesh = &lightMesh;
+    root.transform.update_transform();
+
     SceneObject floor;
     floor.mesh = &floorMesh;
     floor.mesh->shaderMaterial.texUVscales = glm::vec3(100.0f);
@@ -388,6 +394,7 @@ int main()
     renderEngine.set_ui_resolution(1024, 1024);
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
+    renderEngine.register_light(secondary_light);
     renderEngine.set_skybox_texture(skyboxTx);
 #pragma endregion
 
