@@ -16,4 +16,8 @@ public:
 
     void disable_light() { intensity = 0.0f; };
     void enable_light() { intensity = 1.0f; };
+    void set_type(LightSourceType t) { type = t; };
+    void set_direction(glm::vec3 dir) { direction = dir; };
+    void set_cutoff(float cut) { cutoff = cut; };
+    void set_color(glm::vec3 col) { color = col; };
 };

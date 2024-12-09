@@ -241,8 +241,11 @@ int main()
     mainLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
     mainLight.intensity = 1.5f;
     mainLight.transform.set_parent(&root.transform, false);
-    mainLight.transform.set_world_position(glm::vec3(3.0f, 5.0f, 3.0f));
-    mainLight.mesh = &lightMesh;
+    mainLight.transform.set_world_position(glm::vec3(0.0f, 5.0f, 0.0f));
+    // mainLight.mesh = &lightMesh;
+    mainLight.type = LightSourceType::Spot;
+    mainLight.set_direction(glm::vec3(0.0, -1.0, 0.0));
+    mainLight.set_cutoff(0.3);
     root.transform.update_transform();
 
     Light secondary_light;
@@ -411,7 +414,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, glfwGetTime() * 20.0f, 0.0f));
-        mainLight.transform.set_world_position(glm::vec3(3.0 * glm::sin(glfwGetTime()), 5.0, 3.0 * glm::cos(glfwGetTime())));
+        // mainLight.transform.set_world_position(glm::vec3(3.0 * glm::sin(glfwGetTime()), 5.0, 3.0 * glm::cos(glfwGetTime())));
         root.transform.update_transform();
         ui_root.transform.update_transform();
         logicEngine.update(dt);
