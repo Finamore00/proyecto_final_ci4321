@@ -208,10 +208,11 @@ void RenderingEngine::sync_lights()
         const Light& lo = m_lights[l].light;
         float pow = lo.intensity * (lo.active ? 1.0f : 0.0f);
         glm::vec3 lp = lo.transform.get_world_position();
+        glm::vec3 world_direction = glm::mat3(lo.transform.get_model_matrix()) * lo.direction;
 
         glBufferSubData(GL_UNIFORM_BUFFER, base_address + 0, 12, &lp);
         glBufferSubData(GL_UNIFORM_BUFFER, base_address + 16, 12, &lo.color);
-        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 32, 12, &lo.direction);
+        glBufferSubData(GL_UNIFORM_BUFFER, base_address + 32, 12, &world_direction);
         glBufferSubData(GL_UNIFORM_BUFFER, base_address + 44, 4, &lo.type);
         glBufferSubData(GL_UNIFORM_BUFFER, base_address + 48, 4, &lo.cutoff);
         glBufferSubData(GL_UNIFORM_BUFFER, base_address + 52, 4, &pow);

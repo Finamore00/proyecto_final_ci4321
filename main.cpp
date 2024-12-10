@@ -242,11 +242,20 @@ int main()
     mainLight.intensity = 1.5f;
     mainLight.transform.set_parent(&root.transform, false);
     mainLight.transform.set_world_position(glm::vec3(0.0f, 5.0f, 0.0f));
-    // mainLight.mesh = &lightMesh;
-    mainLight.type = LightSourceType::Spot;
+    mainLight.type = LightSourceType::Directional;
     mainLight.set_direction(glm::vec3(0.0, -1.0, 0.0));
-    mainLight.set_cutoff(0.3);
+    mainLight.intensity = 0.5f;
     root.transform.update_transform();
+
+    Light firetruck_headlight;
+    firetruck_headlight.transform.set_parent(&firetruck.transform, true);
+    firetruck_headlight.transform.set_local_position(glm::vec3(0.0f, 0.0f, 1.0f));
+    firetruck_headlight.type = LightSourceType::Spot;
+    firetruck_headlight.set_direction(glm::vec3(0.0f, 0.0f, 1.0f));
+    firetruck_headlight.intensity = 0.7;
+    firetruck_headlight.disable_light();
+    firetruck_headlight.set_cutoff(0.8);
+    firetruck.transform.update_transform();
 
     Light secondary_light;
     secondary_light.transform.set_parent(&root.transform, false);
@@ -398,11 +407,13 @@ int main()
     renderEngine.set_main_camera(&cam.transform);
     renderEngine.register_light(mainLight);
     renderEngine.register_light(secondary_light);
+    renderEngine.register_light(firetruck_headlight);
     renderEngine.set_skybox_texture(skyboxTx);
 #pragma endregion
 
     float old_time = 0.0f;
     float dt = 0.0f;
+    double last_toggled_light = glfwGetTime();
     // Main loop!
     while (!glfwWindowShouldClose(window))
     {
@@ -413,8 +424,21 @@ int main()
         glClearColor(0.106f, 0.118f, 0.169f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        //Está sucio pero bueno mano funciona. Es pa prender y apagar la luz ambiental/la del camión
+        InputManager *input;
+        input = input->get_instance();
+        if (input->key_is_pressed(GLFW_KEY_P) && glfwGetTime() - last_toggled_light > 0.5) {
+            if (mainLight.active) {
+                mainLight.disable_light();
+                firetruck_headlight.enable_light();
+            } else {
+                mainLight.enable_light();
+                firetruck_headlight.disable_light();
+            }
+            last_toggled_light = glfwGetTime();
+        }
+
         sphere1.transform.set_world_euler_rotation(glm::vec3(0.0f, glfwGetTime() * 20.0f, 0.0f));
-        // mainLight.transform.set_world_position(glm::vec3(3.0 * glm::sin(glfwGetTime()), 5.0, 3.0 * glm::cos(glfwGetTime())));
         root.transform.update_transform();
         ui_root.transform.update_transform();
         logicEngine.update(dt);

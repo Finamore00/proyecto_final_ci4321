@@ -14,8 +14,8 @@ public:
     float cutoff = INFINITY;
     float intensity = 1.0f;
 
-    void disable_light() { intensity = 0.0f; };
-    void enable_light() { intensity = 1.0f; };
+    void disable_light() { active = false; };
+    void enable_light() { active = true; };
     void set_type(LightSourceType t) { type = t; };
     void set_direction(glm::vec3 dir) { direction = dir; };
     void set_cutoff(float cut) { cutoff = cut; };
