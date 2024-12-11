@@ -3,6 +3,9 @@
 #include <functional>
 #include <iostream>
 
+#include <chrono>
+#include <random>
+
 #include "thirdparty/glm/gtc/matrix_transform.hpp"
 #include "thirdparty/glm/gtc/type_ptr.hpp"
 #include "thirdparty/stb/stb_image.h"
@@ -42,6 +45,8 @@
 #include "src/ui/font/font_component.hpp"
 #include "src/ui/font/font_loader.hpp"
 
+#include "src/particles/particle_emitter.hpp"
+
 #include "src/scene_graph/logic_engine.hpp"
 
 // Window resize handler
@@ -56,6 +61,7 @@ RenderingEngine *re_ptr;
 
 int main()
 {
+    srand(std::chrono::system_clock::now().time_since_epoch().count());
     // Window initializantion
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -120,6 +126,10 @@ int main()
         "../shader_files/normalmap.vert",
         "../shader_files/normalmap.frag"
     );
+
+    gl_utils::shader_program particleShader = gl_utils::shader_program(
+        "../shader_files/particles.vert", 
+        "../shader_files/particles.frag");
 
     TextureLoader txLoader;
     ResourceManager<Texture> txManager(txLoader);
@@ -205,7 +215,7 @@ int main()
 #pragma endregion
 
 #pragma region Tank setup
-    SceneObject firetruck, firetruckVisual, turret, cannonPivot, cannon, bulletSpawn;
+    SceneObject firetruck, firetruckVisual, turret, cannonPivot, cannon, bulletSpawn, cannonVfx;
     firetruck.transform.set_parent(&root.transform, false);
     firetruck.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.0f));
     firetruck.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -217,9 +227,26 @@ int main()
     firetruckVisual.transform.set_world_scale(glm::vec3(0.6f));
     firetruckVisual.model = firetruckModel;
 
+    cannonVfx.transform.set_parent(&bulletSpawn.transform, false);
+    cannonVfx.transform.update_transform();
+    cannonVfx.add_component<ParticleEmitter>(&cannonVfx, particleShader);
+
+    std::weak_ptr<ParticleEmitter> cannonEmitter = cannonVfx.get_component<ParticleEmitter>();
+    if (auto e = cannonEmitter.lock())
+    {
+        e->set_shape<ConeEmissor>(0.5f, 1.0f);
+        e->set_timer<BurstEmissionTime>(100u, 0.0f, false);
+        e->set_texture(txManager.load_resource("../textures/particle.png"));
+        e->set_life_time(0.7f);
+        e->set_start_color(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+        e->set_end_color(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
+        e->set_start_size(0.2f);
+        e->set_start_speed(20.0f);
+    }
+
     turret.transform.set_parent(&firetruck.transform, false);
     turret.transform.set_local_position(glm::vec3(0.0f, 1.0f, 0.0f));
-    turret.add_component<FiretruckCannonComponent>(&turret, cannonPivot.transform, bulletSpawn.transform, (std::vector<SceneObject*>){&b1, &b2, &b3});
+    turret.add_component<FiretruckCannonComponent>(&turret, cannonPivot.transform, bulletSpawn.transform, (std::vector<SceneObject*>){&b1, &b2, &b3}, cannonEmitter);
     turret.model = turretModel;
 
     cannonPivot.transform.set_parent(&turret.transform, false);
@@ -348,6 +375,7 @@ int main()
     box6.transform.set_world_scale(glm::vec3(2.0f, 2.0f, 2.0f));
     box6.add_component<DestroyableComponent>(&box6);
 
+
 #pragma endregion
 
 #pragma region Physic setup
@@ -389,7 +417,6 @@ int main()
     speedoMeter.transform.update_transform();
     speedoMeter.transform.set_world_position(glm::vec3(128.0f, 128.0f, 0.1f));
     
-    //speedGaugePivot.add_component(*new SpriteComponent(&speedoMeter, spriteShader, txManager.load_resource("../textures/heart.png"), 0));
     speedGaugePivot.transform.set_parent(&speedoMeter.transform, false);
     speedGaugePivot.transform.set_world_position(glm::vec3(0.0f, 0.0f, 0.2f));
     speedGaugePivot.transform.set_world_euler_rotation(glm::vec3(0.0f, 0.0f, 125.0f));

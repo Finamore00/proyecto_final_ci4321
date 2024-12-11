@@ -3,12 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include <vector>
+#include <queue>
 
 #include "shadow_engine.hpp"
 #include "light_component.hpp"
 
 #include "../../thirdparty/glm/glm.hpp"
 
+#include "../particles/particle_emitter.hpp"
 #include "../textures/texture.hpp"
 #include "../gl_utils/shader.hpp"
 #include "../mesh/mesh.hpp"
@@ -18,6 +20,8 @@
 #define BLOCKS_AMOUNT 2
 #define MATRIX_UBO_SIZE 128
 #define LIGHTS_UBO_SIZE 8208
+
+typedef std::queue<std::weak_ptr<ParticleEmitter>> ParticlesQueue;
 
 class Light;
 class Transform;
@@ -54,6 +58,7 @@ private:
 
     ShadowEngine m_shadows;
     std::vector<LightEntity> m_lights;
+    ParticlesQueue m_particlesQ;
     
     void sync_lights();
     void sync_view_matrix();
@@ -62,6 +67,7 @@ private:
     void render_screen_texture(unsigned int tx);
     void render_tree(const SceneObject& tree, bool first);
     void render_ui(SceneObject& tree, bool first);
+    void render_particles();
 
 public:
     RenderingEngine(GLFWwindow& window, float width, float height, float pov);

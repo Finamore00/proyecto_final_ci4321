@@ -5,7 +5,6 @@
 
 #include "../../thirdparty/glm/gtc/matrix_transform.hpp"
 
-#include "../particles/particle_system.hpp"
 #include "../ui/font/font_component.hpp"
 #include "../scene_graph/transform.hpp"
 #include "../mesh/mesh.hpp"
@@ -39,7 +38,7 @@ const float CONTAINER_QUAD_VTX[] = {
 RenderingEngine *RenderingEngine::g_instance = nullptr;
 
 RenderingEngine::RenderingEngine(GLFWwindow& window, float width, float height, float pov)
-    :   m_window(window), m_width(width), m_height(height), m_pov(pov), 
+    :   m_window(window), m_width(width), m_height(height), m_pov(pov),
         m_screen_prog("../shader_files/screen.fb.vert", "../shader_files/screen.fb.frag"),
         m_skybox_prog("../shader_files/skybox.vert", "../shader_files/skybox.frag")
 {
@@ -273,7 +272,7 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
 
     for (auto &&c : tree.transform.get_children())
     {
-        const SceneObject& co = c->get_scene_object();
+        SceneObject& co = c->get_scene_object();
         if (!co.active)
             continue;
 
@@ -287,10 +286,12 @@ void RenderingEngine::render_tree(const SceneObject& tree, bool first)
         {
             co.model.get()->draw(c->get_model_matrix());
         }
-        //else
-        //{
-        //    std::weak_ptr<ParticleSystemComponent> particles = co.get_component<ParticleSystemComponent>();
-        //}
+        else
+        {
+            std::weak_ptr<ParticleEmitter> particles = co.get_component<ParticleEmitter>();
+            if (!particles.expired())
+                m_particlesQ.push(particles);
+        }
 
         render_tree(co, false);
     }
@@ -319,6 +320,19 @@ void RenderingEngine::render_ui(SceneObject& tree, bool first)
     }
 }
 
+void RenderingEngine::render_particles()
+{
+    std::weak_ptr<ParticleEmitter> p;
+    while (m_particlesQ.size() > 0)
+    {
+        p = m_particlesQ.front();
+        m_particlesQ.pop();
+        if (p.expired())
+            continue;;
+
+        p.lock().get()->draw();
+    }
+}
 
 void RenderingEngine::render_screen_texture(unsigned int tx)
 {
@@ -346,6 +360,7 @@ void RenderingEngine::render()
     glDepthMask(GL_TRUE);
     glEnable(GL_DEPTH_TEST);
     render_tree(*m_scene_root, true);
+    render_particles();
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbs[UI_FB]);
     glClearColor(0.0f, 1.0f, 0.0f, 0.0f);

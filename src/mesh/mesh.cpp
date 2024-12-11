@@ -69,6 +69,7 @@ void Mesh::draw(const glm::mat4& model) const
         }
     }
     else {
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
