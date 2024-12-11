@@ -1,5 +1,5 @@
-# Computación Gráfica I (CI4321) - Primer Proyecto
-Primer Proyecto de Computación Gráfica I (CI4321). Universidad Simón Bolívar, trimestre Sep-Dic 2024
+# Computación Gráfica I (CI4321) - Entrega Final
+Entrega definitiva para el proyecto trimestral de Computación Gráfica I (CI4321). Universidad Simón Bolívar, trimestre Sep-Dic 2024
 
 # Integrantes
 - Santiago Finamore, 18-10125
@@ -37,3 +37,4 @@ Primer Proyecto de Computación Gráfica I (CI4321). Universidad Simón Bolívar
 - J: Girar torreta en sentido anti horario
 - Space: Disparar proyectil con gravedad
 - Left CTRL: Disparar proyectir rectilineo
+- P: Toggle para luz de ambiente/faros del camión
