@@ -5,9 +5,13 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../thirdparty/glm/gtx/vector_angle.hpp"
 
-
-FiretruckCannonComponent::FiretruckCannonComponent(SceneObject *sObj, Transform &cannon, Transform& bulletSpawn, const std::vector<SceneObject*>& bullets)
-    : Component(sObj), m_cannon_pivot(cannon), m_bullet_spawn(bulletSpawn)
+FiretruckCannonComponent::FiretruckCannonComponent(
+    SceneObject *sObj, 
+    Transform &cannon, 
+    Transform &bulletSpawn, 
+    const std::vector<SceneObject *> &bullets, 
+    std::weak_ptr<ParticleEmitter> vfx)
+    : Component(sObj), m_cannon_pivot(cannon), m_bullet_spawn(bulletSpawn), m_vfx(vfx)
 {
     for (auto &&b : bullets)
         m_bullets.push_back(b->get_component<BulletComponent>());
@@ -17,8 +21,8 @@ void FiretruckCannonComponent::rotate_turret(float dir, float dt)
 {
     if (dir == 0.0f)
         return;
-    
-    Transform& turret_transform = m_sceneObj->transform;
+
+    Transform &turret_transform = m_sceneObj->transform;
     glm::quat turret_y_rotation = turret_transform.get_world_rotation();
 
     glm::quat rotation;
@@ -32,9 +36,9 @@ void FiretruckCannonComponent::rotate_cannon(float dir, float dt)
 {
     if (dir == 0.0f)
         return;
-        
+
     float angBtw = glm::degrees(glm::angle(m_cannon_pivot.get_front_vector(), glm::vec3(0.0f, 1.0f, 0.0f)));
-    glm::quat pivot_x_rotation  = m_cannon_pivot.get_world_rotation();
+    glm::quat pivot_x_rotation = m_cannon_pivot.get_world_rotation();
     glm::vec3 right = m_cannon_pivot.get_right_vector();
     glm::quat rotation;
     if ((dir < 0.0f && (angBtw - glm::radians(40.0f) * dt * dir) > 1.0f) ||
@@ -50,11 +54,13 @@ void FiretruckCannonComponent::rotate_cannon(float dir, float dt)
 void FiretruckCannonComponent::shoot(bool grav)
 {
     m_last_bullet = (m_last_bullet + 1) % m_bullets.size();
-    std::weak_ptr<BulletComponent>bull = m_bullets.at(m_last_bullet);
+    std::weak_ptr<BulletComponent> bull = m_bullets.at(m_last_bullet);
     if (auto b = bull.lock())
     {
         b->get_scene_object().active = true;
         b->spawn(m_bullet_spawn, 20.0f, grav);
+        if (auto p = m_vfx.lock())
+            p->start(true);
     }
 }
 
